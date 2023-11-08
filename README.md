@@ -9,6 +9,13 @@
 
 ## 문서
 
+## Environment
+```dotenv
+DATABASE_URL=jdbc:mysql://localhost:3306/moodmate
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+```
+
 ## Conventions
 ### Commit Convention
 - [Udacity Convention](http://udacity.github.io/git-styleguide/)
