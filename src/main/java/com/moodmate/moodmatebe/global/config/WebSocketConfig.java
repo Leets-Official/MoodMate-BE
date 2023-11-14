@@ -9,11 +9,13 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
         registry.addEndpoint("/chat")
                 .setAllowedOrigins("*")
                 .withSockJS();
     }
+    @Override
     public void configureMessageBroker(MessageBrokerRegistry registry){
         //pub 로 데이터를 받으면 이곳을 한번 거쳐서 URI 만 MessageMapping 에 매핑
         registry.setApplicationDestinationPrefixes("/pub");
