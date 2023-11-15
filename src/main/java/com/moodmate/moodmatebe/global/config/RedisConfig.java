@@ -8,6 +8,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -35,5 +36,11 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         //redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
         return redisTemplate;
+    }
+
+    // 채팅 메시지를 전송하기 위한 Redis 토픽 설정
+    @Bean
+    public ChannelTopic topic() {
+        return new ChannelTopic("chat");
     }
 }
