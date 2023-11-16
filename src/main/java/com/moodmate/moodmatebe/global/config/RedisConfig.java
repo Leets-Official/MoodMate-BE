@@ -1,5 +1,6 @@
 package com.moodmate.moodmatebe.global.config;
 
+import com.moodmate.moodmatebe.domain.chat.redis.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,9 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -43,4 +47,26 @@ public class RedisConfig {
     public ChannelTopic topic() {
         return new ChannelTopic("chat");
     }
+    @Bean
+    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory,
+                                                              MessageListenerAdapter listenerAdapter,
+                                                              ChannelTopic channelTopic) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.addMessageListener(listenerAdapter, channelTopic);
+        return container;
+    }
+    @Bean
+    public RedisTemplate<String, Object> chatRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> chatRedisTemplate = new RedisTemplate<>();
+        chatRedisTemplate.setConnectionFactory(connectionFactory);
+        chatRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        chatRedisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        return chatRedisTemplate;
+    }
+    @Bean
+    public MessageListenerAdapter listenerAdapter(RedisSubscriber redisSubscriber) {
+        return new MessageListenerAdapter(redisSubscriber, "sendMessage");
+    }
+
 }
