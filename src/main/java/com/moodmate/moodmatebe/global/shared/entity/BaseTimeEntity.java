@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.global.shared.domain;
+package com.moodmate.moodmatebe.global.shared.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

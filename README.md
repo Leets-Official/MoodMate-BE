@@ -14,6 +14,10 @@
 DATABASE_URL=jdbc:mysql://localhost:3306/moodmate
 DATABASE_USERNAME=
 DATABASE_PASSWORD=
+
+# JWT 암호화 키
+JWT_ACCESS_SECRET=
+JWT_REFRESH_SECRET=
 ```
 
 ## Conventions
