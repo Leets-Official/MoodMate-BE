@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
         title = "MoodMate API",
         description = "MoodMate : API 명세서",
         version = "v1.0.0"))
-@RequiredArgsConstructor
 @Configuration
 public class SwaggerConfig {
     @Bean
