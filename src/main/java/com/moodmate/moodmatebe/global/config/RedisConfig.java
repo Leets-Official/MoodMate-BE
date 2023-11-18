@@ -1,9 +1,12 @@
 package com.moodmate.moodmatebe.global.config;
 
+import com.moodmate.moodmatebe.domain.chat.redis.exception.ConnectionException;
+import com.moodmate.moodmatebe.domain.chat.redis.exception.SerializationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -20,32 +23,27 @@ public class RedisConfig {
     private String host;
     @Value("${spring.data.redis.port}")
     private int port;
-
-    //Lettuce를 사용하여 Redis와의 연결을 설정
     @Bean
     public RedisConnectionFactory redisConnectionFactory(){
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host,port);
-        return new LettuceConnectionFactory(redisStandaloneConfiguration);
-    }
-
-    //RedisTemplate-key,value 직렬화 설정
-    @Bean
-    public RedisTemplate<String,Object> redisTemplate(){
-        RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-        return redisTemplate;
+        try {
+            RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host,port);
+            return new LettuceConnectionFactory(redisStandaloneConfiguration);
+        }catch (RedisConnectionFailureException e){
+            throw new ConnectionException();
+        }
     }
     @Bean
     public RedisTemplate<String, Object> chatRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> chatRedisTemplate = new RedisTemplate<>();
         chatRedisTemplate.setConnectionFactory(connectionFactory);
         chatRedisTemplate.setKeySerializer(new StringRedisSerializer());
-        chatRedisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        try {
+            chatRedisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        }catch (Exception e){
+            throw new SerializationException();
+        }
         return chatRedisTemplate;
     }
-    // 채팅 메시지를 전송하기 위한 Redis 토픽 설정
     @Bean
     public ChannelTopic topic() {
         return new ChannelTopic("chat");
