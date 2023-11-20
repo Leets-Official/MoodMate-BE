@@ -21,7 +21,7 @@ import java.util.UUID;
 public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
-    @Column(name = "user_no", columnDefinition = "BINARY(16)", updatable = false)
+    @Column(name = "user_no", columnDefinition = "BINARY(16)")
     private UUID userNo;
 
     @Email
