@@ -2,24 +2,27 @@ package com.moodmate.moodmatebe.domain.user.domain;
 
 import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "user")
 public class User extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_no", columnDefinition = "uuid", updatable = false)
     private UUID userNo;
 
+    @Email
     @Column(name = "user_email", nullable = false)
     private String userEmail;
 
@@ -38,6 +41,5 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_department", nullable = false)
     private String userDepartment;
 
-    @Column(nullable = false)
     private LocalDateTime deletedAt;
 }
