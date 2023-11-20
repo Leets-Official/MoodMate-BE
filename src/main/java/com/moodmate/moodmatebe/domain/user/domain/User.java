@@ -33,6 +33,7 @@ public class User extends BaseTimeEntity {
     private Gender userGender;
 
     @Column(name = "user_age", nullable = false)
+    @Size(min = 20, max = 30, message = "Age should be between 20 and 30")
     private Byte userAge;
 
     @ElementCollection
