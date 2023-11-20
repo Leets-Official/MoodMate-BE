@@ -44,5 +44,6 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_department", nullable = false)
     private String userDepartment;
 
+    @Column()
     private LocalDateTime deletedAt;
 }
