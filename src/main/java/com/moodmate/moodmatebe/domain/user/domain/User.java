@@ -20,6 +20,8 @@ import java.util.UUID;
 @Entity(name = "user")
 public class User extends BaseTimeEntity {
     @Id
+    @GeneratedValue(generator = "uuid2")
+    @Column(name = "user_no", columnDefinition = "BINARY(16)", updatable = false)
     private UUID userNo;
 
     @Email
