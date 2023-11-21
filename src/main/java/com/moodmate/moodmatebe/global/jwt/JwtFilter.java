@@ -2,6 +2,7 @@ package com.moodmate.moodmatebe.global.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,12 @@ public class JwtFilter extends OncePerRequestFilter {
             jwtProvider.validateToken(token, false);
             Authentication authentication = this.jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            Cookie cookie = new Cookie("jwtToken", token);
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(60 * 60 * 2);
+            cookie.setPath("/");
+            response.addCookie(cookie);
         }
         filterChain.doFilter(request, response);
     }
