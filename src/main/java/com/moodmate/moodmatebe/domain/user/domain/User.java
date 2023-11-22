@@ -3,7 +3,8 @@ package com.moodmate.moodmatebe.domain.user.domain;
 import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,7 +33,8 @@ public class User extends BaseTimeEntity {
     private Gender userGender;
 
     @Column(name = "user_age", nullable = false)
-    @Size(min = 20, max = 30, message = "Age should be between 20 and 30")
+    @Min(value = 20, message = "Age should not be less than 20")
+    @Max(value = 30, message = "Age should not be greater than 30")
     private Byte userAge;
 
     @ElementCollection
