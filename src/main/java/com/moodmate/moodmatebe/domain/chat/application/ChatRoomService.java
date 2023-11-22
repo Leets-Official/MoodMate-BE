@@ -12,7 +12,7 @@ public class ChatRoomService {
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
 
-    public void enterMessageRoom(Long roomId) {
+    public void enterChatRoom(Long roomId) {
         ChannelTopic topic = new ChannelTopic("/sub/chat/" + roomId);
         redisMessageListener.addMessageListener(redisSubscriber, topic);
     }
