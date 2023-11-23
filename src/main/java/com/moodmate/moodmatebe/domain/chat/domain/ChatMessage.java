@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 public class ChatMessage extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "message_no")
-    private Long messageNo;
+    @Column(name = "message_id")
+    private Long messageId;
 
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)

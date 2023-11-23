@@ -17,9 +17,9 @@ public class MessageController {
     private final ChatRoomService chatRoomService;
     @MessageMapping("/chat")
     @SendTo("/sub/chat")
-    public void handleChatMessage(ChatMessageDto messageDto) throws Exception {
-        chatRoomService.enterChatRoom(messageDto.getRoomNo());
-        redisPublisher.publish(new ChannelTopic("/sub/chat/" + messageDto.getRoomNo()), messageDto);
+    public void handleChatMessage(ChatMessageDto messageDto){
+        chatRoomService.enterChatRoom(messageDto.getRoomId());
+        redisPublisher.publish(new ChannelTopic("/sub/chat/" + messageDto.getRoomId()), messageDto);
         chatService.saveMessage(messageDto);
     }
 }

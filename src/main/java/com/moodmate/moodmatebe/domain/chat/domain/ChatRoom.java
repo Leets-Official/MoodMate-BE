@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 public class ChatRoom extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_no")
-    private Long roomNo;
+    @Column(name = "room_id")
+    private Long roomId;
 
     @ManyToOne
     @JoinColumn(name = "user1_id", nullable = false)

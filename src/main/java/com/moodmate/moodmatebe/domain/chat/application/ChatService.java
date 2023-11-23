@@ -25,14 +25,14 @@ public class ChatService {
     private final MessageRepository messageRepository;
 
     public void saveMessage(ChatMessageDto chatMessageDto){
-        Optional<ChatRoom> roomId = roomRepository.findById(chatMessageDto.getRoomNo());
-        Optional<User> userId = userRepository.findById(chatMessageDto.getUserNo());
+        Optional<ChatRoom> roomId = roomRepository.findById(chatMessageDto.getRoomId());
+        Optional<User> userId = userRepository.findById(chatMessageDto.getUserId());
         if (roomId.isPresent()) {
             ChatRoom chatRoom = roomId.get();
             ChatMessage chatMessage = new ChatMessage(chatRoom, userId.get(), true, chatMessageDto.getContent(), LocalDateTime.now());
             messageRepository.save(chatMessage);
             chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
-            chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomNo().toString(), chatMessageDto);
+            chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
         } else {
             throw new ChatRoomNotFoundException();
         }
