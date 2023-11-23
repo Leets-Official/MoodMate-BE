@@ -4,18 +4,12 @@ import com.moodmate.moodmatebe.domain.chat.application.ChatRoomService;
 import com.moodmate.moodmatebe.domain.chat.application.ChatService;
 import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
-import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 @RequiredArgsConstructor
