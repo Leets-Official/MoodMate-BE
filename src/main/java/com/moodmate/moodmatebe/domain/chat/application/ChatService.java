@@ -3,6 +3,7 @@ package com.moodmate.moodmatebe.domain.chat.application;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatMessage;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.User;
@@ -23,18 +24,17 @@ public class ChatService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
 
-    public void saveMessage(ChatMessageDto chatMessageDto) throws Exception {
-        Optional<ChatRoom> byId = roomRepository.findById(chatMessageDto.getRoomNo());
+    public void saveMessage(ChatMessageDto chatMessageDto){
+        Optional<ChatRoom> roomId = roomRepository.findById(chatMessageDto.getRoomNo());
         Optional<User> userId = userRepository.findById(chatMessageDto.getUserNo());
-        if (byId.isPresent()) {
-            // ChatRoom이 존재하는 경우
-            ChatRoom chatRoom = byId.get();
+        if (roomId.isPresent()) {
+            ChatRoom chatRoom = roomId.get();
             ChatMessage chatMessage = new ChatMessage(chatRoom, userId.get(), true, chatMessageDto.getContent(), LocalDateTime.now());
             messageRepository.save(chatMessage);
             chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
             chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomNo().toString(), chatMessageDto);
         } else {
-            throw new Exception("ChatRoom NOT FOUND!");
+            throw new ChatRoomNotFoundException();
         }
     }
 }
