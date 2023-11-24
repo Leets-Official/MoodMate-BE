@@ -18,12 +18,10 @@ public class ChatRoomService {
         ChannelTopic topic = new ChannelTopic("/sub/chat/" + roomId);
         try{
             redisMessageListener.addMessageListener(redisSubscriber, topic);
-        }catch (Exception e){
-            if(e.getCause() instanceof ChatRoomNotFoundException){
-                throw new ChatRoomNotFoundException();
-            }else if (e.getCause() instanceof ConnectionException){
-                throw new ConnectionException();
-            }
+        }catch (ChatRoomNotFoundException e){
+            throw new ChatRoomNotFoundException();
+        }catch (ConnectionException e){
+            throw new ConnectionException();
         }
     }
 }
