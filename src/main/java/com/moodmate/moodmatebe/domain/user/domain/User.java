@@ -3,16 +3,12 @@ package com.moodmate.moodmatebe.domain.user.domain;
 import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Builder
@@ -21,10 +17,9 @@ import java.util.UUID;
 @Entity(name = "user")
 public class User extends BaseTimeEntity {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name="uuid2", strategy = "uuid2")
-    @Column(name = "user_no", columnDefinition = "BINARY(16)")
-    private UUID userNo;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Long userId;
 
     @Email
     @Column(name = "user_email", nullable = false)
@@ -35,7 +30,8 @@ public class User extends BaseTimeEntity {
     private Gender userGender;
 
     @Column(name = "user_age", nullable = false)
-    @Size(min = 20, max = 30, message = "Age should be between 20 and 30")
+    @Min(value = 20, message = "Age should not be less than 20")
+    @Max(value = 30, message = "Age should not be greater than 30")
     private Byte userAge;
 
     @ElementCollection
