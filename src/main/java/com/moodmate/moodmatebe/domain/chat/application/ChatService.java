@@ -3,6 +3,7 @@ package com.moodmate.moodmatebe.domain.chat.application;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatMessage;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
@@ -19,12 +20,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
-    private final RedisTemplate<String, ChatMessageDto> chatRedistemplate;
+    private final RedisTemplate<String, RedisChatMessageDto> chatRedistemplate;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
 
-    public void saveMessage(ChatMessageDto chatMessageDto){
+    public void saveMessage(RedisChatMessageDto chatMessageDto){
         Optional<ChatRoom> roomId = roomRepository.findByRoomId(chatMessageDto.getRoomId());
         Optional<User> userId = userRepository.findById(chatMessageDto.getUserId());
         if (roomId.isPresent()) {

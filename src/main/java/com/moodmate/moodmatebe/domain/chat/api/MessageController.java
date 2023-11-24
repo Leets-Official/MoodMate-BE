@@ -3,6 +3,7 @@ package com.moodmate.moodmatebe.domain.chat.api;
 import com.moodmate.moodmatebe.domain.chat.application.ChatRoomService;
 import com.moodmate.moodmatebe.domain.chat.application.ChatService;
 import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+
+import java.time.LocalDateTime;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,7 +25,8 @@ public class MessageController {
     @SendTo("/sub/chat")
     public void handleChatMessage(ChatMessageDto messageDto){
         chatRoomService.enterChatRoom(messageDto.getRoomId());
-        redisPublisher.publish(new ChannelTopic("/sub/chat/" + messageDto.getRoomId()), messageDto);
-        chatService.saveMessage(messageDto);
+        RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(messageDto.getUserId(),messageDto.getRoomId(),messageDto.getContent(),true, LocalDateTime.now());
+        redisPublisher.publish(new ChannelTopic("/sub/chat/" + messageDto.getRoomId()), redisChatMessageDto);
+        chatService.saveMessage(redisChatMessageDto);
     }
 }
