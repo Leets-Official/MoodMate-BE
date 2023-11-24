@@ -2,7 +2,6 @@ package com.moodmate.moodmatebe.domain.chat.application;
 
 import com.moodmate.moodmatebe.domain.chat.domain.ChatMessage;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
@@ -13,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -25,6 +25,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
 
+    @Transactional
     public void saveMessage(RedisChatMessageDto chatMessageDto){
         Optional<ChatRoom> roomId = roomRepository.findByRoomId(chatMessageDto.getRoomId());
         Optional<User> userId = userRepository.findById(chatMessageDto.getUserId());
