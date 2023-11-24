@@ -25,7 +25,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
 
     public void saveMessage(ChatMessageDto chatMessageDto){
-        Optional<ChatRoom> roomId = roomRepository.findById(chatMessageDto.getRoomId());
+        Optional<ChatRoom> roomId = roomRepository.findByRoomId(chatMessageDto.getRoomId());
         Optional<User> userId = userRepository.findById(chatMessageDto.getUserId());
         if (roomId.isPresent()) {
             ChatRoom chatRoom = roomId.get();
