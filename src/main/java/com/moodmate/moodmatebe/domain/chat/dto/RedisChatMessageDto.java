@@ -16,6 +16,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RedisChatMessageDto {
+    private Long messageId;
     private Long userId;
     private Long roomId;
     private String content;
@@ -33,5 +34,4 @@ public class RedisChatMessageDto {
         map.put("createdAt", createdAt);
         return map;
     }
-
 }

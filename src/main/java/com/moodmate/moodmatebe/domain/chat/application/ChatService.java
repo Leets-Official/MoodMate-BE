@@ -92,5 +92,5 @@ public class ChatService {
         Boolean isRead = (Boolean) redisMessage.get("isRead");
         LocalDateTime createdAt = (LocalDateTime) redisMessage.get("createdAt");
         return new MessageDto(messageId+1, content, userId, createdAt,isRead);
-
+    }
 }
