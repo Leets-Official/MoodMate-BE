@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import java.time.LocalDateTime;
+
 @Controller
 @RequiredArgsConstructor
 public class MessageController {
@@ -42,5 +44,6 @@ public class MessageController {
             @RequestParam Long roomId, @RequestParam int size, @RequestParam int page) throws JsonProcessingException {
         List<MessageDto> message = chatService.getMessage(roomId, size, page);
         return ResponseEntity.ok(message);
+
     }
 }
