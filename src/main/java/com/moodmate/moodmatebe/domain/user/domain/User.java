@@ -35,7 +35,7 @@ public class User extends BaseTimeEntity {
     private Byte userAge;
 
     @ElementCollection
-    @CollectionTable(name = "user_keywords", joinColumns = @JoinColumn(name = "user_no"))
+    @CollectionTable(name = "user_keywords", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "user_keywords", nullable = false)
     private List<String> userKeywords;
 
