@@ -4,7 +4,6 @@ import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.util.Optional;
 
 public interface RoomRepository extends JpaRepository<ChatRoom, Long> {
