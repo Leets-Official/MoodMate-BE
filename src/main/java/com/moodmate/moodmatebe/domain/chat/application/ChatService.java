@@ -7,7 +7,7 @@ import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import com.moodmate.moodmatebe.domain.chat.dto.MessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
-import com.moodmate.moodmatebe.domain.chat.exception.UserNotFoundException;
+import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisMessageIdGenerator;
 import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
