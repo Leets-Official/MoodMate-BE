@@ -13,7 +13,6 @@ import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -36,7 +35,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final RedisMessageIdGenerator redisMessageIdGenerator;
-
+    private final MessageDtoConverter messageDtoConverter;
 
     @Transactional
     public void saveMessage(RedisChatMessageDto chatMessageDto) {
@@ -56,43 +55,30 @@ public class ChatService {
         if (redisMessageList == null || redisMessageList.isEmpty()) {
             List<ChatMessage> dbMessageList = getDbMessages(roomId, size, page);
             for (ChatMessage message : dbMessageList) {
-                MessageDto messageDto = new MessageDto(message);
+                MessageDto messageDto = messageDtoConverter.fromChatMessage(message);
                 messageList.add(messageDto);
             }
         } else {
             ObjectMapper objectMapper = new ObjectMapper();
             for (int i = 0; i < redisMessageList.size(); i++) {
                 RedisChatMessageDto chatMessageDto = objectMapper.readValue(objectMapper.writeValueAsString(redisMessageList.get(i)), RedisChatMessageDto.class);
-                Map<String, Object> map = chatMessageDto.toMap();
-                MessageDto messageDto = convertToMessageDto(map);
+                MessageDto messageDto = messageDtoConverter.fromRedisChatMessageDto(chatMessageDto);
                 messageList.add(messageDto);
             }
         }
         return messageList;
     }
-
     private List<RedisChatMessageDto> getRedisMessages(Long roomId, int size, int page) {
         int start = (page - 1) * size;
         int end = start + size - 1;
         return chatRedistemplate.opsForList().range(roomId.toString(), start, end);
     }
-
     private List<ChatMessage> getDbMessages(Long roomId, int size, int page) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         ChatRoom chatRoom = getChatRoom(roomId);
         Page<ChatMessage> byRoomIdOrderByCreatedAt = messageRepository.findByRoomOrderByCreatedAt(chatRoom, pageable);
         return byRoomIdOrderByCreatedAt.getContent();
     }
-
-    private MessageDto convertToMessageDto(Map<String, Object> redisMessage) {
-        Long messageId = Long.valueOf(redisMessage.get("messageId").toString());
-        Long userId = Long.valueOf(redisMessage.get("userId").toString());
-        String content = (String) redisMessage.get("content");
-        Boolean isRead = (Boolean) redisMessage.get("isRead");
-        LocalDateTime createdAt = (LocalDateTime) redisMessage.get("createdAt");
-        return new MessageDto(messageId + 1, content, userId, createdAt, isRead);
-    }
-
     private ChatRoom getChatRoom(Long roomId) {
         Optional<ChatRoom> byRoomId = roomRepository.findByRoomId(roomId);
         if (byRoomId.isPresent()) {
