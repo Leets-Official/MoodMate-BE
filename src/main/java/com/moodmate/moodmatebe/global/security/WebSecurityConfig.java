@@ -29,24 +29,23 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(corsConfig ->
-                        corsConfig.disable())
-                .csrf(csrfConfig ->
-                        csrfConfig.disable())
-                .formLogin(formLoginConfig ->
-                        formLoginConfig.disable())
-                .httpBasic(httpBasicConfig ->
-                        httpBasicConfig.disable())
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(CorsUtils::isCorsRequest).permitAll()
-                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                                .anyRequest().permitAll()
-                )
-                .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .cors().and()
+                .csrf().disable()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .exceptionHandling()
+                .and()
+                .authorizeHttpRequests()
+                .requestMatchers(CorsUtils::isCorsRequest).permitAll()
+
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                .requestMatchers("/**").permitAll()
+
+                .anyRequest().authenticated()
+                .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ExceptionHandleFilter(), JwtFilter.class);
 
         return http.build();
     }
