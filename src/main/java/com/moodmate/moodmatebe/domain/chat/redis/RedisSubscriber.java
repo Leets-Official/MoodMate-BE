@@ -1,7 +1,12 @@
 package com.moodmate.moodmatebe.domain.chat.redis;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.redis.exception.JsonParsingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -21,11 +26,15 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
-            String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
+            String publishMessage = redisTemplate.getStringSerializer().deserialize(message.getBody());
             ChatMessageDto roomMessage = objectMapper.readValue(publishMessage, ChatMessageDto.class);
             simpMessageSendingOperations.convertAndSend("/sub/chat/" + roomMessage.getRoomId(), roomMessage);
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        } catch (JsonParseException e) {
+            throw new JsonParsingException();
+        }catch (JsonMappingException e){
+            throw new RuntimeException();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }
