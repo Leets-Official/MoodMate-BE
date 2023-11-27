@@ -16,6 +16,18 @@ import java.util.Map;
 
 public class ExceptionHandleFilter extends OncePerRequestFilter {
 
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            filterChain.doFilter(request, response);
+        } catch (ServiceException e) {
+            sendErrorResponse(response, e.getErrorCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendErrorResponse(response, ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setStatus(errorCode.getHttpStatus());
         response.setCharacterEncoding("UTF-8");
