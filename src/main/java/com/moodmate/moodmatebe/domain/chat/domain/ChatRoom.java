@@ -30,7 +30,7 @@ public class ChatRoom extends BaseTimeEntity {
     private User user2;
 
     @Column(name = "active", nullable = false)
-    private Boolean active;
+    private Boolean roomActive;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
