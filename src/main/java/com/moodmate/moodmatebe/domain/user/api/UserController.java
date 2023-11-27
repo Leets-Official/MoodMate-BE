@@ -8,14 +8,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
 
-    // TODO: OAuthDetails가 아직 없음
 //    @Operation(summary = "메인 페이지 불러오기")
 //    @ApiResponses({
 //            @ApiResponse(responseCode = "200"),
@@ -28,12 +29,11 @@ public class UserController {
 
     @Operation(summary = "메인 페이지 불러오기")
     @ApiResponses({
-            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "200")
     })
     @GetMapping("/main")
     public MainPageResponse getMainPage() {
         // TODO: 임시값
-        Long userId = 1L;
-        return userService.getMainPage(userId);
+        return userService.getMainPage(1L);
     }
 }
