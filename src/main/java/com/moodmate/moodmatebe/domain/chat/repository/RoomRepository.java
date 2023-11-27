@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface RoomRepository extends JpaRepository<ChatRoom, Long> {
     Optional<ChatRoom> findByRoomId(Long roomId);
-    @Query("SELECT cr FROM chat_room cr WHERE (cr.user1.userId = :userId OR cr.user2.userId = :userId) AND cr.roomActive = true ORDER BY cr.createdAt DESC")
-    Optional<ChatRoom> findLatestActiveByUserId(@Param("userId") Long userId);
+    @Query("SELECT cr FROM chat_room cr WHERE (cr.user1.userId = :userId OR cr.user2.userId = :userId) AND cr.roomActive = TRUE")
+    Optional<ChatRoom> findActiveChatRoomByUserId(@Param("userId") Long userId);
 }
