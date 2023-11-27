@@ -26,7 +26,7 @@ public class UserService {
         Boolean roomActive = false;
 
         Optional<User> user = userRepository.findById(userId);
-        Optional<ChatRoom> chatRoom = roomRepository.findLatestActiveByUserId(userId);
+        Optional<ChatRoom> chatRoom = roomRepository.findActiveChatRoomByUserId(userId);
 
         if(user.isPresent()){
             userGender = user.get().getUserGender();
@@ -37,6 +37,8 @@ public class UserService {
             roomActive = chatRoom.get().getRoomActive();
         }
 
-        return new MainPageResponse(userId, userGender, userMatchActive, roomId, roomActive);
+        MainPageResponse mainPageResponse = new MainPageResponse(userId, userGender, userMatchActive, roomId, roomActive);
+
+        return mainPageResponse;
     }
 }
