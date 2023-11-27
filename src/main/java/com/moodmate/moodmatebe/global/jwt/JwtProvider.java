@@ -27,6 +27,7 @@ public class JwtProvider {
     private String refreshSecret;
 
     public String generateToken(UUID id, String email, AuthRole role, boolean isRefreshToken) {
+    public String generateToken(Long id, String email, AuthRole role, boolean isRefreshToken) {
         Instant accessDate = LocalDateTime.now().plusHours(2).atZone(ZoneId.systemDefault()).toInstant();
         Instant refreshDate = LocalDateTime.now().plusDays(14).atZone(ZoneId.systemDefault()).toInstant();
         return Jwts.builder()
