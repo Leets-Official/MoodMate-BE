@@ -11,6 +11,7 @@
 
 ## Environment
 ```dotenv
+# 데이터 베이스
 DATABASE_URL=jdbc:mysql://localhost:3306/moodmate
 DATABASE_USERNAME=
 DATABASE_PASSWORD=
@@ -18,6 +19,19 @@ DATABASE_PASSWORD=
 # JWT 암호화 키
 JWT_ACCESS_SECRET=
 JWT_REFRESH_SECRET=
+
+# 소셜 로그인 리다이렉트
+social-login.redirect=
+
+# Google 소셜 로그인
+spring.security.oauth2.client.registration.google.client-id=
+spring.security.oauth2.client.registration.google.client-secret=
+spring.security.oauth2.client.registration.google.redirect-uri={baseUrl}/oauth/callback/google
+spring.security.oauth2.client.registration.google.scope=email,profile
+
+# CORS 정보
+cors.origin.development=
+cors.origin.production=
 ```
 
 ## Conventions
