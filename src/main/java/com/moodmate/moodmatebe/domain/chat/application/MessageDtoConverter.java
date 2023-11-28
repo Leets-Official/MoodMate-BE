@@ -14,9 +14,9 @@ public class MessageDtoConverter {
         return new MessageDto(
                 chatMessage.getMessageId(),
                 chatMessage.getContent(),
-                chatMessage.getSender().getUserId(),
+                chatMessage.getUser().getUserId(),
                 chatMessage.getCreatedAt(),
-                chatMessage.getChecked()
+                chatMessage.getIsRead()
         );
     }
     public static MessageDto fromRedisChatMessageDto(RedisChatMessageDto redisChatMessageDto) {
