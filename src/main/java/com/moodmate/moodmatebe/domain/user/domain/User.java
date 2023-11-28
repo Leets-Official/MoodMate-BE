@@ -1,11 +1,14 @@
 package com.moodmate.moodmatebe.domain.user.domain;
 
 import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
+import jakarta.annotation.PreDestroy;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,19 +32,29 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_gender", nullable = false)
     private Gender userGender;
 
-    @Column(name = "user_age", nullable = false)
-    @Min(value = 20, message = "Age should not be less than 20")
-    @Max(value = 30, message = "Age should not be greater than 30")
-    private Byte userAge;
+    @Column(name = "user_nickname", nullable = true)
+    private String userNickname;
+
+    @Column(name = "year", nullable = true)
+    private Integer year;
 
     @ElementCollection
-    @CollectionTable(name = "user_keywords", joinColumns = @JoinColumn(name = "user_no"))
+    @CollectionTable(name = "user_keywords", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "user_keywords", nullable = false)
     private List<String> userKeywords;
 
     @Column(name = "user_department", nullable = false)
     private String userDepartment;
 
+    @Column(name = "user_match_active")
+    @ColumnDefault("true")
+    private Boolean userMatchActive;
+
     @Column()
     private LocalDateTime deletedAt;
+
+    @PreDestroy()
+    public void preDestroy() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }
