@@ -32,7 +32,8 @@ public class JwtProvider {
         return Jwts.builder()
                 .claim("role", role.getRole())
                 .claim("id", id)
-                .setSubject(email)
+                .claim("email", email)
+                .setSubject(id.toString())
                 .setExpiration(isRefreshToken ? Date.from(refreshDate) : Date.from(accessDate))
                 .signWith(SignatureAlgorithm.HS256, isRefreshToken ? refreshSecret : accessSecret)
                 .compact();
@@ -62,5 +63,10 @@ public class JwtProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(accessSecret).parseClaimsJws(token).getBody();
+        return Long.parseLong(claims.getSubject());
     }
 }
