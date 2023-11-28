@@ -44,12 +44,6 @@ public class OAuthDetailService extends DefaultOAuth2UserService {
             System.out.println("UserEmail : " + createdUser.getUserEmail());
             System.out.println("UserIsActivate : " + createdUser.getUserMatchActive());
 
-            // TODO: 회원정보 입력 받기
-            createdUser.setUserDepartment("소프트웨어학과");
-            createdUser.setUserNickname("서빈이");
-            createdUser.setUserGender(Gender.FEMALE);
-            createdUser.setYear(2000);
-
             user = userRepository.save(createdUser);
         }
 
