@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatMessage;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
+import com.moodmate.moodmatebe.domain.chat.dto.ChatPageableDto;
+import com.moodmate.moodmatebe.domain.chat.dto.ChatUserDto;
 import com.moodmate.moodmatebe.domain.chat.dto.MessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
@@ -15,6 +17,7 @@ import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +32,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
     private final RedisTemplate<String, RedisChatMessageDto> chatRedistemplate;
     private final RoomRepository roomRepository;
@@ -68,6 +72,19 @@ public class ChatService {
         }
         return messageList;
     }
+    public ChatPageableDto getPageable(Long roomId, int size, int page){
+        ChatRoom room = getChatRoom(roomId);
+        int totalElements = messageRepository.countByRoom(room);
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        ChatPageableDto chatPageableDto = new ChatPageableDto(size,page,totalPages,totalElements);
+        return chatPageableDto;
+    }
+    public ChatUserDto getUserInfo(Long userId){
+        User user = getUser(userId);
+        ChatUserDto chatUserDto = new ChatUserDto(user.getUserGender(),"testNickname");
+        return chatUserDto;
+    }
+
     private List<RedisChatMessageDto> getRedisMessages(Long roomId, int size, int page) {
         int start = (page - 1) * size;
         int end = start + size - 1;
