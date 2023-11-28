@@ -2,6 +2,7 @@ package com.moodmate.moodmatebe.global.jwt;
 
 import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
 import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
+import com.moodmate.moodmatebe.global.oauth.domain.OAuthDetails;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,7 +17,6 @@ import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.UUID;
 
 @Component
 public class JwtProvider {
@@ -26,7 +26,7 @@ public class JwtProvider {
     @Value("${jwt.refresh_secret}")
     private String refreshSecret;
 
-    public String generateToken(UUID id, String email, AuthRole role, boolean isRefreshToken) {
+    public String generateToken(Long id, String email, AuthRole role, boolean isRefreshToken) {
         Instant accessDate = LocalDateTime.now().plusHours(2).atZone(ZoneId.systemDefault()).toInstant();
         Instant refreshDate = LocalDateTime.now().plusDays(14).atZone(ZoneId.systemDefault()).toInstant();
         return Jwts.builder()
@@ -41,7 +41,8 @@ public class JwtProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token, false);
         Collection<? extends GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(claims.get("role").toString()));
-        return new UsernamePasswordAuthenticationToken(null, authorities);
+        OAuthDetails oAuthDetails = new OAuthDetails(Long.getLong(claims.get("id").toString()), claims.getSubject());
+        return new UsernamePasswordAuthenticationToken(oAuthDetails, null, authorities);
     }
 
     public void validateToken(String token, boolean isRefreshToken) {
