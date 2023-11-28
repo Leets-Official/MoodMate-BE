@@ -7,7 +7,6 @@ import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,6 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@Slf4j
 public class MessageController {
     private final ChatService chatService;
     private final RedisPublisher redisPublisher;
