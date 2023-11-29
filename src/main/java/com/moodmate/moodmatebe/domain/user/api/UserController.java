@@ -85,4 +85,11 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
+        String newAccessToken = userService.refreshAccessToken(refreshToken);
+        System.out.println("새로운 Access Token : " + newAccessToken);
+        return new ResponseEntity<>(Map.of("accessToken", newAccessToken), HttpStatus.OK);
+    }
 }
