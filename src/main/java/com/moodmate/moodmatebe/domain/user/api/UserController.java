@@ -85,4 +85,16 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "액세스 토큰 갱신", description = "Refresh Token을 사용하여 Access Token과 Refresh Token을 갱신합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
+        Map<String, String> newTokens = userService.refreshAccessToken(refreshToken);
+        return new ResponseEntity<>(newTokens, HttpStatus.OK);
+    }
 }
