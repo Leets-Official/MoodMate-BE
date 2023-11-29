@@ -3,7 +3,10 @@ package com.moodmate.moodmatebe.domain.user.api;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
+import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
+import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
+import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -47,9 +50,14 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/user-info")
-    public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String token,
-                                                           @RequestBody UserInfoRequest userInfoDto) {
+    public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoRequest userInfoDto) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new InvalidInputValueException();
+        }
+
+        String token = authorizationHeader.substring(7);
         userService.setUserInfo(token, userInfoDto);
+
         return new ResponseEntity<>(Map.of("message", "회원정보가 정상적으로 설정되었습니다."), HttpStatus.OK);
     }
 
@@ -71,5 +79,17 @@ public class UserController {
         res.addCookie(accessCookie);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "액세스 토큰 갱신", description = "Refresh Token을 사용하여 Access Token과 Refresh Token을 갱신합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
+        Map<String, String> newTokens = userService.refreshAccessToken(refreshToken);
+        return new ResponseEntity<>(newTokens, HttpStatus.OK);
     }
 }
