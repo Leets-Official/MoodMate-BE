@@ -63,23 +63,15 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/user-info")
-    public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader,
-                                                           @RequestBody UserInfoRequest userInfoDto) {
-        try {
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                throw new InvalidInputValueException();
-            }
-
-            String token = authorizationHeader.substring(7); // Extract token without "Bearer "
-
-            userService.setUserInfo(token, userInfoDto);
-
-            return new ResponseEntity<>(Map.of("message", "회원정보가 정상적으로 설정되었습니다."), HttpStatus.OK);
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoRequest userInfoDto) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new InvalidInputValueException();
         }
+
+        String token = authorizationHeader.substring(7);
+        userService.setUserInfo(token, userInfoDto);
+
+        return new ResponseEntity<>(Map.of("message", "회원정보가 정상적으로 설정되었습니다."), HttpStatus.OK);
     }
 
     @Operation(summary = "로그아웃", description = "쿠키에 저장된 토큰을 삭제합니다.")
