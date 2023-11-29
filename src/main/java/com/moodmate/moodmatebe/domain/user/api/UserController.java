@@ -4,9 +4,7 @@ import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
 import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
-import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
-import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -82,15 +80,10 @@ public class UserController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse res) {
-        Cookie refreshCookie = new Cookie("refreshToken", null);
-        refreshCookie.setMaxAge(0);
-        res.addCookie(refreshCookie);
-
-        Cookie accessCookie = new Cookie("accessToken", null);
-        accessCookie.setMaxAge(0);
-        res.addCookie(accessCookie);
-
+    public ResponseEntity<Void> logout(@CookieValue("refreshToken") String oldToken, HttpServletResponse res) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setMaxAge(0);
+        res.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 
