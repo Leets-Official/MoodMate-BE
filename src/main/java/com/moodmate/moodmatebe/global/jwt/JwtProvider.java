@@ -1,5 +1,6 @@
 package com.moodmate.moodmatebe.global.jwt;
 
+import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
 import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
 import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
 import com.moodmate.moodmatebe.global.oauth.domain.OAuthDetails;
@@ -68,5 +69,13 @@ public class JwtProvider {
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(accessSecret).parseClaimsJws(token).getBody();
         return Long.parseLong(claims.getSubject());
+    }
+
+    public String getTokenFromAuthorizationHeader(String authorizationHeader){
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new InvalidInputValueException();
+        }
+
+        return authorizationHeader.substring(7);
     }
 }
