@@ -11,7 +11,9 @@ import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
+import com.moodmate.moodmatebe.global.jwt.AuthRole;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +72,26 @@ public class UserService {
             throw e;
         } catch (IllegalArgumentException e) {
             throw new InvalidInputValueException();
+        } catch (Exception e) {
+            throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Transactional
+    public String refreshAccessToken(String refreshToken) {
+        try {
+            jwtProvider.validateToken(refreshToken, true);
+            Claims claims = jwtProvider.parseClaims(refreshToken, true);
+
+            Long userId = Long.parseLong(claims.get("id").toString());
+            String userEmail = claims.get("email").toString();
+            AuthRole role = AuthRole.valueOf(claims.get("role").toString());
+
+            String newAccessToken = jwtProvider.generateToken(userId, userEmail, role, false);
+
+            return newAccessToken;
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
