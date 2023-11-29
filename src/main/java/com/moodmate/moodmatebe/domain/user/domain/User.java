@@ -37,9 +37,10 @@ public class User extends BaseTimeEntity {
     private Integer year;
 
     @ElementCollection
+    @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_keywords", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "user_keywords", nullable = true)
-    private List<String> userKeywords;
+    private List<Keyword> userKeywords;
 
     @Column(name = "user_department", nullable = true)
     private String userDepartment;
