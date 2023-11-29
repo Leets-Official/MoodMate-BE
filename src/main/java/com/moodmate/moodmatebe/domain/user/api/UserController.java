@@ -28,24 +28,11 @@ public class UserController {
 
     private final UserService userService;
 
-//    @Operation(summary = "메인 페이지 불러오기")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200"),
-//    })
-//    @GetMapping("/main")
-//    public MainPageResponse getMainPage(@AuthenticationPrincipal AuthDetails authDetails) {
-//
-//        return userService.getMainPage();
-//    }
-
-    @Operation(summary = "메인 페이지 불러오기")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200")
-    })
+    @Operation(summary = "메인 페이지 불러오기", description = "유저의 메인 페이지를 불러옵니다.")
+    @ApiResponses({@ApiResponse(responseCode = "200")})
     @GetMapping("/main")
-    public MainPageResponse getMainPage() {
-        // TODO: 임시값
-        return userService.getMainPage(1L);
+    public MainPageResponse getMainPage(@RequestHeader("Authorization") String token) {
+        return userService.getMainPage(token);
     }
 
     @Operation(summary = "회원 정보 설정", description = "회원 정보를 설정합니다.")
