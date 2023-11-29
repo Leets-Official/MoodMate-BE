@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -78,7 +80,7 @@ public class UserService {
     }
 
     @Transactional
-    public String refreshAccessToken(String refreshToken) {
+    public Map<String, String> refreshAccessToken(String refreshToken) {
         try {
             jwtProvider.validateToken(refreshToken, true);
             Claims claims = jwtProvider.parseClaims(refreshToken, true);
@@ -88,8 +90,13 @@ public class UserService {
             AuthRole role = AuthRole.valueOf(claims.get("role").toString());
 
             String newAccessToken = jwtProvider.generateToken(userId, userEmail, role, false);
+            String newRefreshToken = jwtProvider.generateToken(userId, userEmail, role, true);
 
-            return newAccessToken;
+            Map<String, String> tokens = new HashMap<>();
+            tokens.put("accessToken", newAccessToken);
+            tokens.put("refreshToken", newRefreshToken);
+
+            return tokens;
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
