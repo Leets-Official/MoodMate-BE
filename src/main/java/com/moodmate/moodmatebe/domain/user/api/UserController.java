@@ -1,7 +1,7 @@
 package com.moodmate.moodmatebe.domain.user.api;
 
 import com.moodmate.moodmatebe.domain.user.application.UserService;
-import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
+import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,24 +28,16 @@ public class UserController {
 
     private final UserService userService;
 
-//    @Operation(summary = "메인 페이지 불러오기")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200"),
-//    })
-//    @GetMapping("/main")
-//    public MainPageResponse getMainPage(@AuthenticationPrincipal AuthDetails authDetails) {
-//
-//        return userService.getMainPage();
-//    }
-
-    @Operation(summary = "메인 페이지 불러오기")
+    @Operation(summary = "유저 매칭 활성화 변경", description = "유저가 본인의 현재 매칭 상태를 반대로 변경합니다." )
     @ApiResponses({
-            @ApiResponse(responseCode = "200")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @GetMapping("/main")
-    public MainPageResponse getMainPage() {
-        // TODO: 임시값
-        return userService.getMainPage(1L);
+    @PatchMapping("/match")
+    public User setUserMatchActive(@RequestHeader("Authorization") String token) {
+        return userService.changeUserMatchActive(token);
     }
 
     @Operation(summary = "회원 정보 설정", description = "회원 정보를 설정합니다.")

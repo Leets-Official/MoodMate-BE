@@ -74,4 +74,14 @@ public class UserService {
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public User changeUserMatchActive(String token){
+
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        user.setUserMatchActive(!user.getUserMatchActive());
+        return userRepository.save(user);
+    }
 }
