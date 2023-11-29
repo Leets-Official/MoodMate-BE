@@ -3,7 +3,10 @@ package com.moodmate.moodmatebe.domain.user.api;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
+import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
+import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
+import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -60,9 +63,14 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/user-info")
-    public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String token,
-                                                           @RequestBody UserInfoRequest userInfoDto) {
+    public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoRequest userInfoDto) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new InvalidInputValueException();
+        }
+
+        String token = authorizationHeader.substring(7);
         userService.setUserInfo(token, userInfoDto);
+
         return new ResponseEntity<>(Map.of("message", "회원정보가 정상적으로 설정되었습니다."), HttpStatus.OK);
     }
 
