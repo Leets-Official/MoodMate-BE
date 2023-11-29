@@ -47,7 +47,7 @@ public class ChatService {
         messageRepository.save(chatMessage);
         Long messageId = redisMessageIdGenerator.generateUniqueId(chatMessageDto.getRoomId().toString());
         chatMessageDto.setMessageId(messageId);
-        chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
+        chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
         chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
     }
 
@@ -79,7 +79,7 @@ public class ChatService {
     }
     public ChatUserDto getUserInfo(Long userId){
         User user = getUser(userId);
-        ChatUserDto chatUserDto = new ChatUserDto(user.getUserGender(),"testNickname");
+        ChatUserDto chatUserDto = new ChatUserDto(user.getUserGender(),user.getUserNickname());
         return chatUserDto;
     }
 
