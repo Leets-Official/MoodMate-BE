@@ -31,10 +31,17 @@ public class UserController {
     private final JwtProvider jwtProvider;
 
     @Operation(summary = "메인 페이지 불러오기", description = "유저의 메인 페이지를 불러옵니다.")
-    @ApiResponses({@ApiResponse(responseCode = "200")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MainPageResponse.class))),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping("/main")
-    public MainPageResponse getMainPage(@RequestHeader("Authorization") String token) {
-        return userService.getMainPage(token);
+    public MainPageResponse getMainPage(@RequestHeader("Authorization") String authorizationHeader) {
+        MainPageResponse mainPageResponse = userService.getMainPage(authorizationHeader);
+
+        return mainPageResponse;
     }
 
     @Operation(summary = "회원 정보 설정", description = "회원 정보를 설정합니다.")

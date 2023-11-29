@@ -30,26 +30,25 @@ public class UserService {
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
 
-    public MainPageResponse getMainPage(String token) {
+    public MainPageResponse getMainPage(String authorizationHeader) {
 
         Long roomId = ROOM_NOT_EXIST;
         Boolean roomActive = false;
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        Optional<User> user = userRepository.findById(userId);
         Optional<ChatRoom> chatRoom = roomRepository.findActiveChatRoomByUserId(userId);
 
-        Gender userGender = user.getUserGender();
-        Boolean userMatchActive = user.getUserMatchActive();
+        Gender userGender = user.get().getUserGender();
+        Boolean userMatchActive = user.get().getUserMatchActive();
 
         if (chatRoom.isPresent()) {
             roomId = chatRoom.get().getRoomId();
             roomActive = chatRoom.get().getRoomActive();
         }
 
-        MainPageResponse mainPageResponse = new MainPageResponse(userId, userGender, userMatchActive, roomId, roomActive);
-
-        return mainPageResponse;
+        return new MainPageResponse(userId, userGender, userMatchActive, roomId, roomActive);
     }
 
     @Transactional
