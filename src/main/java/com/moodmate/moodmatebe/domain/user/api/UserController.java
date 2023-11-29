@@ -3,10 +3,8 @@ package com.moodmate.moodmatebe.domain.user.api;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
-import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
-import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
-import com.moodmate.moodmatebe.global.error.exception.ServiceException;
+import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,6 +28,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final JwtProvider jwtProvider;
 
     @Operation(summary = "메인 페이지 불러오기", description = "유저의 메인 페이지를 불러옵니다.")
     @ApiResponses({@ApiResponse(responseCode = "200")})
@@ -51,12 +50,8 @@ public class UserController {
     })
     @PostMapping("/user-info")
     public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoRequest userInfoDto) {
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new InvalidInputValueException();
-        }
 
-        String token = authorizationHeader.substring(7);
-        userService.setUserInfo(token, userInfoDto);
+        userService.setUserInfo(jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader), userInfoDto);
 
         return new ResponseEntity<>(Map.of("message", "회원정보가 정상적으로 설정되었습니다."), HttpStatus.OK);
     }
