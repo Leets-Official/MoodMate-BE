@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatMessage;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
+import com.moodmate.moodmatebe.domain.chat.dto.ChatPageableDto;
+import com.moodmate.moodmatebe.domain.chat.dto.ChatUserDto;
 import com.moodmate.moodmatebe.domain.chat.dto.MessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
