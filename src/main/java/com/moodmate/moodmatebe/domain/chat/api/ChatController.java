@@ -3,9 +3,7 @@ package com.moodmate.moodmatebe.domain.chat.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.moodmate.moodmatebe.domain.chat.application.ChatRoomService;
 import com.moodmate.moodmatebe.domain.chat.application.ChatService;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
-import com.moodmate.moodmatebe.domain.chat.dto.MessageDto;
-import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,12 +42,16 @@ public class ChatController {
 
     @Operation(summary = "채팅내역 조회", description = "채팅내역을 조회합니다.")
     @GetMapping("/chat")
-    ResponseEntity<List<MessageDto>> getChatMessage(
-            @RequestParam Long roomId, @RequestParam int size, @RequestParam int page) throws JsonProcessingException {
+    ResponseEntity<ChatResponseDto> getChatMessage(
+            @RequestParam Long roomId,
+            @RequestParam Long userId, @RequestParam int size, @RequestParam int page) throws JsonProcessingException {
         List<MessageDto> message = chatService.getMessage(roomId, size, page);
-        return ResponseEntity.ok(message);
-
+        ChatPageableDto pageable = chatService.getPageable(roomId, size, page);
+        ChatUserDto user = chatService.getUserInfo(userId);
+        ChatResponseDto responseDto = new ChatResponseDto(user,pageable,message);
+        return ResponseEntity.ok(responseDto);
     }
+
     @Operation(summary = "채팅 종료", description = "채팅을 종료합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Boolean.class))),
