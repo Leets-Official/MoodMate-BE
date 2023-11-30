@@ -30,28 +30,25 @@ public class UserService {
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
 
-    public MainPageResponse getMainPage(Long userId) {
+    public MainPageResponse getMainPage(String authorizationHeader) {
 
-        Gender userGender = null;
-        Boolean userMatchActive = false;
         Long roomId = ROOM_NOT_EXIST;
         Boolean roomActive = false;
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
 
         Optional<User> user = userRepository.findById(userId);
         Optional<ChatRoom> chatRoom = roomRepository.findActiveChatRoomByUserId(userId);
 
-        if (user.isPresent()) {
-            userGender = user.get().getUserGender();
-            userMatchActive = user.get().getUserMatchActive();
-        }
+        Gender userGender = user.get().getUserGender();
+        Boolean userMatchActive = user.get().getUserMatchActive();
+
         if (chatRoom.isPresent()) {
             roomId = chatRoom.get().getRoomId();
             roomActive = chatRoom.get().getRoomActive();
         }
 
-        MainPageResponse mainPageResponse = new MainPageResponse(userId, userGender, userMatchActive, roomId, roomActive);
-
-        return mainPageResponse;
+        return new MainPageResponse(userId, userGender, userMatchActive, roomId, roomActive);
     }
 
     @Transactional
@@ -62,8 +59,7 @@ public class UserService {
             }
 
             Long userId = jwtProvider.getUserIdFromToken(token);
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException());
+            User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
             user.setUserNickname(userInfoDto.getNickname());
             user.setUserKeywords(userInfoDto.getKeywords());
