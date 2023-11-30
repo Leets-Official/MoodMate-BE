@@ -19,11 +19,13 @@ public class MessageDtoConverter {
                 chatMessage.getIsRead()
         );
     }
+
     public static MessageDto fromRedisChatMessageDto(RedisChatMessageDto redisChatMessageDto) {
         Map<String, Object> map = redisChatMessageDto.toMap();
         MessageDto messageDto = convertToMessageDto(map);
         return messageDto;
     }
+
     private static MessageDto convertToMessageDto(Map<String, Object> redisMessage) {
         Long messageId = Long.valueOf(redisMessage.get("messageId").toString());
         Long userId = Long.valueOf(redisMessage.get("userId").toString());

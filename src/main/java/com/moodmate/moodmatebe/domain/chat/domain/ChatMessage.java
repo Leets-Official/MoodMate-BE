@@ -34,6 +34,7 @@ public class ChatMessage extends BaseTimeEntity {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
     public ChatMessage(ChatRoom room, User user, boolean isRead, String content, LocalDateTime createdAt) {
         this.room = room;
         this.user = user;

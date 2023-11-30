@@ -19,11 +19,11 @@ public class ChatRoomService {
     private final RoomRepository roomRepository;
     public void enterChatRoom(Long roomId) throws ChatRoomNotFoundException, ConnectionException {
         ChannelTopic topic = new ChannelTopic("/sub/chat/" + roomId);
-        try{
+        try {
             redisMessageListener.addMessageListener(redisSubscriber, topic);
-        }catch (ChatRoomNotFoundException e){
+        } catch (ChatRoomNotFoundException e) {
             throw new ChatRoomNotFoundException();
-        }catch (ConnectionException e){
+        } catch (ConnectionException e) {
             throw new ConnectionException();
         }
     }

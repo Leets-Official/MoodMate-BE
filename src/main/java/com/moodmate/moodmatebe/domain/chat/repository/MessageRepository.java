@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
     Page<ChatMessage> findByRoomOrderByCreatedAt(ChatRoom room, Pageable pageable);
+
     int countByRoom(ChatRoom room);
 }

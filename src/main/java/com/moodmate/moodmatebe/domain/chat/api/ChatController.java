@@ -31,12 +31,13 @@ public class ChatController {
     private final ChatService chatService;
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
+
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     @SendTo("/sub/chat")
-    public void handleChatMessage(ChatMessageDto messageDto){
+    public void handleChatMessage(ChatMessageDto messageDto) {
         chatRoomService.enterChatRoom(messageDto.getRoomId());
-        RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null,messageDto.getUserId(),messageDto.getRoomId(),messageDto.getContent(),true, LocalDateTime.now());
+        RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, messageDto.getUserId(), messageDto.getRoomId(), messageDto.getContent(), true, LocalDateTime.now());
         redisPublisher.publish(new ChannelTopic("/sub/chat/" + messageDto.getRoomId()), redisChatMessageDto);
         chatService.saveMessage(redisChatMessageDto);
     }
@@ -49,7 +50,7 @@ public class ChatController {
         List<MessageDto> message = chatService.getMessage(roomId, size, page);
         ChatPageableDto pageable = chatService.getPageable(roomId, size, page);
         ChatUserDto user = chatService.getUserInfo(userId);
-        ChatResponseDto responseDto = new ChatResponseDto(user,pageable,message);
+        ChatResponseDto responseDto = new ChatResponseDto(user, pageable, message);
         return ResponseEntity.ok(responseDto);
     }
 

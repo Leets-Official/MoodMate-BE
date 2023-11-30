@@ -70,16 +70,18 @@ public class ChatService {
         }
         return messageList;
     }
-    public ChatPageableDto getPageable(Long roomId, int size, int page){
+
+    public ChatPageableDto getPageable(Long roomId, int size, int page) {
         ChatRoom room = getChatRoom(roomId);
         int totalElements = messageRepository.countByRoom(room);
         int totalPages = (int) Math.ceil((double) totalElements / size);
-        ChatPageableDto chatPageableDto = new ChatPageableDto(size,page,totalPages,totalElements);
+        ChatPageableDto chatPageableDto = new ChatPageableDto(size, page, totalPages, totalElements);
         return chatPageableDto;
     }
-    public ChatUserDto getUserInfo(Long userId){
+
+    public ChatUserDto getUserInfo(Long userId) {
         User user = getUser(userId);
-        ChatUserDto chatUserDto = new ChatUserDto(user.getUserGender(),user.getUserNickname());
+        ChatUserDto chatUserDto = new ChatUserDto(user.getUserGender(), user.getUserNickname());
         return chatUserDto;
     }
 
@@ -88,6 +90,7 @@ public class ChatService {
         int end = start + size - 1;
         return chatRedistemplate.opsForList().range(roomId.toString(), start, end);
     }
+
     private List<ChatMessage> getDbMessages(Long roomId, int size, int page) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         ChatRoom chatRoom = getChatRoom(roomId);
@@ -95,6 +98,7 @@ public class ChatService {
         return byRoomIdOrderByCreatedAt.getContent();
     }
     public ChatRoom getChatRoom(Long roomId) {
+
         Optional<ChatRoom> byRoomId = roomRepository.findByRoomId(roomId);
         if (byRoomId.isPresent()) {
             return byRoomId.get();
@@ -102,11 +106,12 @@ public class ChatService {
             throw new ChatRoomNotFoundException();
         }
     }
+
     private User getUser(Long userId) {
         Optional<User> byId = userRepository.findById(userId);
-        if(byId.isPresent()){
+        if (byId.isPresent()) {
             return byId.get();
-        }else {
+        } else {
             throw new UserNotFoundException();
         }
     }
