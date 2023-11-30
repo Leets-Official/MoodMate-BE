@@ -1,6 +1,7 @@
 package com.moodmate.moodmatebe.domain.user.api;
 
 import com.moodmate.moodmatebe.domain.user.application.UserService;
+import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
@@ -29,6 +30,19 @@ public class UserController {
 
     private final UserService userService;
     private final JwtProvider jwtProvider;
+
+    @Operation(summary = "유저 매칭 활성화 변경", description = "유저가 본인의 현재 매칭 상태를 반대로 변경합니다." )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PatchMapping("/match")
+    public ResponseEntity<Map<String, User>> setUserMatchActive(@RequestHeader("Authorization") String token) {
+        User user = userService.changeUserMatchActive(token);
+        return new ResponseEntity<>(Map.of("User", user), HttpStatus.OK);
+    }
 
     @Operation(summary = "메인 페이지 불러오기", description = "유저의 메인 페이지를 불러옵니다.")
     @ApiResponses({
