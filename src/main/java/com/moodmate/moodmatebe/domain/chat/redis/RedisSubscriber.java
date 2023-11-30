@@ -31,7 +31,7 @@ public class RedisSubscriber implements MessageListener {
             simpMessageSendingOperations.convertAndSend("/sub/chat/" + roomMessage.getRoomId(), roomMessage);
         } catch (JsonParseException e) {
             throw new JsonParsingException();
-        }catch (JsonMappingException e){
+        } catch (JsonMappingException e) {
             throw new RuntimeException();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
