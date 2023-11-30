@@ -3,6 +3,8 @@ package com.moodmate.moodmatebe.domain.user.api;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
+import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
+import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,15 +73,10 @@ public class UserController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse res) {
-        Cookie refreshCookie = new Cookie("refreshToken", null);
-        refreshCookie.setMaxAge(0);
-        res.addCookie(refreshCookie);
-
-        Cookie accessCookie = new Cookie("accessToken", null);
-        accessCookie.setMaxAge(0);
-        res.addCookie(accessCookie);
-
+    public ResponseEntity<Void> logout(@CookieValue("refreshToken") String oldToken, HttpServletResponse res) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setMaxAge(0);
+        res.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 
@@ -90,8 +87,8 @@ public class UserController {
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
-        Map<String, String> newTokens = userService.refreshAccessToken(refreshToken);
+    public ResponseEntity<Map<String, String>> refreshAccessToken(@CookieValue("refreshToken") String tokenInput) {
+        Map<String, String> newTokens = userService.refreshAccessToken(tokenInput);
         return new ResponseEntity<>(newTokens, HttpStatus.OK);
     }
 }
