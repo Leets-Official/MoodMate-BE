@@ -27,7 +27,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 
-public class ChatController {
+public class ChatController { 
     private final ChatService chatService;
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
