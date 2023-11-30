@@ -1,9 +1,10 @@
 package com.moodmate.moodmatebe.domain.user.api;
 
 import com.moodmate.moodmatebe.domain.user.application.UserService;
-import com.moodmate.moodmatebe.domain.user.domain.User;
+import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
+import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,17 +28,20 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final JwtProvider jwtProvider;
 
-    @Operation(summary = "유저 매칭 활성화 변경", description = "유저가 본인의 현재 매칭 상태를 반대로 변경합니다." )
+    @Operation(summary = "메인 페이지 불러오기", description = "유저의 메인 페이지를 불러옵니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @PatchMapping("/match")
-    public User setUserMatchActive(@RequestHeader("Authorization") String token) {
-        return userService.changeUserMatchActive(token);
+    @GetMapping("/main")
+    public ResponseEntity<Map<String, MainPageResponse>> getMainPage(@RequestHeader("Authorization") String authorizationHeader) {
+        MainPageResponse mainPageResponse = userService.getMainPage(authorizationHeader);
+
+        return new ResponseEntity<>(Map.of("mainPageResponse", mainPageResponse), HttpStatus.OK);
     }
 
     @Operation(summary = "회원 정보 설정", description = "회원 정보를 설정합니다.")
@@ -52,9 +56,10 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/user-info")
-    public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String token,
-                                                           @RequestBody UserInfoRequest userInfoDto) {
-        userService.setUserInfo(token, userInfoDto);
+    public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoRequest userInfoDto) {
+
+        userService.setUserInfo(jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader), userInfoDto);
+
         return new ResponseEntity<>(Map.of("message", "회원정보가 정상적으로 설정되었습니다."), HttpStatus.OK);
     }
 
@@ -76,5 +81,17 @@ public class UserController {
         res.addCookie(accessCookie);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "액세스 토큰 갱신", description = "Refresh Token을 사용하여 Access Token과 Refresh Token을 갱신합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
+        Map<String, String> newTokens = userService.refreshAccessToken(refreshToken);
+        return new ResponseEntity<>(newTokens, HttpStatus.OK);
     }
 }

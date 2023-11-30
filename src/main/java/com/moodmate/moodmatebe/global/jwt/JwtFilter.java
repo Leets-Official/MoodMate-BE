@@ -1,5 +1,7 @@
 package com.moodmate.moodmatebe.global.jwt;
 
+import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
+import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -19,19 +21,25 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = resolveToken(request);
-        if (token != null) {
-            jwtProvider.validateToken(token, false);
-            Authentication authentication = this.jwtProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            String token = resolveToken(request);
+            if (token != null) {
+                jwtProvider.validateToken(token, false);
+                Authentication authentication = this.jwtProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            Cookie cookie = new Cookie("jwtToken", token);
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge(60 * 60 * 2);
-            cookie.setPath("/");
-            response.addCookie(cookie);
+                Cookie cookie = new Cookie("jwtToken", token);
+                cookie.setHttpOnly(true);
+                cookie.setMaxAge(60 * 60 * 2);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
+            filterChain.doFilter(request, response);
+        } catch (ExpiredTokenException e) {
+            throw e;
+        } catch (InvalidTokenException e) {
+            throw e;
         }
-        filterChain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {
