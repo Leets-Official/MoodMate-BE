@@ -30,6 +30,17 @@ public class UserService {
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
 
+    public User changeUserMatchActive(String authorizationHeader){
+
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        user.setUserMatchActive(!user.getUserMatchActive());
+        return userRepository.save(user);
+    }
+
     public MainPageResponse getMainPage(String authorizationHeader) {
 
         Long roomId = ROOM_NOT_EXIST;
