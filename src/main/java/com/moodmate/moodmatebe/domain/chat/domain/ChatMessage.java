@@ -19,15 +19,15 @@ public class ChatMessage extends BaseTimeEntity {
     private Long messageId;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
-    private User sender;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private ChatRoom room;
 
-    @Column(name = "checked", nullable = false)
-    private Boolean checked;
+    @Column(name = "isRead", nullable = false)
+    private Boolean isRead;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -35,10 +35,10 @@ public class ChatMessage extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public ChatMessage(ChatRoom room, User sender, boolean checked, String content, LocalDateTime createdAt) {
+    public ChatMessage(ChatRoom room, User user, boolean isRead, String content, LocalDateTime createdAt) {
         this.room = room;
-        this.sender = sender;
-        this.checked = checked;
+        this.user = user;
+        this.isRead = isRead;
         this.content = content;
         this.createdAt = createdAt;
     }

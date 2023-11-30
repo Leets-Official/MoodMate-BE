@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatMessage;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
+import com.moodmate.moodmatebe.domain.chat.dto.ChatPageableDto;
+import com.moodmate.moodmatebe.domain.chat.dto.ChatUserDto;
 import com.moodmate.moodmatebe.domain.chat.dto.MessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
@@ -45,7 +47,7 @@ public class ChatService {
         messageRepository.save(chatMessage);
         Long messageId = redisMessageIdGenerator.generateUniqueId(chatMessageDto.getRoomId().toString());
         chatMessageDto.setMessageId(messageId);
-        chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
+        chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
         chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
     }
 
@@ -68,17 +70,34 @@ public class ChatService {
         }
         return messageList;
     }
+
+    public ChatPageableDto getPageable(Long roomId, int size, int page) {
+        ChatRoom room = getChatRoom(roomId);
+        int totalElements = messageRepository.countByRoom(room);
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        ChatPageableDto chatPageableDto = new ChatPageableDto(size, page, totalPages, totalElements);
+        return chatPageableDto;
+    }
+
+    public ChatUserDto getUserInfo(Long userId) {
+        User user = getUser(userId);
+        ChatUserDto chatUserDto = new ChatUserDto(user.getUserGender(), user.getUserNickname());
+        return chatUserDto;
+    }
+
     private List<RedisChatMessageDto> getRedisMessages(Long roomId, int size, int page) {
         int start = (page - 1) * size;
         int end = start + size - 1;
         return chatRedistemplate.opsForList().range(roomId.toString(), start, end);
     }
+
     private List<ChatMessage> getDbMessages(Long roomId, int size, int page) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         ChatRoom chatRoom = getChatRoom(roomId);
         Page<ChatMessage> byRoomIdOrderByCreatedAt = messageRepository.findByRoomOrderByCreatedAt(chatRoom, pageable);
         return byRoomIdOrderByCreatedAt.getContent();
     }
+
     private ChatRoom getChatRoom(Long roomId) {
         Optional<ChatRoom> byRoomId = roomRepository.findByRoomId(roomId);
         if (byRoomId.isPresent()) {
@@ -87,11 +106,12 @@ public class ChatService {
             throw new ChatRoomNotFoundException();
         }
     }
+
     private User getUser(Long userId) {
         Optional<User> byId = userRepository.findById(userId);
-        if(byId.isPresent()){
+        if (byId.isPresent()) {
             return byId.get();
-        }else {
+        } else {
             throw new UserNotFoundException();
         }
     }
