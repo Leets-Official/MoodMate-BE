@@ -98,7 +98,7 @@ public class ChatService {
         return byRoomIdOrderByCreatedAt.getContent();
     }
 
-    private ChatRoom getChatRoom(Long roomId) {
+    public ChatRoom getChatRoom(Long roomId) {
         Optional<ChatRoom> byRoomId = roomRepository.findByRoomId(roomId);
         if (byRoomId.isPresent()) {
             return byRoomId.get();
