@@ -104,8 +104,10 @@ public class UserController {
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshAccessToken(@CookieValue("refreshToken") String tokenInput) {
-        Map<String, String> newTokens = userService.refreshAccessToken(tokenInput);
-        return new ResponseEntity<>(newTokens, HttpStatus.OK);
+    public ResponseEntity<Void> refreshAccessToken(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        Map<String, String> newTokens = userService.refreshAccessToken(refreshToken);
+        response.setHeader("accessToken", newTokens.get("accessToken"));
+        response.setHeader("refreshToken", newTokens.get("refreshToken"));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
