@@ -45,8 +45,8 @@ public class UserService {
 
         prefer.setUser(user);
         prefer.setPreferMood(preferInfoRequest.getPreferMood());
-        prefer.setPreferAgeMax(preferInfoRequest.getPreferAgeMax());
-        prefer.setPreferAgeMin(preferInfoRequest.getPreferAgeMin());
+        prefer.setPreferYearMax(preferInfoRequest.getPreferYearMax());
+        prefer.setPreferYearMin(preferInfoRequest.getPreferYearMin());
 
         return preferRepository.save(prefer);
     }
