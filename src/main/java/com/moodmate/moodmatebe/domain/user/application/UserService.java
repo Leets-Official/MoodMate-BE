@@ -3,11 +3,14 @@ package com.moodmate.moodmatebe.domain.user.application;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
+import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
+import com.moodmate.moodmatebe.domain.user.dto.PreferInfoRequest;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
 import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
+import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
@@ -27,8 +30,26 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
+    private final PreferRepository preferRepository;
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
+
+    public Prefer setUserPrefer(String authorizationHeader, PreferInfoRequest preferInfoRequest){
+
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        Prefer prefer = new Prefer();
+
+        prefer.setUser(user);
+        prefer.setPreferMood(preferInfoRequest.getPreferMood());
+        prefer.setPreferAgeMax(preferInfoRequest.getPreferAgeMax());
+        prefer.setPreferAgeMin(preferInfoRequest.getPreferAgeMin());
+
+        return preferRepository.save(prefer);
+    }
 
     public User changeUserMatchActive(String authorizationHeader){
 
