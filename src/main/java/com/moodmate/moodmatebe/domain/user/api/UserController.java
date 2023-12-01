@@ -1,11 +1,11 @@
 package com.moodmate.moodmatebe.domain.user.api;
 
 import com.moodmate.moodmatebe.domain.user.application.UserService;
+import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
+import com.moodmate.moodmatebe.domain.user.dto.PreferInfoRequest;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
-import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
-import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +32,19 @@ public class UserController {
 
     private final UserService userService;
     private final JwtProvider jwtProvider;
+
+    @Operation(summary = "유저 상대 무디 조건 입력", description = "유저가 상대 무디 조건을 입력합니다" )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("/prefer-info")
+    public ResponseEntity<Map<String, Prefer>> setUserPrefer (@RequestHeader("Authorization") String token, @RequestBody PreferInfoRequest preferInfoRequest) {
+        Prefer prefer = userService.setUserPrefer(token, preferInfoRequest);
+        return new ResponseEntity<>(Map.of("Prefer", prefer), HttpStatus.CREATED);
+    }
 
     @Operation(summary = "유저 매칭 활성화 변경", description = "유저가 본인의 현재 매칭 상태를 반대로 변경합니다." )
     @ApiResponses({
