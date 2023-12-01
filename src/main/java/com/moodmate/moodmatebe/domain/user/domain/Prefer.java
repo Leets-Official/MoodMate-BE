@@ -1,22 +1,8 @@
 package com.moodmate.moodmatebe.domain.user.domain;
 
 import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Setter
 @Getter
@@ -46,8 +32,9 @@ public class Prefer extends BaseTimeEntity {
     @Column(name = "prefer_age_max", nullable = false)
     private int preferAgeMax;
 
-    @ElementCollection
-    @CollectionTable(name = "preferences", joinColumns = @JoinColumn(name = "prefer_id"))
-    @Column(name = "preferences", nullable = false)
-    private List<String> preferences;
+    // TODO: 동훈아 이거 없애도 되는지 확인해줘. 아래 칼럼은 Person에 들어가야 할 것 같은데??
+//    @ElementCollection
+//    @CollectionTable(name = "preferences", joinColumns = @JoinColumn(name = "prefer_id"))
+//    @Column(name = "preferences", nullable = false)
+//    private List<String> preferences;
 }
