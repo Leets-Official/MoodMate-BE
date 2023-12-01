@@ -75,7 +75,6 @@ public class UserController {
     public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoRequest userInfoDto) {
         Map<String, String> tokens = userService.setUserInfo(jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader), userInfoDto);
 
-        userService.setUserInfo(jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader), userInfoDto);
         HttpHeaders headers = new HttpHeaders();
         headers.add("accessToken", tokens.get("accessToken"));
         headers.add("refreshToken", tokens.get("refreshToken"));
