@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -87,9 +88,7 @@ public class UserController {
     })
     @PostMapping("/user-info")
     public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoRequest userInfoDto) {
-
-        userService.setUserInfo(jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader), userInfoDto);
-
+        Map<String, String> tokens = userService.setUserInfo(jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader), userInfoDto);
         return new ResponseEntity<>(Map.of("message", "회원정보가 정상적으로 설정되었습니다."), HttpStatus.OK);
     }
 
@@ -115,9 +114,11 @@ public class UserController {
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshAccessToken(@CookieValue("refreshToken") String tokenInput) {
-        Map<String, String> newTokens = userService.refreshAccessToken(tokenInput);
-        return new ResponseEntity<>(newTokens, HttpStatus.OK);
+    public ResponseEntity<Void> refreshAccessToken(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        Map<String, String> newTokens = userService.refreshAccessToken(refreshToken);
+        response.setHeader("accessToken", newTokens.get("accessToken"));
+        response.setHeader("refreshToken", newTokens.get("refreshToken"));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "상대무디 정보 조회", description = "현재 채팅 중인 상대방의 정보를 상세조회합니다.")
