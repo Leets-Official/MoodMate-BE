@@ -30,7 +30,7 @@ public class UserService {
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
 
-    public User changeUserMatchActive(String authorizationHeader){
+    public User changeUserMatchActive(String authorizationHeader) {
 
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);

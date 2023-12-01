@@ -32,7 +32,7 @@ public class UserController {
     private final UserService userService;
     private final JwtProvider jwtProvider;
 
-    @Operation(summary = "유저 매칭 활성화 변경", description = "유저가 본인의 현재 매칭 상태를 반대로 변경합니다." )
+    @Operation(summary = "유저 매칭 활성화 변경", description = "유저가 본인의 현재 매칭 상태를 반대로 변경합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
