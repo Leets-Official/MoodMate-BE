@@ -16,7 +16,7 @@ public enum ErrorCode {
     JSON_PARSING_ERROR(400, "JSON_PARSING_ERROR", "제이슨 파싱에 실패했습니다."),
     JSON_MAPPING_ERROR(400, "JSON_MAPPING_ERROR", "제이슨 맵핑에 실패했습니다."),
     INVALID_INPUT_VALUE(400, "INVALID_INPUT_VALUE", "유효하지 않은 입력값입니다."),
-    PREFER_NOT_FOUND(404, "PREFER_NOT_FOUND", "선호를 찾을 수 없습니다.");
+    PREFER_NOT_FOUND(404, "PREFER_NOT_FOUND", "선호 조건이 설정되지 않았습니다.");
 
     private final int httpStatus;
     private final String code;
