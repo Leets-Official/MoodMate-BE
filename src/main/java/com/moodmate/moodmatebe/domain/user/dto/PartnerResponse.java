@@ -1,10 +1,9 @@
 package com.moodmate.moodmatebe.domain.user.dto;
 
+import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Keyword;
-import com.nimbusds.openid.connect.sdk.claims.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.util.List;
 
 @Getter
