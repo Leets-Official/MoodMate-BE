@@ -4,8 +4,6 @@ import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
-import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
-import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
