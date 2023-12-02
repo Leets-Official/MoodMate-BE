@@ -19,6 +19,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 
-public class ChatController { 
+public class ChatController {
     private final ChatService chatService;
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
@@ -46,10 +47,10 @@ public class ChatController {
     @GetMapping("/chat")
     ResponseEntity<ChatResponseDto> getChatMessage(
             @RequestParam Long roomId,
-            @RequestParam Long userId, @RequestParam int size, @RequestParam int page) throws JsonProcessingException {
+            @RequestHeader("Authorization") String authorizationHeader, @RequestParam int size, @RequestParam int page) throws JsonProcessingException {
         List<MessageDto> message = chatService.getMessage(roomId, size, page);
         ChatPageableDto pageable = chatService.getPageable(roomId, size, page);
-        ChatUserDto user = chatService.getUserInfo(userId);
+        ChatUserDto user = chatService.getUserInfo(authorizationHeader);
         ChatResponseDto responseDto = new ChatResponseDto(user, pageable, message);
         return ResponseEntity.ok(responseDto);
     }
@@ -62,7 +63,7 @@ public class ChatController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PatchMapping("/chat")
-    ResponseEntity<Void> closeChatRoom(@RequestParam Long roomId){
+    ResponseEntity<Void> closeChatRoom(@RequestParam Long roomId) {
         chatRoomService.exitChatRoom(roomId);
         return ResponseEntity.ok().build();
     }

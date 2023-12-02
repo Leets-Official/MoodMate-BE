@@ -15,6 +15,7 @@ import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
+import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -38,6 +39,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final RedisMessageIdGenerator redisMessageIdGenerator;
     private final MessageDtoConverter messageDtoConverter;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public void saveMessage(RedisChatMessageDto chatMessageDto) {
@@ -79,9 +81,12 @@ public class ChatService {
         return chatPageableDto;
     }
 
-    public ChatUserDto getUserInfo(Long userId) {
-        User user = getUser(userId);
-        ChatUserDto chatUserDto = new ChatUserDto(user.getUserGender(), user.getUserNickname());
+    public ChatUserDto getUserInfo(String authorizationHeader) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        Optional<User> user = userRepository.findById(userId);
+
+        ChatUserDto chatUserDto = new ChatUserDto(user.get().getUserGender(), user.get().getUserNickname());
         return chatUserDto;
     }
 
