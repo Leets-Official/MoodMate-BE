@@ -1,11 +1,13 @@
 package com.moodmate.moodmatebe.domain.user.application;
 
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
+import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
+import com.moodmate.moodmatebe.domain.user.dto.PartnerResponse;
 import com.moodmate.moodmatebe.domain.user.dto.PreferInfoRequest;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
 import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
@@ -34,7 +36,7 @@ public class UserService {
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
 
-    public Prefer setUserPrefer(String authorizationHeader, PreferInfoRequest preferInfoRequest){
+    public Prefer setUserPrefer(String authorizationHeader, PreferInfoRequest preferInfoRequest) {
 
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);
@@ -51,7 +53,7 @@ public class UserService {
         return preferRepository.save(prefer);
     }
 
-    public User changeUserMatchActive(String authorizationHeader){
+    public User changeUserMatchActive(String authorizationHeader) {
 
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);
@@ -141,5 +143,27 @@ public class UserService {
         } catch (Exception e) {
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public PartnerResponse getPartnerInfo(String authorizationHeader) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
+        ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
+        Long otherUserId = (userId.equals(chatRoom.getUser1().getUserId())) ? chatRoom.getUser2().getUserId() : chatRoom.getUser1().getUserId();
+
+        User otherUser = userRepository.findById(otherUserId).orElseThrow(() -> new UserNotFoundException());
+
+        Optional<String> preferMoodByUserId = preferRepository.findPreferMoodByUserId(otherUserId);
+
+        return new PartnerResponse(
+                otherUser.getUserNickname(),
+                otherUser.getUserKeywords(),
+                otherUser.getUserGender(),
+                otherUser.getUserDepartment(),
+                otherUser.getYear(),
+                preferMoodByUserId.get()
+        );
     }
 }
