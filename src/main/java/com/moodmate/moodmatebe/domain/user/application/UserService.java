@@ -149,8 +149,8 @@ public class UserService {
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);
 
-        Optional<ChatRoom> byUser1IdOrUser2Id = roomRepository.findByUser1UserIdOrUser2UserId(userId, userId);
-        ChatRoom chatRoom = byUser1IdOrUser2Id.orElseThrow(() -> new ChatRoomNotFoundException());
+        Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
+        ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
         Long otherUserId = (userId.equals(chatRoom.getUser1().getUserId())) ? chatRoom.getUser2().getUserId() : chatRoom.getUser1().getUserId();
 
         User otherUser = userRepository.findById(otherUserId).orElseThrow(() -> new UserNotFoundException());
