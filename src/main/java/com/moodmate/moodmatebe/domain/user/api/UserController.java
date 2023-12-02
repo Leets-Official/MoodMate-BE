@@ -4,6 +4,7 @@ import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
+import com.moodmate.moodmatebe.domain.user.dto.PartnerResponse;
 import com.moodmate.moodmatebe.domain.user.dto.PreferInfoRequest;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
@@ -118,5 +119,18 @@ public class UserController {
         response.setHeader("accessToken", newTokens.get("accessToken"));
         response.setHeader("refreshToken", newTokens.get("refreshToken"));
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "상대무디 정보 조회", description = "현재 채팅 중인 상대방의 정보를 상세조회합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/partner")
+    public ResponseEntity<Map<String, PartnerResponse>> getPartnerInfo(@RequestHeader("Authorization") String authorizationHeader){
+        PartnerResponse partnerInfo = userService.getPartnerInfo(authorizationHeader);
+        return new ResponseEntity<>(Map.of("PartnerResponse",partnerInfo),HttpStatus.OK);
     }
 }
