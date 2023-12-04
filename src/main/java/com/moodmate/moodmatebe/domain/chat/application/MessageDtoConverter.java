@@ -32,6 +32,6 @@ public class MessageDtoConverter {
         String content = (String) redisMessage.get("content");
         Boolean isRead = (Boolean) redisMessage.get("isRead");
         LocalDateTime createdAt = (LocalDateTime) redisMessage.get("createdAt");
-        return new MessageDto(messageId + 1, content, userId, createdAt, isRead);
+        return new MessageDto(messageId, content, userId, createdAt, isRead);
     }
 }
