@@ -10,7 +10,6 @@ import com.moodmate.moodmatebe.domain.chat.dto.MessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
-import com.moodmate.moodmatebe.domain.chat.redis.RedisMessageIdGenerator;
 import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.User;
@@ -37,7 +36,6 @@ public class ChatService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
-    private final RedisMessageIdGenerator redisMessageIdGenerator;
     private final MessageDtoConverter messageDtoConverter;
     private final JwtProvider jwtProvider;
 
@@ -45,9 +43,10 @@ public class ChatService {
     public void saveMessage(RedisChatMessageDto chatMessageDto) {
         ChatRoom chatRoom = getChatRoom(chatMessageDto.getRoomId());
         User user = getUser(chatMessageDto.getUserId());
+
         ChatMessage chatMessage = new ChatMessage(chatRoom, user, true, chatMessageDto.getContent(), LocalDateTime.now());
         messageRepository.save(chatMessage);
-        Long messageId = redisMessageIdGenerator.generateUniqueId(chatMessageDto.getRoomId().toString());
+        Long messageId = messageRepository.getNextMessageId();
         chatMessageDto.setMessageId(messageId);
         chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
         chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
