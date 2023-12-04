@@ -5,9 +5,14 @@ import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
     Page<ChatMessage> findByRoomOrderByCreatedAt(ChatRoom room, Pageable pageable);
 
     int countByRoom(ChatRoom room);
+
+    @Query("SELECT COALESCE(MAX(m.messageId), 0) FROM chat_message m")
+    Long getNextMessageId();
+
 }
