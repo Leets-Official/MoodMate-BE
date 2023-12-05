@@ -40,13 +40,13 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             String refreshToken = jwtProvider.generateToken(id, email, role, true);
 
             Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-            accessTokenCookie.setHttpOnly(true);
+            accessTokenCookie.setHttpOnly(false);
             accessTokenCookie.setSecure(false);
             accessTokenCookie.setMaxAge(60 * 60 * 2);
             response.addCookie(accessTokenCookie);
 
             Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setHttpOnly(false);
             refreshTokenCookie.setSecure(false);
             refreshTokenCookie.setMaxAge(60 * 60 * 24 * 14);
             response.addCookie(refreshTokenCookie);
