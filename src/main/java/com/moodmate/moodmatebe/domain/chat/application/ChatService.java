@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatMessage;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatPageableDto;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatUserDto;
-import com.moodmate.moodmatebe.domain.chat.dto.MessageDto;
-import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
@@ -28,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +36,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final MessageDtoConverter messageDtoConverter;
     private final JwtProvider jwtProvider;
+    private final int TTL_SECONDS = 86400;
 
     @Transactional
     public void saveMessage(RedisChatMessageDto chatMessageDto) {
@@ -50,6 +49,7 @@ public class ChatService {
         chatMessageDto.setMessageId(messageId);
         chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
         chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
+        chatRedistemplate.expire(chatMessageDto.getRoomId().toString(),TTL_SECONDS, TimeUnit.SECONDS);
     }
 
     public List<MessageDto> getMessage(Long roomId, int size, int page) throws JsonProcessingException {
