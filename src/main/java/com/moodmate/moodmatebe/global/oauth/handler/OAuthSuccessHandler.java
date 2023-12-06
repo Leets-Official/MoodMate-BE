@@ -43,11 +43,13 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             accessTokenCookie.setHttpOnly(false);
             accessTokenCookie.setSecure(false);
             accessTokenCookie.setMaxAge(60 * 60 * 2);
+            accessTokenCookie.setPath("/");
             response.addCookie(accessTokenCookie);
 
             Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
             refreshTokenCookie.setHttpOnly(false);
             refreshTokenCookie.setSecure(false);
+            refreshTokenCookie.setPath("/");
             refreshTokenCookie.setMaxAge(60 * 60 * 24 * 14);
             response.addCookie(refreshTokenCookie);
 
