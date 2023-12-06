@@ -60,17 +60,17 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             response.setHeader("accessToken", accessToken);
             response.setHeader("refreshToken", refreshToken);
 
-            Map<String, String> tokenMap = new HashMap<>();
-            tokenMap.put("accessToken", accessToken);
-            tokenMap.put("refreshToken", refreshToken);
+//            Map<String, String> tokenMap = new HashMap<>();
+//            tokenMap.put("accessToken", accessToken);
+//            tokenMap.put("refreshToken", refreshToken);
+//
+//            String tokenJson = objectMapper.writeValueAsString(tokenMap);
+//
+//            response.setContentType("application/json");
+//            response.setCharacterEncoding("UTF-8");
+//            response.getWriter().write(tokenJson);
 
-            String tokenJson = objectMapper.writeValueAsString(tokenMap);
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(tokenJson);
-
-//            getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+            getRedirectStrategy().sendRedirect(request, response, redirectUrl);
 
             System.out.println("accessToken : " + accessToken);
             System.out.println("refreshToken : " + refreshToken);
