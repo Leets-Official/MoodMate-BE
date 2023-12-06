@@ -69,8 +69,8 @@ public class UserService {
 
         Long roomId = ROOM_NOT_EXIST;
         Boolean roomActive = false;
-//        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
-        Long userId = jwtProvider.getUserIdFromToken(authorizationHeader);
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
 
         Optional<User> user = userRepository.findById(userId);
         Optional<ChatRoom> chatRoom = roomRepository.findActiveChatRoomByUserId(userId);
