@@ -1,5 +1,6 @@
 package com.moodmate.moodmatebe.global.oauth.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import com.moodmate.moodmatebe.global.jwt.AuthRole;
@@ -17,6 +18,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -24,6 +27,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Value("${social-login.redirect}")
     private String redirectUrl;
     private final JwtProvider jwtProvider;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -55,6 +59,16 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
             response.setHeader("accessToken", accessToken);
             response.setHeader("refreshToken", refreshToken);
+
+//            Map<String, String> tokenMap = new HashMap<>();
+//            tokenMap.put("accessToken", accessToken);
+//            tokenMap.put("refreshToken", refreshToken);
+//
+//            String tokenJson = objectMapper.writeValueAsString(tokenMap);
+//
+//            response.setContentType("application/json");
+//            response.setCharacterEncoding("UTF-8");
+//            response.getWriter().write(tokenJson);
 
             getRedirectStrategy().sendRedirect(request, response, redirectUrl);
 
