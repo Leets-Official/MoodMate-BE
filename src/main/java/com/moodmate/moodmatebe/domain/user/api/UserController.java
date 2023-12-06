@@ -70,9 +70,8 @@ public class UserController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/main")
-    public ResponseEntity<Map<String, MainPageResponse>> getMainPage(HttpServletRequest request) {
-        String token = userService.extractAccessTokenFromCookies(request.getCookies());
-        MainPageResponse mainPageResponse = userService.getMainPage(token);
+    public ResponseEntity<Map<String, MainPageResponse>> getMainPage(@RequestHeader("Authorization") String authorizationHeader) {
+        MainPageResponse mainPageResponse = userService.getMainPage(authorizationHeader);
         return new ResponseEntity<>(Map.of("mainPageResponse", mainPageResponse), HttpStatus.OK);
     }
 
