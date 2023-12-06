@@ -54,6 +54,10 @@ dependencies {
     // OpenAPI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
+    // SameSite Cookie
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.session:spring-session-core:2.5.5'
+
     // JAXB API
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
 }
