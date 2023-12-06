@@ -19,6 +19,7 @@ import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import com.moodmate.moodmatebe.global.jwt.AuthRole;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,8 +69,8 @@ public class UserService {
 
         Long roomId = ROOM_NOT_EXIST;
         Boolean roomActive = false;
-        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
-        Long userId = jwtProvider.getUserIdFromToken(token);
+//        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(authorizationHeader);
 
         Optional<User> user = userRepository.findById(userId);
         Optional<ChatRoom> chatRoom = roomRepository.findActiveChatRoomByUserId(userId);
@@ -165,5 +166,20 @@ public class UserService {
                 otherUser.getYear(),
                 preferMoodByUserId.get()
         );
+    }
+
+    public String extractAccessTokenFromCookies(Cookie[] cookies) {
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                System.out.println(cookie.getName());
+                System.out.println(cookie.getValue());
+                if (cookie.getName().equals("accessToken")) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        return token;
     }
 }
