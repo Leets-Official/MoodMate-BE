@@ -16,8 +16,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +61,9 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             refreshTokenCookie.setMaxAge(60 * 60 * 24 * 14);
             response.addCookie(refreshTokenCookie);
 
+//            String redirectUrlWithToken = buildRedirectUrlWithToken(redirectUrl, accessToken);
+//            getRedirectStrategy().sendRedirect(request, response, redirectUrlWithToken);
+
             response.setHeader("accessToken", accessToken);
             response.setHeader("refreshToken", refreshToken);
 
@@ -70,7 +77,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 //            response.setCharacterEncoding("UTF-8");
 //            response.getWriter().write(tokenJson);
 
-            getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+//            getRedirectStrategy().sendRedirect(request, response, redirectUrl + "?accessToekn=" + accessToken + "?refreshToekn=" + refreshToken);
 
             System.out.println("accessToken : " + accessToken);
             System.out.println("refreshToken : " + refreshToken);
@@ -81,5 +88,12 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String buildRedirectUrlWithToken(String redirectUrl, String accessToken) throws UnsupportedEncodingException {
+        // Add the access token as a query parameter to the redirect URL
+        return UriComponentsBuilder.fromUriString(redirectUrl)
+                .queryParam("accessToken", URLEncoder.encode(accessToken, StandardCharsets.UTF_8.toString()))
+                .build().toUriString();
     }
 }
