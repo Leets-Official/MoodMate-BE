@@ -166,4 +166,19 @@ public class UserService {
                 preferMoodByUserId.get()
         );
     }
+
+    public String extractAccessTokenFromCookies(Cookie[] cookies) {
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                System.out.println(cookie.getName());
+                System.out.println(cookie.getValue());
+                if (cookie.getName().equals("accessToken")) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        return token;
+    }
 }
