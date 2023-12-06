@@ -27,6 +27,7 @@ public class CorsConfig implements WebMvcConfigurer {
                         developmentOrigin,
                         productionOrigin
                 )
+                .allowedHeaders("*")
                 .exposedHeaders("*");
     }
 }
