@@ -77,7 +77,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 //            response.setCharacterEncoding("UTF-8");
 //            response.getWriter().write(tokenJson);
 
-            getRedirectStrategy().sendRedirect(request, response, redirectUrl + "?accessToekn=" + accessToken + "?refreshToekn=" + refreshToken);
+            getRedirectStrategy().sendRedirect(request, response, redirectUrl + "?accessToken=" + accessToken + "?refreshToken=" + refreshToken);
 
             System.out.println("accessToken : " + accessToken);
             System.out.println("refreshToken : " + refreshToken);
