@@ -1,5 +1,6 @@
 package com.moodmate.moodmatebe.global.oauth.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import com.moodmate.moodmatebe.global.jwt.AuthRole;
@@ -15,8 +16,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -24,6 +31,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Value("${social-login.redirect}")
     private String redirectUrl;
     private final JwtProvider jwtProvider;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -43,18 +51,33 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             accessTokenCookie.setHttpOnly(false);
             accessTokenCookie.setSecure(false);
             accessTokenCookie.setMaxAge(60 * 60 * 2);
+            accessTokenCookie.setPath("/");
             response.addCookie(accessTokenCookie);
 
             Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
             refreshTokenCookie.setHttpOnly(false);
             refreshTokenCookie.setSecure(false);
+            refreshTokenCookie.setPath("/");
             refreshTokenCookie.setMaxAge(60 * 60 * 24 * 14);
             response.addCookie(refreshTokenCookie);
+
+//            String redirectUrlWithToken = buildRedirectUrlWithToken(redirectUrl, accessToken);
+//            getRedirectStrategy().sendRedirect(request, response, redirectUrlWithToken);
 
             response.setHeader("accessToken", accessToken);
             response.setHeader("refreshToken", refreshToken);
 
-            getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+//            Map<String, String> tokenMap = new HashMap<>();
+//            tokenMap.put("accessToken", accessToken);
+//            tokenMap.put("refreshToken", refreshToken);
+//
+//            String tokenJson = objectMapper.writeValueAsString(tokenMap);
+//
+//            response.setContentType("application/json");
+//            response.setCharacterEncoding("UTF-8");
+//            response.getWriter().write(tokenJson);
+
+            getRedirectStrategy().sendRedirect(request, response, redirectUrl + "?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
 
             System.out.println("accessToken : " + accessToken);
             System.out.println("refreshToken : " + refreshToken);
@@ -65,5 +88,12 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String buildRedirectUrlWithToken(String redirectUrl, String accessToken) throws UnsupportedEncodingException {
+        // Add the access token as a query parameter to the redirect URL
+        return UriComponentsBuilder.fromUriString(redirectUrl)
+                .queryParam("accessToken", URLEncoder.encode(accessToken, StandardCharsets.UTF_8.toString()))
+                .build().toUriString();
     }
 }

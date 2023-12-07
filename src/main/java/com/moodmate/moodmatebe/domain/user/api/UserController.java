@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -71,7 +72,6 @@ public class UserController {
     @GetMapping("/main")
     public ResponseEntity<Map<String, MainPageResponse>> getMainPage(@RequestHeader("Authorization") String authorizationHeader) {
         MainPageResponse mainPageResponse = userService.getMainPage(authorizationHeader);
-
         return new ResponseEntity<>(Map.of("mainPageResponse", mainPageResponse), HttpStatus.OK);
     }
 
