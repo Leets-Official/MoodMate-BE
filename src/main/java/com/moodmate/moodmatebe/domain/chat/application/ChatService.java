@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatMessage;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatPageableDto;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatUserDto;
-import com.moodmate.moodmatebe.domain.chat.dto.MessageDto;
-import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
@@ -17,6 +14,7 @@ import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ChatService {
     private final RedisTemplate<String, RedisChatMessageDto> chatRedistemplate;
@@ -38,6 +38,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final MessageDtoConverter messageDtoConverter;
     private final JwtProvider jwtProvider;
+    private final int TTL_SECONDS = 86400;
 
     @Transactional
     public void saveMessage(RedisChatMessageDto chatMessageDto) {
@@ -50,6 +51,7 @@ public class ChatService {
         chatMessageDto.setMessageId(messageId);
         chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
         chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
+        chatRedistemplate.expire(chatMessageDto.getRoomId().toString(), TTL_SECONDS, TimeUnit.SECONDS);
     }
 
     public List<MessageDto> getMessage(Long roomId, int size, int page) throws JsonProcessingException {
@@ -61,6 +63,7 @@ public class ChatService {
                 MessageDto messageDto = messageDtoConverter.fromChatMessage(message);
                 messageList.add(messageDto);
             }
+            saveDbMessageToRedis(roomId, dbMessageList);
         } else {
             ObjectMapper objectMapper = new ObjectMapper();
             for (int i = 0; i < redisMessageList.size(); i++) {
@@ -100,6 +103,22 @@ public class ChatService {
         ChatRoom chatRoom = getChatRoom(roomId);
         Page<ChatMessage> byRoomIdOrderByCreatedAt = messageRepository.findByRoomOrderByCreatedAt(chatRoom, pageable);
         return byRoomIdOrderByCreatedAt.getContent();
+    }
+
+    private void saveDbMessageToRedis(Long roomId, List<ChatMessage> dbMessageList) {
+        List<RedisChatMessageDto> redisChatMessageDtoList = new ArrayList<>();
+        for (ChatMessage dbMessage : dbMessageList) {
+            RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(
+                    dbMessage.getMessageId(),
+                    dbMessage.getUser().getUserId(),
+                    dbMessage.getRoom().getRoomId(),
+                    dbMessage.getContent(),
+                    dbMessage.getIsRead(),
+                    dbMessage.getCreatedAt()
+            );
+            redisChatMessageDtoList.add(redisChatMessageDto);
+        }
+        chatRedistemplate.opsForList().rightPushAll(roomId.toString(), redisChatMessageDtoList);
     }
 
     public ChatRoom getChatRoom(Long roomId) {
