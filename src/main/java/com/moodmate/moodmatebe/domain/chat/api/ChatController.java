@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -36,10 +37,12 @@ public class ChatController {
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     @SendTo("/sub/chat")
-    public void handleChatMessage(ChatMessageDto messageDto) {
-        chatRoomService.enterChatRoom(messageDto.getRoomId());
-        RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, messageDto.getUserId(), messageDto.getRoomId(), messageDto.getContent(), true, LocalDateTime.now());
-        redisPublisher.publish(new ChannelTopic("/sub/chat/" + messageDto.getRoomId()), redisChatMessageDto);
+    public void handleChatMessage(ChatMessageDto messageDto, @Header("Authorization") String authorizationHeader) {
+        Long userId = chatService.getUserId(authorizationHeader);
+        Long roomId = chatService.getRoomId(userId);
+        chatRoomService.enterChatRoom(roomId);
+        RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
+        redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
         chatService.saveMessage(redisChatMessageDto);
     }
 

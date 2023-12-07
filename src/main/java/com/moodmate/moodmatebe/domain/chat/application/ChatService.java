@@ -138,4 +138,13 @@ public class ChatService {
             throw new UserNotFoundException();
         }
     }
+    public Long getUserId(String authorizationHeader){
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        return jwtProvider.getUserIdFromToken(token);
+    }
+
+    public Long getRoomId(Long userId){
+        Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
+        return activeChatRoomByUserId.get().getRoomId();
+    }
 }
