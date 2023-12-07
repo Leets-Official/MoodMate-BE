@@ -6,13 +6,10 @@ import com.moodmate.moodmatebe.domain.matching.domain.Woman;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class MatchingService {
@@ -118,6 +115,18 @@ public class MatchingService {
     }
 
     // 무드에 따라 그룹화하는 메소드
+    // 질문: 그럼 무드가 다른 사람 남 녀 둘이 있다면 매칭이 아예 안되나요?
+    /*
+        예를 들어서
+
+        성별  무드
+        남   A
+        남   B
+        남   C
+        여   D
+
+        이렇게 남으면 아예 저 사람들은 매칭이 안되어버리는건지, 아니면 후순위로 밀리는건지 궁금합니다
+     */
     private static <T extends Person> Map<String, Map<String, T>> groupByMood(Map<String, T> persons) {
         Map<String, Map<String, T>> groups = new HashMap<>();
         for (T person : persons.values()) {
