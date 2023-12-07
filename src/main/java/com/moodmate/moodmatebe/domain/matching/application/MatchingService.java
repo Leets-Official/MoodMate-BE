@@ -27,6 +27,7 @@ public class MatchingService {
     public void match() {
         // 활성화된 Prefer 객체들을 가져옴
         List<Prefer> activeMatchTrue = preferRepository.findByUserMatchActiveAndGenderTrue(Gender.MALE);
+        activeMatchTrue.addAll(preferRepository.findByUserMatchActiveAndGenderTrue(Gender.FEMALE));
 
         List<Man> men = new ArrayList<>();
         List<Woman> women = new ArrayList<>();
