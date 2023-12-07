@@ -3,9 +3,9 @@ package com.moodmate.moodmatebe.domain.matching.application;
 import com.moodmate.moodmatebe.domain.matching.domain.Man;
 import com.moodmate.moodmatebe.domain.matching.domain.Person;
 import com.moodmate.moodmatebe.domain.matching.domain.Woman;
-import com.moodmate.moodmatebe.domain.matching.repository.PersonRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
+import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,16 +17,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class MatchingService {
 
-    private final PersonRepository personRepository;
+    private final PreferRepository preferRepository;
 
     @Autowired
-    public MatchingService(PersonRepository personRepository) {
-        this.personRepository = personRepository;
+    public MatchingService(PreferRepository personRepository) {
+        this.preferRepository = personRepository;
     }
 
     public void match() {
         // 활성화된 Prefer 객체들을 가져옴
-        List<Prefer> activeMatchTrue = personRepository.findByUserMatchActiveAndGenderTrue(Gender.MALE);
+        List<Prefer> activeMatchTrue = preferRepository.findByUserMatchActiveAndGenderTrue(Gender.MALE);
 
         List<Man> men = new ArrayList<>();
         List<Woman> women = new ArrayList<>();
