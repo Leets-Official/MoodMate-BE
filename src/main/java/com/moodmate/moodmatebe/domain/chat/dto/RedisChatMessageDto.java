@@ -1,5 +1,6 @@
 package com.moodmate.moodmatebe.domain.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -16,6 +17,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RedisChatMessageDto {
+    @JsonProperty("messageId")
     private Long messageId;
     private Long userId;
     private Long roomId;
@@ -34,5 +36,12 @@ public class RedisChatMessageDto {
         map.put("isRead", isRead);
         map.put("createdAt", createdAt);
         return map;
+    }
+    public Long getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(Long messageId) {
+        this.messageId = messageId;
     }
 }
