@@ -48,7 +48,7 @@ public class ChatController {
         log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
         log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
         log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
-        redisPublisher.publish(new ChannelTopic("/sub/chat"), redisChatMessageDto);
+        redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
         log.info("publish");
         chatService.saveMessage(redisChatMessageDto);
     }
