@@ -58,7 +58,7 @@ public class RedisConfig {
     }
     @Bean
     public ChannelTopic topic() {
-        return new ChannelTopic("chat");
+        return new ChannelTopic("/sub/chat");
     }
     @Bean
     public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory) {
