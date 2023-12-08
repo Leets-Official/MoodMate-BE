@@ -20,7 +20,7 @@ public class ChatRoomService {
     private final ChatService chatService;
     private final RoomRepository roomRepository;
     public void enterChatRoom(Long roomId) throws ChatRoomNotFoundException, ConnectionException {
-        ChannelTopic topic = new ChannelTopic("/sub/chat/" + roomId);
+        ChannelTopic topic = new ChannelTopic("/sub/chat");
         try {
             redisMessageListener.addMessageListener(redisSubscriber, topic);
             log.info("pub/sub Listener success!");

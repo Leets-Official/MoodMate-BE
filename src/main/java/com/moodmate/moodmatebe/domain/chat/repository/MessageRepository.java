@@ -12,7 +12,7 @@ public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
 
     int countByRoom(ChatRoom room);
 
-    @Query("SELECT COALESCE(MAX(CAST(m.messageId AS LONG)), 0) FROM chat_message m")
+    @Query("SELECT COALESCE(MAX(m.messageId), 0) FROM chat_message m")
     Long getNextMessageId();
 
 }
