@@ -6,12 +6,14 @@ import com.moodmate.moodmatebe.domain.chat.redis.RedisSubscriber;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.ConnectionException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatRoomService {
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
@@ -21,6 +23,7 @@ public class ChatRoomService {
         ChannelTopic topic = new ChannelTopic("/sub/chat/" + roomId);
         try {
             redisMessageListener.addMessageListener(redisSubscriber, topic);
+            log.info("pub/sub Listener success!");
         } catch (ChatRoomNotFoundException e) {
             throw new ChatRoomNotFoundException();
         } catch (ConnectionException e) {

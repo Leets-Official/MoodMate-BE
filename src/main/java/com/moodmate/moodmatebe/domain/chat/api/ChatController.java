@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
@@ -28,7 +29,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-
+@Slf4j
 public class ChatController {
     private final ChatService chatService;
     private final RedisPublisher redisPublisher;
@@ -39,10 +40,16 @@ public class ChatController {
     @SendTo("/sub/chat")
     public void handleChatMessage(ChatMessageDto messageDto, @Header("Authorization") String authorizationHeader) {
         Long userId = chatService.getUserId(authorizationHeader);
+        log.info("userId:{}",userId);
         Long roomId = chatService.getRoomId(userId);
+        log.info("roomId:{}",roomId);
         chatRoomService.enterChatRoom(roomId);
         RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
+        log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
+        log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
+        log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
         redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
+        log.info("publish");
         chatService.saveMessage(redisChatMessageDto);
     }
 

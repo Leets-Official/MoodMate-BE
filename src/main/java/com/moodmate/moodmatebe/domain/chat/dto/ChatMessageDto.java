@@ -7,4 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ChatMessageDto {
     private String content;
+    private Long roomId;
 }
