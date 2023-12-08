@@ -129,8 +129,8 @@ public class UserController {
         @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/partner")
-    public ResponseEntity<Map<String, PartnerResponse>> getPartnerInfo(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<PartnerResponse> getPartnerInfo(@RequestHeader("Authorization") String authorizationHeader){
         PartnerResponse partnerInfo = userService.getPartnerInfo(authorizationHeader);
-        return new ResponseEntity<>(Map.of("PartnerResponse",partnerInfo),HttpStatus.OK);
+        return ResponseEntity.ok(partnerInfo);
     }
 }
