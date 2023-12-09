@@ -6,6 +6,13 @@ import com.moodmate.moodmatebe.domain.chat.application.ChatService;
 import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
+import com.moodmate.moodmatebe.global.jwt.JwtProvider;
+import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
+import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,18 +46,25 @@ public class ChatController {
     @MessageMapping("/chat")
     @SendTo("/sub/chat")
     public void handleChatMessage(ChatMessageDto messageDto, @Header("Authorization") String authorizationHeader) {
-        Long userId = chatService.getUserId(authorizationHeader);
-        log.info("userId:{}",userId);
-        Long roomId = chatService.getRoomId(userId);
-        log.info("roomId:{}",roomId);
-        chatRoomService.enterChatRoom(roomId);
-        RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
-        log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
-        log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
-        log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
-        redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
-        log.info("publish");
-        chatService.saveMessage(redisChatMessageDto);
+        try {
+            Long userId = chatService.getUserId(authorizationHeader);
+            log.info("userId:{}",userId);
+            Long roomId = chatService.getRoomId(userId);
+            log.info("roomId:{}",roomId);
+            chatRoomService.enterChatRoom(roomId);
+            RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
+            log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
+            log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
+            log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
+            redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
+            log.info("publish");
+            chatService.saveMessage(redisChatMessageDto);
+
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
+            throw new InvalidTokenException();
+        }
     }
 
     @Operation(summary = "채팅내역 조회", description = "채팅내역을 조회합니다.")
