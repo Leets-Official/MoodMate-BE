@@ -5,11 +5,14 @@ import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisSubscriber;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.ConnectionException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
+import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +20,8 @@ import org.springframework.stereotype.Service;
 public class ChatRoomService {
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
-    private final ChatService chatService;
     private final RoomRepository roomRepository;
+    private final JwtProvider jwtProvider;
     public void enterChatRoom(Long roomId) throws ChatRoomNotFoundException, ConnectionException {
         ChannelTopic topic = new ChannelTopic("/sub/chat/" + roomId);
         try {
@@ -30,9 +33,14 @@ public class ChatRoomService {
             throw new ConnectionException();
         }
     }
-    public void exitChatRoom(Long roomId){
-        ChatRoom chatRoom = chatService.getChatRoom(roomId);
-        chatRoom.setRoomActive(false);
-        roomRepository.save(chatRoom);
+    public void exitChatRoom(String authorizationHeader){
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        Optional<ChatRoom> optionalChatRoom = roomRepository.findActiveChatRoomByUserId(userId);
+        if (optionalChatRoom.isPresent()) {
+            ChatRoom chatRoom = optionalChatRoom.get();
+            chatRoom.setRoomActive(false);
+            roomRepository.save(chatRoom);
+        }
     }
 }

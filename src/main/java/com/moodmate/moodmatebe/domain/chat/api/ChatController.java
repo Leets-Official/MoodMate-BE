@@ -6,7 +6,6 @@ import com.moodmate.moodmatebe.domain.chat.application.ChatService;
 import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
-import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
 import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -87,8 +86,8 @@ public class ChatController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PatchMapping("/chat")
-    ResponseEntity<Void> closeChatRoom(@RequestParam Long roomId) {
-        chatRoomService.exitChatRoom(roomId);
+    ResponseEntity<Void> closeChatRoom(@RequestHeader("Authorization") String authorizationHeader) {
+        chatRoomService.exitChatRoom(authorizationHeader);
         return ResponseEntity.ok().build();
     }
 }
