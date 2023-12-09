@@ -106,19 +106,21 @@ public class ChatService {
     }
 
     private void saveDbMessageToRedis(Long roomId, List<ChatMessage> dbMessageList) {
-        List<RedisChatMessageDto> redisChatMessageDtoList = new ArrayList<>();
-        for (ChatMessage dbMessage : dbMessageList) {
-            RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(
-                    dbMessage.getMessageId(),
-                    dbMessage.getUser().getUserId(),
-                    dbMessage.getRoom().getRoomId(),
-                    dbMessage.getContent(),
-                    dbMessage.getIsRead(),
-                    dbMessage.getCreatedAt()
-            );
-            redisChatMessageDtoList.add(redisChatMessageDto);
+        if (dbMessageList != null && !dbMessageList.isEmpty()) {
+            List<RedisChatMessageDto> redisChatMessageDtoList = new ArrayList<>();
+            for (ChatMessage dbMessage : dbMessageList) {
+                RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(
+                        dbMessage.getMessageId(),
+                        dbMessage.getUser().getUserId(),
+                        dbMessage.getRoom().getRoomId(),
+                        dbMessage.getContent(),
+                        dbMessage.getIsRead(),
+                        dbMessage.getCreatedAt()
+                );
+                redisChatMessageDtoList.add(redisChatMessageDto);
+            }
+            chatRedistemplate.opsForList().rightPushAll(roomId.toString(), redisChatMessageDtoList);
         }
-        chatRedistemplate.opsForList().rightPushAll(roomId.toString(), redisChatMessageDtoList);
     }
 
     public ChatRoom getChatRoom(Long roomId) {
