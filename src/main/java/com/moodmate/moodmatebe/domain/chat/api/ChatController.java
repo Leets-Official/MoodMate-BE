@@ -52,18 +52,18 @@ public class ChatController {
             String authorization = accessor.getFirstNativeHeader("Authorization");
             if (authorization != null && authorization.startsWith("Bearer ")) {
                 String authorizationHeader = authorization.substring(7);
-                log.info("message전송!!");
+                log.debug("message전송!!");
                 Long userId = chatService.getUserId(authorizationHeader);
-                log.info("userId:{}",userId);
+                log.debug("controller -userId:{}",userId);
                 Long roomId = chatService.getRoomId(userId);
-                log.info("roomId:{}",roomId);
+                log.debug("roomId:{}",roomId);
                 chatRoomService.enterChatRoom(roomId);
                 RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
-                log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
-                log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
-                log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
+                log.debug("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
+                log.debug("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
+                log.debug("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
                 redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
-                log.info("publish");
+                log.debug("publish");
                 chatService.saveMessage(redisChatMessageDto);
 
             }
