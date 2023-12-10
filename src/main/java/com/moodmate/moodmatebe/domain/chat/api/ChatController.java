@@ -49,7 +49,8 @@ public class ChatController {
     @SendTo("/sub/chat")
     public void handleChatMessage(ChatMessageDto messageDto, StompHeaderAccessor accessor) {
         try {
-            String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
+            String authorization = accessor.getFirstNativeHeader("Authorization");
+            String authorizationHeader = authorization.substring(7);
             Long userId = chatService.getUserId(authorizationHeader);
             log.info("userId:{}",userId);
             Long roomId = chatService.getRoomId(userId);
