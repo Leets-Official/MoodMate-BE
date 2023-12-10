@@ -16,12 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @Component
@@ -56,12 +52,5 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private String buildRedirectUrlWithToken(String redirectUrl, String accessToken) throws UnsupportedEncodingException {
-        // Add the access token as a query parameter to the redirect URL
-        return UriComponentsBuilder.fromUriString(redirectUrl)
-                .queryParam("accessToken", URLEncoder.encode(accessToken, StandardCharsets.UTF_8.toString()))
-                .build().toUriString();
     }
 }
