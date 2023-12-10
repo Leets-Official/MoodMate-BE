@@ -46,12 +46,13 @@ public class ChatController {
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
-    @SendTo("/sub/chat")
+    @SendTo("/sub/chat/{roomId}")
     public void handleChatMessage(ChatMessageDto messageDto, StompHeaderAccessor accessor) {
         try {
             String authorization = accessor.getFirstNativeHeader("Authorization");
             if (authorization != null && authorization.startsWith("Bearer ")) {
                 String authorizationHeader = authorization.substring(7);
+                log.info("message전송!!");
                 Long userId = chatService.getUserId(authorizationHeader);
                 log.info("userId:{}",userId);
                 Long roomId = chatService.getRoomId(userId);
