@@ -13,10 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,7 +31,7 @@ public class UserController {
     private final UserService userService;
     private final JwtProvider jwtProvider;
 
-    @Operation(summary = "유저 상대 무디 조건 입력", description = "유저가 상대 무디 조건을 입력합니다" )
+    @Operation(summary = "유저 상대 무디 조건 입력", description = "유저가 상대 무디 조건을 입력합니다")
     @ApiResponses({
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -41,12 +39,12 @@ public class UserController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/prefer-info")
-    public ResponseEntity<Map<String, Prefer>> setUserPrefer (@RequestHeader("Authorization") String token, @RequestBody PreferInfoRequest preferInfoRequest) {
+    public ResponseEntity<Map<String, Prefer>> setUserPrefer(@RequestHeader("Authorization") String token, @RequestBody PreferInfoRequest preferInfoRequest) {
         Prefer prefer = userService.setUserPrefer(token, preferInfoRequest);
         return new ResponseEntity<>(Map.of("Prefer", prefer), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "유저 매칭 활성화 변경", description = "유저가 본인의 현재 매칭 상태를 반대로 변경합니다." )
+    @Operation(summary = "유저 매칭 활성화 변경", description = "유저가 본인의 현재 매칭 상태를 반대로 변경합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -119,13 +117,13 @@ public class UserController {
 
     @Operation(summary = "상대무디 정보 조회", description = "현재 채팅 중인 상대방의 정보를 상세조회합니다.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200"),
-        @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/partner")
-    public ResponseEntity<PartnerResponse> getPartnerInfo(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<PartnerResponse> getPartnerInfo(@RequestHeader("Authorization") String authorizationHeader) {
         PartnerResponse partnerInfo = userService.getPartnerInfo(authorizationHeader);
         return ResponseEntity.ok(partnerInfo);
     }
