@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -46,8 +47,9 @@ public class ChatController {
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     @SendTo("/sub/chat")
-    public void handleChatMessage(ChatMessageDto messageDto, @Header("Authorization") String authorizationHeader) {
+    public void handleChatMessage(ChatMessageDto messageDto, StompHeaderAccessor accessor) {
         try {
+            String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
             Long userId = chatService.getUserId(authorizationHeader);
             log.info("userId:{}",userId);
             Long roomId = chatService.getRoomId(userId);
