@@ -50,20 +50,22 @@ public class ChatController {
     public void handleChatMessage(ChatMessageDto messageDto, StompHeaderAccessor accessor) {
         try {
             String authorization = accessor.getFirstNativeHeader("Authorization");
-            String authorizationHeader = authorization.substring(7);
-            Long userId = chatService.getUserId(authorizationHeader);
-            log.info("userId:{}",userId);
-            Long roomId = chatService.getRoomId(userId);
-            log.info("roomId:{}",roomId);
-            chatRoomService.enterChatRoom(roomId);
-            RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
-            log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
-            log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
-            log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
-            redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
-            log.info("publish");
-            chatService.saveMessage(redisChatMessageDto);
+            if (authorization != null && authorization.startsWith("Bearer ")) {
+                String authorizationHeader = authorization.substring(7);
+                Long userId = chatService.getUserId(authorizationHeader);
+                log.info("userId:{}",userId);
+                Long roomId = chatService.getRoomId(userId);
+                log.info("roomId:{}",roomId);
+                chatRoomService.enterChatRoom(roomId);
+                RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
+                log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
+                log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
+                log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
+                redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
+                log.info("publish");
+                chatService.saveMessage(redisChatMessageDto);
 
+            }
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
