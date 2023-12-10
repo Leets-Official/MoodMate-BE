@@ -45,20 +45,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             AuthRole role = AuthRole.valueOf(authority);
 
             String accessToken = jwtProvider.generateToken(id, email, role, false);
-            String refreshToken = jwtProvider.generateToken(id, email, role, true);
-
-//            String redirectUrlWithToken = buildRedirectUrlWithToken(redirectUrl, accessToken);
-//            getRedirectStrategy().sendRedirect(request, response, redirectUrlWithToken);
-
-//            Map<String, String> tokenMap = new HashMap<>();
-//            tokenMap.put("accessToken", accessToken);
-//            tokenMap.put("refreshToken", refreshToken);
-//
-//            String tokenJson = objectMapper.writeValueAsString(tokenMap);
-//
-//            response.setContentType("application/json");
-//            response.setCharacterEncoding("UTF-8");
-//            response.getWriter().write(tokenJson);
+            String refreshToken = jwtProvider.generateToken(id, email, role, true);sHandler 주석 삭제)
 
             getRedirectStrategy().sendRedirect(request, response, redirectUrl + "?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
 
