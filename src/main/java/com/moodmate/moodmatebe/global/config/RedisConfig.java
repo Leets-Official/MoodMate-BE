@@ -2,6 +2,7 @@ package com.moodmate.moodmatebe.global.config;
 
 import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.redis.RedisSubscriber;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.ConnectionException;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.SerializationException;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -65,5 +67,9 @@ public class RedisConfig {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         return container;
+    }
+    @Bean
+    public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");
     }
 }
