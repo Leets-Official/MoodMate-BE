@@ -32,23 +32,29 @@ public class StompHandler implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         if (StompCommand.CONNECT == accessor.getCommand()) {
-            String jwt = accessor.getFirstNativeHeader("Authorization");
-            Long userIdFromToken = jwtProvider.getUserIdFromToken(jwt);
-            if (userIdFromToken != null) {
-                log.debug("userId: {}", userIdFromToken);
-                Optional<User> user = userRepository.findById(userIdFromToken);
-                if (!user.isPresent()) {
-                    // 예외를 던지지 않고 메시지에 에러 응답을 추가하고 계속 진행
-                    StompHeaderAccessor errorAccessor = StompHeaderAccessor.create(StompCommand.ERROR);
-                    errorAccessor.setHeader("message", "User not found");
-                    Message<?> errorMessage = MessageBuilder.createMessage(new byte[0], errorAccessor.getMessageHeaders());
-                    return errorMessage;
-                } else {
-                    return message;
+            String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                String jwt = authorizationHeader.substring(7); // "Bearer " 부분 제거
+                System.out.println("jwt: "+jwt);
+                Long userIdFromToken = jwtProvider.getUserIdFromToken(jwt);
+                if (userIdFromToken != null) {
+                    log.debug("userId: {}", userIdFromToken);
+                    System.out.println("userId :"+userIdFromToken);
+                    Optional<User> user = userRepository.findById(userIdFromToken);
+                    if (!user.isPresent()) {
+                        // 예외를 던지지 않고 메시지에 에러 응답을 추가하고 계속 진행
+                        StompHeaderAccessor errorAccessor = StompHeaderAccessor.create(StompCommand.ERROR);
+                        errorAccessor.setHeader("message", "User not found");
+                        Message<?> errorMessage = MessageBuilder.createMessage(new byte[0], errorAccessor.getMessageHeaders());
+                        return errorMessage;
+                    } else {
+                        return message;
+                    }
                 }
             }
         }
         return message;
     }
 }
+
 
