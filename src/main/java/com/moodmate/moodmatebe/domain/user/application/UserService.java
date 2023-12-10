@@ -1,6 +1,7 @@
 package com.moodmate.moodmatebe.domain.user.application;
 
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
+import com.moodmate.moodmatebe.domain.chat.dto.ChatUserDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
@@ -145,18 +146,14 @@ public class UserService {
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+    public ChatUserDto getChatPartnerInfo(String authorizationHeader) {
+        User otherUser = getOtherUser(authorizationHeader);
+        return new ChatUserDto(otherUser.getUserGender(), otherUser.getUserNickname());
+    }
 
     public PartnerResponse getPartnerInfo(String authorizationHeader) {
-        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
-        Long userId = jwtProvider.getUserIdFromToken(token);
-
-        Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
-        ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
-        Long otherUserId = (userId.equals(chatRoom.getUser1().getUserId())) ? chatRoom.getUser2().getUserId() : chatRoom.getUser1().getUserId();
-
-        User otherUser = userRepository.findById(otherUserId).orElseThrow(() -> new UserNotFoundException());
-
-        Optional<String> preferMoodByUserId = preferRepository.findPreferMoodByUserId(otherUserId);
+        User otherUser = getOtherUser(authorizationHeader);
+        Optional<String> preferMoodByUserId = preferRepository.findPreferMoodByUserId(otherUser.getUserId());
 
         return new PartnerResponse(
                 otherUser.getUserNickname(),
@@ -164,9 +161,21 @@ public class UserService {
                 otherUser.getUserGender(),
                 otherUser.getUserDepartment(),
                 otherUser.getYear(),
-                preferMoodByUserId.get()
+                preferMoodByUserId.orElse(null)
         );
     }
+
+    private User getOtherUser(String authorizationHeader) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
+        ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
+        Long otherUserId = (userId.equals(chatRoom.getUser1().getUserId())) ? chatRoom.getUser2().getUserId() : chatRoom.getUser1().getUserId();
+
+        return userRepository.findById(otherUserId).orElseThrow(() -> new UserNotFoundException());
+    }
+
 
     public String extractAccessTokenFromCookies(Cookie[] cookies) {
         String token = null;

@@ -83,15 +83,6 @@ public class ChatService {
         return chatPageableDto;
     }
 
-    public ChatUserDto getUserInfo(String authorizationHeader) {
-        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
-        Long userId = jwtProvider.getUserIdFromToken(token);
-        Optional<User> user = userRepository.findById(userId);
-
-        ChatUserDto chatUserDto = new ChatUserDto(user.get().getUserGender(), user.get().getUserNickname());
-        return chatUserDto;
-    }
-
     private List<RedisChatMessageDto> getRedisMessages(Long roomId, int size, int page) {
         int start = (page - 1) * size;
         int end = start + size - 1;
@@ -106,21 +97,19 @@ public class ChatService {
     }
 
     private void saveDbMessageToRedis(Long roomId, List<ChatMessage> dbMessageList) {
-        if (dbMessageList != null && !dbMessageList.isEmpty()) {
-            List<RedisChatMessageDto> redisChatMessageDtoList = new ArrayList<>();
-            for (ChatMessage dbMessage : dbMessageList) {
-                RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(
-                        dbMessage.getMessageId(),
-                        dbMessage.getUser().getUserId(),
-                        dbMessage.getRoom().getRoomId(),
-                        dbMessage.getContent(),
-                        dbMessage.getIsRead(),
-                        dbMessage.getCreatedAt()
-                );
-                redisChatMessageDtoList.add(redisChatMessageDto);
-            }
-            chatRedistemplate.opsForList().rightPushAll(roomId.toString(), redisChatMessageDtoList);
+        List<RedisChatMessageDto> redisChatMessageDtoList = new ArrayList<>();
+        for (ChatMessage dbMessage : dbMessageList) {
+            RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(
+                    dbMessage.getMessageId(),
+                    dbMessage.getUser().getUserId(),
+                    dbMessage.getRoom().getRoomId(),
+                    dbMessage.getContent(),
+                    dbMessage.getIsRead(),
+                    dbMessage.getCreatedAt()
+            );
+            redisChatMessageDtoList.add(redisChatMessageDto);
         }
+        chatRedistemplate.opsForList().rightPushAll(roomId.toString(), redisChatMessageDtoList);
     }
 
     public ChatRoom getChatRoom(Long roomId) {
@@ -140,12 +129,13 @@ public class ChatService {
             throw new UserNotFoundException();
         }
     }
-    public Long getUserId(String authorizationHeader){
+
+    public Long getUserId(String authorizationHeader) {
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         return jwtProvider.getUserIdFromToken(token);
     }
 
-    public Long getRoomId(Long userId){
+    public Long getRoomId(Long userId) {
         Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
         return activeChatRoomByUserId.get().getRoomId();
     }

@@ -5,6 +5,7 @@ import com.moodmate.moodmatebe.domain.chat.application.ChatRoomService;
 import com.moodmate.moodmatebe.domain.chat.application.ChatService;
 import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
+import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
 import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
@@ -40,6 +41,7 @@ public class ChatController {
     private final ChatService chatService;
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
+    private final UserService userService;
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
@@ -73,7 +75,7 @@ public class ChatController {
             @RequestHeader("Authorization") String authorizationHeader, @RequestParam int size, @RequestParam int page) throws JsonProcessingException {
         List<MessageDto> message = chatService.getMessage(roomId, size, page);
         ChatPageableDto pageable = chatService.getPageable(roomId, size, page);
-        ChatUserDto user = chatService.getUserInfo(authorizationHeader);
+        ChatUserDto user = userService.getChatPartnerInfo(authorizationHeader);
         ChatResponseDto responseDto = new ChatResponseDto(user, pageable, message);
         return ResponseEntity.ok(responseDto);
     }
