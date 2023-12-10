@@ -13,6 +13,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,11 @@ public class StompHandler implements ChannelInterceptor {
                 log.debug("userId: {}", userIdFromToken);
                 Optional<User> user = userRepository.findById(userIdFromToken);
                 if (!user.isPresent()) {
-                    throw new UserNotFoundException();
+                    // 예외를 던지지 않고 메시지에 에러 응답을 추가하고 계속 진행
+                    StompHeaderAccessor errorAccessor = StompHeaderAccessor.create(StompCommand.ERROR);
+                    errorAccessor.setHeader("message", "User not found");
+                    Message<?> errorMessage = MessageBuilder.createMessage(new byte[0], errorAccessor.getMessageHeaders());
+                    return errorMessage;
                 } else {
                     return message;
                 }
