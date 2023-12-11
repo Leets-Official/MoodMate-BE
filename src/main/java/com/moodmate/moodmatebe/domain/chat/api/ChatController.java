@@ -49,10 +49,9 @@ public class ChatController {
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     @SendTo("/sub/chat/{roomId}")
-    public void handleChatMessage(ChatMessageDto messageDto, HttpServletRequest request) {
+    public void handleChatMessage(ChatMessageDto messageDto, @Header("Authorization") String authorization) {
         log.info("aa");
         try {
-            String authorization = request.getHeader("Authorization");
             log.info("authorization:{}",authorization);
             if (authorization != null && authorization.startsWith(TOKEN_PREFIX)) {
                 String authorizationHeader = authorization.substring(7);
