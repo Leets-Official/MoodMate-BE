@@ -29,6 +29,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,14 +47,14 @@ public class ChatController {
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     @SendTo("/sub/chat/{roomId}")
-    public void handleChatMessage(ChatMessageDto messageDto, @CookieValue(name = "realAccessToken") String authorization) {
+    public void handleChatMessage(ChatMessageDto messageDto, @CookieValue(name = "realAccessToken") Cookie cookie) {
         log.info("aa");
         try {
+            String authorization = cookie.getValue();
             log.info("authorization:{}",authorization);
-            if (authorization != null && authorization.startsWith(TOKEN_PREFIX)) {
-                String authorizationHeader = authorization.substring(7);
+            if (authorization != null) {
                 log.info("message전송!!");
-                Long userId = chatService.getUserId(authorizationHeader);
+                Long userId = chatService.getUserId(authorization);
                 log.info("userId:{}",userId);
                 Long roomId = chatService.getRoomId(userId);
                 log.info("roomId:{}",roomId);
