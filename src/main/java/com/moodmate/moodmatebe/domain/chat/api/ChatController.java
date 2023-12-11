@@ -48,22 +48,23 @@ public class ChatController {
     @MessageMapping("/chat")
     @SendTo("/sub/chat/{roomId}")
     public void handleChatMessage(ChatMessageDto messageDto, StompHeaderAccessor accessor) {
+        log.info("aa");
         try {
             String authorization = accessor.getFirstNativeHeader("Authorization");
             if (authorization != null && authorization.startsWith("Bearer ")) {
                 String authorizationHeader = authorization.substring(7);
-                log.debug("message전송!!");
+                log.info("message전송!!");
                 Long userId = chatService.getUserId(authorizationHeader);
-                log.debug("controller -userId:{}",userId);
+                log.info("userId:{}",userId);
                 Long roomId = chatService.getRoomId(userId);
-                log.debug("roomId:{}",roomId);
+                log.info("roomId:{}",roomId);
                 chatRoomService.enterChatRoom(roomId);
                 RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
-                log.debug("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
-                log.debug("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
-                log.debug("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
+                log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
+                log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
+                log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
                 redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
-                log.debug("publish");
+                log.info("publish");
                 chatService.saveMessage(redisChatMessageDto);
 
             }
