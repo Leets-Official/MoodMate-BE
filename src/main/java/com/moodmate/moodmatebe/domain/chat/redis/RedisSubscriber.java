@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.JsonParsingException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,13 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
+            log.debug("onMessage");
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-            ChatMessageDto roomMessage = objectMapper.readValue(publishMessage, ChatMessageDto.class);
+            log.debug("!");
+            RedisChatMessageDto roomMessage = objectMapper.readValue(publishMessage, RedisChatMessageDto.class);
+            log.debug("!!");
             simpMessageSendingOperations.convertAndSend("/sub/chat/" + roomMessage.getRoomId(), roomMessage);
+            log.debug("!!!");
         } catch (JsonParseException e) {
             throw new JsonParsingException();
         } catch (JsonMappingException e) {
