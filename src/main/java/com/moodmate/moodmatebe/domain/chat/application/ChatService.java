@@ -43,14 +43,21 @@ public class ChatService {
     @Transactional
     public void saveMessage(RedisChatMessageDto chatMessageDto) {
         ChatRoom chatRoom = getChatRoom(chatMessageDto.getRoomId());
+        log.info("chatroom!");
         User user = getUser(chatMessageDto.getUserId());
-
+        log.info("user!");
         ChatMessage chatMessage = new ChatMessage(chatRoom, user, true, chatMessageDto.getContent(), LocalDateTime.now());
+        log.info("chatMessage:{}",chatMessage.getContent());
         messageRepository.save(chatMessage);
+        log.info("save!");
         Long messageId = messageRepository.getNextMessageId();
+        log.info(">??");
         chatMessageDto.setMessageId(messageId);
+        log.info("messageId:{}",messageId);
         chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
+        log.info("redis");
         chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
+        log.info("zz");
         chatRedistemplate.expire(chatMessageDto.getRoomId().toString(), TTL_SECONDS, TimeUnit.SECONDS);
     }
 
