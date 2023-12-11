@@ -133,8 +133,7 @@ public class ChatService {
     }
 
     public Long getUserId(String authorizationHeader) {
-        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
-        return jwtProvider.getUserIdFromToken(token);
+        return jwtProvider.getUserIdFromToken(authorizationHeader);
     }
 
     public Long getRoomId(Long userId) {
