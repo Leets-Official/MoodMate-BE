@@ -47,10 +47,10 @@ public class ChatController {
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     @SendTo("/sub/chat/{roomId}")
-    public void handleChatMessage(ChatMessageDto messageDto, @CookieValue(name = "realAccessToken") Cookie cookie) {
-        log.info("aa");
+    public void handleChatMessage(ChatMessageDto messageDto) {
+        log.info("dto:{}",messageDto.toString());
         try {
-            String authorization = cookie.getValue();
+            String authorization = messageDto.getToken().substring(TOKEN_PREFIX.length());
             log.info("authorization:{}",authorization);
             if (authorization != null) {
                 log.info("message전송!!");
