@@ -51,6 +51,7 @@ public class ChatController {
         log.info("aa");
         try {
             String authorization = accessor.getFirstNativeHeader("Authorization");
+            log.info("authorization:{}",authorization);
             if (authorization != null && authorization.startsWith("Bearer ")) {
                 String authorizationHeader = authorization.substring(7);
                 log.info("message전송!!");
