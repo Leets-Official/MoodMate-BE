@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moodmate.moodmatebe.domain.chat.application.MessageDtoConverter;
 import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.JsonParsingException;
@@ -21,19 +22,21 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class RedisSubscriber implements MessageListener {
     private final ObjectMapper objectMapper;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final SimpMessageSendingOperations simpMessageSendingOperations;
-
+    private final MessageDtoConverter messageDtoConverter;
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
-            log.debug("onMessage");
-            String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-            log.debug("!");
-            RedisChatMessageDto roomMessage = objectMapper.readValue(publishMessage, RedisChatMessageDto.class);
-            log.debug("!!");
+            System.out.println("!");
+            String publishMessage = redisTemplate.getStringSerializer().deserialize(message.getBody());
+            System.out.println("!!");
+            //ChatMessageDto roomMessage = objectMapper.readValue(publishMessage, ChatMessageDto.class);
+            RedisChatMessageDto redisChatMessage = objectMapper.readValue(publishMessage, RedisChatMessageDto.class);
+            System.out.println("!!!");
+            ChatMessageDto roomMessage = convertToChatMessageDto(redisChatMessage);
+            System.out.println("!!!");
             simpMessageSendingOperations.convertAndSend("/sub/chat/" + roomMessage.getRoomId(), roomMessage);
-            log.debug("!!!");
         } catch (JsonParseException e) {
             throw new JsonParsingException();
         } catch (JsonMappingException e) {
@@ -41,5 +44,10 @@ public class RedisSubscriber implements MessageListener {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+    private ChatMessageDto convertToChatMessageDto(RedisChatMessageDto redisChatMessage) {
+        // Implement conversion logic if needed
+        // Example: return new ChatMessageDto(redisChatMessage.getContent(), redisChatMessage.getSenderId(), ...);
+        return new ChatMessageDto(redisChatMessage.getContent(), redisChatMessage.getUserId());
     }
 }
