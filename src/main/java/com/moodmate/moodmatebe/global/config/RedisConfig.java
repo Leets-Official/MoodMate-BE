@@ -60,7 +60,7 @@ public class RedisConfig {
     }
     @Bean
     public ChannelTopic topic() {
-        return new ChannelTopic("/sub/chat");
+        return new ChannelTopic("/chatRoom");
     }
     @Bean
     public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory,
@@ -69,7 +69,6 @@ public class RedisConfig {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(listenerAdapter, channelTopic);
-        container.setConnectionFactory(connectionFactory);
         return container;
     }
     @Bean
