@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,16 +44,17 @@ public class ChatController {
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
     private final UserService userService;
+    private final static String TOKEN_PREFIX = "Bearer ";
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     @SendTo("/sub/chat/{roomId}")
-    public void handleChatMessage(ChatMessageDto messageDto, StompHeaderAccessor accessor) {
+    public void handleChatMessage(ChatMessageDto messageDto, HttpServletRequest request) {
         log.info("aa");
         try {
-            String authorization = accessor.getFirstNativeHeader("Authorization");
+            String authorization = request.getHeader("Authorization");
             log.info("authorization:{}",authorization);
-            if (authorization != null && authorization.startsWith("Bearer ")) {
+            if (authorization != null && authorization.startsWith(TOKEN_PREFIX)) {
                 String authorizationHeader = authorization.substring(7);
                 log.info("message전송!!");
                 Long userId = chatService.getUserId(authorizationHeader);
