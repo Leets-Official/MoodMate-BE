@@ -40,7 +40,7 @@ public class ChatService {
     private final JwtProvider jwtProvider;
     private final int TTL_SECONDS = 86400;
 
-    @Transactional
+    //@Transactional
     public void saveMessage(RedisChatMessageDto chatMessageDto) {
         ChatRoom chatRoom = getChatRoom(chatMessageDto.getRoomId());
         log.info("chatroom!");
