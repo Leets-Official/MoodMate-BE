@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    @Query("SELECT ch FROM chat_message ch WHERE ch.room = :room ORDER BY ch.createdAt")
+    @Query("SELECT ch FROM chat_message ch WHERE ch.room = :room ORDER BY ch.createdAt DESC")
     List<ChatMessage> findByRoomOrderByCreatedAt(@Param("room") ChatRoom room, Pageable pageable);
 
     int countByRoom(ChatRoom room);
