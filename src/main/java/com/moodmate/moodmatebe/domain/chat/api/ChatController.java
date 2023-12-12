@@ -26,6 +26,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -48,8 +49,8 @@ public class ChatController {
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
-    @SendTo("/sub/chat")
-    public void handleChatMessage(ChatMessageDto messageDto) {
+    @SendToUser("/sub/chat")
+    public String handleChatMessage(ChatMessageDto messageDto) {
         log.info("dto:{}",messageDto.toString());
         try {
             String authorization = messageDto.getToken().substring(TOKEN_PREFIX.length());
@@ -72,13 +73,14 @@ public class ChatController {
                 log.info("publish");
 
                 //chatService.saveMessage(redisChatMessageDto);
-
+                return messageDto.getContent();
             }
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
             throw new InvalidTokenException();
         }
+        return null;
     }
 
     @Operation(summary = "채팅내역 조회", description = "채팅내역을 조회합니다.")
