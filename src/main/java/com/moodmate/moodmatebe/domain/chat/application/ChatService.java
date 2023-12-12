@@ -73,7 +73,6 @@ public class ChatService {
             }
             saveDbMessageToRedis(roomId, dbMessageList);
         } else {
-            log.info("db에서 가져오기");
             ObjectMapper objectMapper = new ObjectMapper();
             for (int i = 0; i < redisMessageList.size(); i++) {
                 RedisChatMessageDto chatMessageDto = objectMapper.readValue(objectMapper.writeValueAsString(redisMessageList.get(i)), RedisChatMessageDto.class);
@@ -101,8 +100,11 @@ public class ChatService {
 
     private List<ChatMessage> getDbMessages(Long roomId, int size, int page) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        log.info("pageable");
         ChatRoom chatRoom = getChatRoom(roomId);
+        log.info("chatRoom:{}",chatRoom.getRoomId());
         Page<ChatMessage> byRoomIdOrderByCreatedAt = messageRepository.findByRoomOrderByCreatedAt(chatRoom, pageable);
+        log.info("byRoomIdOrderByCreatedAt");
         return byRoomIdOrderByCreatedAt.getContent();
     }
 
