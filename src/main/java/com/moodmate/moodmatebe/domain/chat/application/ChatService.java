@@ -110,10 +110,11 @@ public class ChatService {
         log.info("pageable");
         ChatRoom chatRoom = getChatRoom(roomId);
         log.info("chatRoom:{}",chatRoom.getRoomId());
-        Page<ChatMessage> byRoomIdOrderByCreatedAt = messageRepository.findByRoomOrderByCreatedAt(chatRoom, pageable);
+        List<ChatMessage> byRoomOrderByCreatedAt = messageRepository.findByRoomOrderByCreatedAt(chatRoom, pageable);
+        Collections.reverse(byRoomOrderByCreatedAt);
         log.info("byRoomIdOrderByCreatedAt ");
 
-        return byRoomIdOrderByCreatedAt.getContent();
+        return byRoomOrderByCreatedAt;
     }
 
     private void saveDbMessageToRedis(Long roomId, List<ChatMessage> dbMessageList) {
