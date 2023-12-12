@@ -53,7 +53,7 @@ public class ChatController {
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
-    public String handleChatMessage(ChatMessageDto messageDto) {
+    public void handleChatMessage(ChatMessageDto messageDto) {
         log.info("dto:{}",messageDto.toString());
         try {
             String authorization = messageDto.getToken().substring(TOKEN_PREFIX.length());
@@ -70,21 +70,16 @@ public class ChatController {
                 log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
                 log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
                 log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
-                simpMessageSendingOperations.convertAndSend("/sub/chat/" +roomId,messageDto);
-
-                //redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
+                //simpMessageSendingOperations.convertAndSend("/sub/chat/" +roomId,messageDto);
+                redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
                 log.info("publish");
-
-
                 chatService.saveMessage(redisChatMessageDto);
-                return messageDto.getContent();
             }
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
             throw new InvalidTokenException();
         }
-        return null;
     }
 
     @Operation(summary = "채팅내역 조회", description = "채팅내역을 조회합니다.")
