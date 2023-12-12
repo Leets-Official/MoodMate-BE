@@ -108,14 +108,6 @@ public class UserService {
             user.setYear(userInfoDto.getYear());
 
             userRepository.save(user);
-
-            String newAccessToken = jwtProvider.generateToken(userId, user.getUserEmail(), AuthRole.ROLE_USER, false);
-            String newRefreshToken = jwtProvider.generateToken(userId, user.getUserEmail(), AuthRole.ROLE_USER, true);
-
-            Map<String, String> tokens = new HashMap<>();
-            tokens.put("accessToken", newAccessToken);
-            tokens.put("refreshToken", newRefreshToken);
-
         } catch (ServiceException e) {
             throw e;
         } catch (IllegalArgumentException e) {
