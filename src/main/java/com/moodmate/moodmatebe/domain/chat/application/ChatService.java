@@ -70,7 +70,7 @@ public class ChatService {
                 MessageDto messageDto = messageDtoConverter.fromChatMessage(message);
                 messageList.add(messageDto);
             }
-            //saveDbMessageToRedis(roomId, dbMessageList);
+            saveDbMessageToRedis(roomId, dbMessageList);
         } else {
             ObjectMapper objectMapper = new ObjectMapper();
             for (int i = 0; i < redisMessageList.size(); i++) {
