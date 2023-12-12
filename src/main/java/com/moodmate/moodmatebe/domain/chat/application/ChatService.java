@@ -52,13 +52,13 @@ public class ChatService {
         log.info("chatMessage:{}",chatMessage.getContent());
         messageRepository.save(chatMessage);
         log.info("save");
-        //chatMessageDto.setMessageId(chatMessage.getMessageId());
-        //log.info("messageId:{}",chatMessage.getMessageId());
-        //chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
-        //log.info("redis");
-        //chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
-        //log.info("zz");
-        //chatRedistemplate.expire(chatMessageDto.getRoomId().toString(), TTL_SECONDS, TimeUnit.SECONDS);
+        chatMessageDto.setMessageId(chatMessage.getMessageId());
+        log.info("messageId:{}",chatMessage.getMessageId());
+        chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
+        log.info("redis");
+        chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
+        log.info("zz");
+        chatRedistemplate.expire(chatMessageDto.getRoomId().toString(), TTL_SECONDS, TimeUnit.SECONDS);
     }
 
     public List<MessageDto> getMessage(Long roomId, int size, int page) throws JsonProcessingException {

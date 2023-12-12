@@ -75,6 +75,7 @@ public class ChatController {
                 //redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
                 log.info("publish");
 
+
                 chatService.saveMessage(redisChatMessageDto);
                 return messageDto.getContent();
             }
