@@ -49,13 +49,11 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final UserService userService;
     private final SimpMessageSendingOperations simpMessageSendingOperations;
-    private final SimpUserRegistry simpUserRegistry;
     private final static String TOKEN_PREFIX = "Bearer ";
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
-    //@SendToUser("/sub/chat/{roomId}")
-    public String handleChatMessage(ChatMessageDto messageDto,@Header("simpSessionId") String sessionId) {
+    public String handleChatMessage(ChatMessageDto messageDto) {
         log.info("dto:{}",messageDto.toString());
         try {
             String authorization = messageDto.getToken().substring(TOKEN_PREFIX.length());
@@ -72,8 +70,7 @@ public class ChatController {
                 log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
                 log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
                 log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
-                //SimpMessageHeaderAccessor.getSessionAttributes(principal.getName()).get(SimpMessageHeaderAccessor.s)
-                simpMessageSendingOperations.convertAndSendToUser(sessionId,"/sub/chat/" +roomId,messageDto);
+                simpMessageSendingOperations.convertAndSend("/sub/chat/" +roomId,messageDto);
 
                 //redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
                 log.info("publish");
