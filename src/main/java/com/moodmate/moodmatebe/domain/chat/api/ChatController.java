@@ -25,14 +25,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.simp.user.SimpUser;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,12 +49,13 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final UserService userService;
     private final SimpMessageSendingOperations simpMessageSendingOperations;
+    private final SimpUserRegistry simpUserRegistry;
     private final static String TOKEN_PREFIX = "Bearer ";
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
-    @SendToUser("/sub/chat")
-    public String handleChatMessage(ChatMessageDto messageDto) {
+    //@SendToUser("/sub/chat/{roomId}")
+    public String handleChatMessage(ChatMessageDto messageDto,@Header("simpSessionId") String sessionId) {
         log.info("dto:{}",messageDto.toString());
         try {
             String authorization = messageDto.getToken().substring(TOKEN_PREFIX.length());
@@ -67,7 +72,8 @@ public class ChatController {
                 log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
                 log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
                 log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
-                //simpMessageSendingOperations.convertAndSend("/sub/chat/" +roomId,messageDto);
+                //SimpMessageHeaderAccessor.getSessionAttributes(principal.getName()).get(SimpMessageHeaderAccessor.s)
+                simpMessageSendingOperations.convertAndSendToUser(sessionId,"/sub/chat/" +roomId,messageDto);
 
                 //redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
                 log.info("publish");
