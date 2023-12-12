@@ -106,7 +106,7 @@ public class ChatService {
     }
 
     private List<ChatMessage> getDbMessages(Long roomId, int size, int page) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("created_at").ascending());
+        Pageable pageable = PageRequest.of(page - 1, size);
         log.info("pageable");
         ChatRoom chatRoom = getChatRoom(roomId);
         log.info("chatRoom:{}",chatRoom.getRoomId());
