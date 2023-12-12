@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,7 @@ public class ChatController {
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
     private final UserService userService;
+    private final SimpMessageSendingOperations simpMessageSendingOperations;
     private final static String TOKEN_PREFIX = "Bearer ";
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
@@ -64,10 +66,12 @@ public class ChatController {
                 log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
                 log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
                 log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
+                simpMessageSendingOperations.convertAndSend("/sub/chat/" +roomId,messageDto);
 
                 //redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
                 log.info("publish");
-                chatService.saveMessage(redisChatMessageDto);
+
+                //chatService.saveMessage(redisChatMessageDto);
 
             }
         } catch (ExpiredJwtException e) {

@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final MessageDtoConverter messageDtoConverter;
     private final JwtProvider jwtProvider;
+    private final SimpMessageSendingOperations simpMessageSendingOperations;
     private final int TTL_SECONDS = 86400;
 
     //@Transactional
@@ -54,9 +56,9 @@ public class ChatService {
         log.info("messageId:{}",chatMessage.getMessageId());
         chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
         log.info("redis");
-        chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
+        //chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
         log.info("zz");
-        chatRedistemplate.expire(chatMessageDto.getRoomId().toString(), TTL_SECONDS, TimeUnit.SECONDS);
+        //chatRedistemplate.expire(chatMessageDto.getRoomId().toString(), TTL_SECONDS, TimeUnit.SECONDS);
     }
 
     public List<MessageDto> getMessage(Long roomId, int size, int page) throws JsonProcessingException {
@@ -67,6 +69,7 @@ public class ChatService {
         if (redisMessageList == null || redisMessageList.isEmpty()) {
             log.info("redisnull");
             List<ChatMessage> dbMessageList = getDbMessages(roomId, size, page);
+            log.info("dbMessageList:{}",dbMessageList);
             for (ChatMessage message : dbMessageList) {
                 MessageDto messageDto = messageDtoConverter.fromChatMessage(message);
                 messageList.add(messageDto);
@@ -104,7 +107,8 @@ public class ChatService {
         ChatRoom chatRoom = getChatRoom(roomId);
         log.info("chatRoom:{}",chatRoom.getRoomId());
         Page<ChatMessage> byRoomIdOrderByCreatedAt = messageRepository.findByRoomOrderByCreatedAt(chatRoom, pageable);
-        log.info("byRoomIdOrderByCreatedAt");
+        log.info("byRoomIdOrderByCreatedAt ");
+
         return byRoomIdOrderByCreatedAt.getContent();
     }
 
