@@ -46,7 +46,7 @@ public class ChatController {
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
-    @SendTo("/sub/chat/{roomId}")
+    //@SendTo("/sub/chat")
     public void handleChatMessage(ChatMessageDto messageDto) {
         log.info("dto:{}",messageDto.toString());
         try {
@@ -60,11 +60,12 @@ public class ChatController {
                 log.info("roomId:{}",roomId);
                 chatRoomService.enterChatRoom(roomId);
                 RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
+                log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getMessageId());
                 log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
                 log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
                 log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
 
-                redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
+                //redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
                 log.info("publish");
                 chatService.saveMessage(redisChatMessageDto);
 
