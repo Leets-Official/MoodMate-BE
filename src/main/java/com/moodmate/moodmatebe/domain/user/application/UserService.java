@@ -92,7 +92,7 @@ public class UserService {
     }
 
     @Transactional
-    public Map<String, String> setUserInfo(String token, UserInfoRequest userInfoDto) {
+    public void setUserInfo(String token, UserInfoRequest userInfoDto) {
         try {
             if (token == null || userInfoDto == null) {
                 throw new InvalidInputValueException();
@@ -116,7 +116,6 @@ public class UserService {
             tokens.put("accessToken", newAccessToken);
             tokens.put("refreshToken", newRefreshToken);
 
-            return tokens;
         } catch (ServiceException e) {
             throw e;
         } catch (IllegalArgumentException e) {

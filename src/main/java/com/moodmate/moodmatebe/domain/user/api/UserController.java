@@ -83,7 +83,7 @@ public class UserController {
     })
     @PostMapping("/user-info")
     public ResponseEntity<Map<String, String>> setUserInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserInfoRequest userInfoDto) {
-        Map<String, String> tokens = userService.setUserInfo(jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader), userInfoDto);
+        userService.setUserInfo(jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader), userInfoDto);
         return new ResponseEntity<>(Map.of("message", "회원정보가 정상적으로 설정되었습니다."), HttpStatus.OK);
     }
 
