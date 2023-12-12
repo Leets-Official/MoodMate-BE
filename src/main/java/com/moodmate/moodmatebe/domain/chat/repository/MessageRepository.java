@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    @Query("SELECT ch FROM chat_message ch WHERE ch.room = :room ORDER BY ch.createdAt")
+    @Query("SELECT ch FROM chat_message ch WHERE ch.room = :room ORDER BY ch.createdAt DESC")
     Page<ChatMessage> findByRoomOrderByCreatedAt(@Param("room") ChatRoom room, Pageable pageable);
 
     int countByRoom(ChatRoom room);
