@@ -52,12 +52,12 @@ public class ChatService {
         log.info("chatMessage:{}",chatMessage.getContent());
         messageRepository.save(chatMessage);
         log.info("save");
-        chatMessageDto.setMessageId(chatMessage.getMessageId());
-        log.info("messageId:{}",chatMessage.getMessageId());
-        chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
-        log.info("redis");
+        //chatMessageDto.setMessageId(chatMessage.getMessageId());
+        //log.info("messageId:{}",chatMessage.getMessageId());
+        //chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
+        //log.info("redis");
         //chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
-        log.info("zz");
+        //log.info("zz");
         //chatRedistemplate.expire(chatMessageDto.getRoomId().toString(), TTL_SECONDS, TimeUnit.SECONDS);
     }
 
@@ -69,12 +69,15 @@ public class ChatService {
         if (redisMessageList == null || redisMessageList.isEmpty()) {
             log.info("redisnull");
             List<ChatMessage> dbMessageList = getDbMessages(roomId, size, page);
-            log.info("dbMessageList:{}",dbMessageList);
+            log.info("dbMessageList:{}",dbMessageList.toArray().toString());
             for (ChatMessage message : dbMessageList) {
+                log.info("!");
                 MessageDto messageDto = messageDtoConverter.fromChatMessage(message);
+                log.info("!!");
                 messageList.add(messageDto);
+                log.info("!!!");
             }
-            saveDbMessageToRedis(roomId, dbMessageList);
+            //saveDbMessageToRedis(roomId, dbMessageList);
         } else {
             ObjectMapper objectMapper = new ObjectMapper();
             for (int i = 0; i < redisMessageList.size(); i++) {
@@ -84,6 +87,7 @@ public class ChatService {
                 messageList.add(messageDto);
             }
         }
+        log.info("messageList:{}",messageList.toArray().toString());
         return messageList;
     }
 
