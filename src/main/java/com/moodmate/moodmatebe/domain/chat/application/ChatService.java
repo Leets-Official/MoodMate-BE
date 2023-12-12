@@ -61,8 +61,11 @@ public class ChatService {
 
     public List<MessageDto> getMessage(Long roomId, int size, int page) throws JsonProcessingException {
         List<MessageDto> messageList = new ArrayList<>();
+        log.info("1");
         List<RedisChatMessageDto> redisMessageList = getRedisMessages(roomId, size, page);
+        log.info("redisMessageList:{}",redisMessageList);
         if (redisMessageList == null || redisMessageList.isEmpty()) {
+            log.info("redisnull");
             List<ChatMessage> dbMessageList = getDbMessages(roomId, size, page);
             for (ChatMessage message : dbMessageList) {
                 MessageDto messageDto = messageDtoConverter.fromChatMessage(message);
@@ -70,9 +73,11 @@ public class ChatService {
             }
             saveDbMessageToRedis(roomId, dbMessageList);
         } else {
+            log.info("db에서 가져오기");
             ObjectMapper objectMapper = new ObjectMapper();
             for (int i = 0; i < redisMessageList.size(); i++) {
                 RedisChatMessageDto chatMessageDto = objectMapper.readValue(objectMapper.writeValueAsString(redisMessageList.get(i)), RedisChatMessageDto.class);
+                log.info("chatMessageDto:{}",chatMessageDto);
                 MessageDto messageDto = messageDtoConverter.fromRedisChatMessageDto(chatMessageDto);
                 messageList.add(messageDto);
             }
