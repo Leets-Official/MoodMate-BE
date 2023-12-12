@@ -11,8 +11,4 @@ public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
     Page<ChatMessage> findByRoomOrderByCreatedAt(ChatRoom room, Pageable pageable);
 
     int countByRoom(ChatRoom room);
-
-    @Query("SELECT COALESCE(MAX(m.messageId), 0) FROM chat_message m")
-    Long getNextMessageId();
-
 }

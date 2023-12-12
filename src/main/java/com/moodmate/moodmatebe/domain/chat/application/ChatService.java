@@ -49,11 +49,9 @@ public class ChatService {
         ChatMessage chatMessage = new ChatMessage(chatRoom, user, true, chatMessageDto.getContent(), LocalDateTime.now());
         log.info("chatMessage:{}",chatMessage.getContent());
         messageRepository.save(chatMessage);
-        log.info("save!");
-        Long messageId = messageRepository.getNextMessageId();
-        log.info(">??");
-        chatMessageDto.setMessageId(messageId);
-        log.info("messageId:{}",messageId);
+        log.info("save");
+        chatMessageDto.setMessageId(chatMessage.getMessageId());
+        log.info("messageId:{}",chatMessage.getMessageId());
         chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
         log.info("redis");
         chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
