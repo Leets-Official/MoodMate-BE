@@ -7,7 +7,6 @@ import com.moodmate.moodmatebe.global.jwt.AuthRole;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import com.moodmate.moodmatebe.global.oauth.domain.OAuthDetails;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
