@@ -50,9 +50,6 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 //            String redirectUrlWithToken = buildRedirectUrlWithToken(redirectUrl, accessToken);
 //            getRedirectStrategy().sendRedirect(request, response, redirectUrlWithToken);
 
-            response.setHeader("accessToken", accessToken);
-            response.setHeader("refreshToken", refreshToken);
-
 //            Map<String, String> tokenMap = new HashMap<>();
 //            tokenMap.put("accessToken", accessToken);
 //            tokenMap.put("refreshToken", refreshToken);
