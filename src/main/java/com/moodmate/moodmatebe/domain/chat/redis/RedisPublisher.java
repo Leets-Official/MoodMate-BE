@@ -1,6 +1,5 @@
 package com.moodmate.moodmatebe.domain.chat.redis;
 
-import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

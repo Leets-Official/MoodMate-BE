@@ -13,24 +13,15 @@ import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class ChatService {
     private final RedisTemplate<String, RedisChatMessageDto> chatRedistemplate;
@@ -39,55 +30,38 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final MessageDtoConverter messageDtoConverter;
     private final JwtProvider jwtProvider;
-    private final SimpMessageSendingOperations simpMessageSendingOperations;
-    private final int TTL_SECONDS = 86400;
+    //private final int TTL_SECONDS = 86400;
 
-    //@Transactional
     public void saveMessage(RedisChatMessageDto chatMessageDto) {
         ChatRoom chatRoom = getChatRoom(chatMessageDto.getRoomId());
-        log.info("chatroom!");
         User user = getUser(chatMessageDto.getUserId());
-        log.info("user!");
         ChatMessage chatMessage = new ChatMessage(chatRoom, user, true, chatMessageDto.getContent(), LocalDateTime.now());
-        log.info("chatMessage:{}",chatMessage.getContent());
         messageRepository.save(chatMessage);
-        log.info("save");
         chatMessageDto.setMessageId(chatMessage.getMessageId());
-        log.info("messageId:{}",chatMessage.getMessageId());
+        //Redis 설정
         //chatRedistemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatMessageDto.class));
-        //log.info("redis");
         //chatRedistemplate.opsForList().rightPush(chatMessageDto.getRoomId().toString(), chatMessageDto);
-        //log.info("zz");
         //chatRedistemplate.expire(chatMessageDto.getRoomId().toString(), TTL_SECONDS, TimeUnit.SECONDS);
     }
 
     public List<MessageDto> getMessage(Long roomId, int size, int page) throws JsonProcessingException {
         List<MessageDto> messageList = new ArrayList<>();
-        log.info("1");
         List<RedisChatMessageDto> redisMessageList = getRedisMessages(roomId, size, page);
-        log.info("redisMessageList:{}",redisMessageList);
         if (redisMessageList == null || redisMessageList.isEmpty()) {
-            log.info("redisnull");
             List<ChatMessage> dbMessageList = getDbMessages(roomId, size, page);
-            log.info("dbMessageList:{}",dbMessageList.toArray().toString());
             for (ChatMessage message : dbMessageList) {
-                log.info("!");
                 MessageDto messageDto = messageDtoConverter.fromChatMessage(message);
-                log.info("!!");
                 messageList.add(messageDto);
-                log.info("!!!");
             }
             //saveDbMessageToRedis(roomId, dbMessageList);
         } else {
             ObjectMapper objectMapper = new ObjectMapper();
             for (int i = 0; i < redisMessageList.size(); i++) {
                 RedisChatMessageDto chatMessageDto = objectMapper.readValue(objectMapper.writeValueAsString(redisMessageList.get(i)), RedisChatMessageDto.class);
-                log.info("chatMessageDto:{}",chatMessageDto);
                 MessageDto messageDto = messageDtoConverter.fromRedisChatMessageDto(chatMessageDto);
                 messageList.add(messageDto);
             }
         }
-        log.info("messageList:{}",messageList.toArray().toString());
         return messageList;
     }
 
@@ -107,12 +81,9 @@ public class ChatService {
 
     private List<ChatMessage> getDbMessages(Long roomId, int size, int page) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        log.info("pageable");
         ChatRoom chatRoom = getChatRoom(roomId);
-        log.info("chatRoom:{}",chatRoom.getRoomId());
         List<ChatMessage> byRoomOrderByCreatedAt = messageRepository.findByRoomOrderByCreatedAt(chatRoom, pageable);
         Collections.reverse(byRoomOrderByCreatedAt);
-        log.info("byRoomIdOrderByCreatedAt ");
 
         return byRoomOrderByCreatedAt;
     }
