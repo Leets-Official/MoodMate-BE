@@ -30,17 +30,12 @@ public class OAuthDetailService extends DefaultOAuth2UserService {
         String email = attr.getEmail();
         String name = attr.getName();
 
-        System.out.println("Google Login - Email: " + email + ", Name: " + name);
-
         User user = userRepository.findByUserEmail(email).orElse(null);
         if (user == null) {
             User createdUser = User.builder()
                     .userEmail(email)
                     .userMatchActive(true)
                     .build();
-
-            System.out.println("UserEmail : " + createdUser.getUserEmail());
-            System.out.println("UserIsActivate : " + createdUser.getUserMatchActive());
 
             user = userRepository.save(createdUser);
 

@@ -14,7 +14,6 @@ public class OAuthFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        logger.debug("OAuth login failed: " + exception.getMessage());
         exception.printStackTrace();
 
         super.onAuthenticationFailure(request, response, exception);
