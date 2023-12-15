@@ -51,7 +51,6 @@ public class ChatController {
             chatRoomService.enterChatRoom(roomId);
             RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
             redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
-
             chatService.saveMessage(redisChatMessageDto);
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
