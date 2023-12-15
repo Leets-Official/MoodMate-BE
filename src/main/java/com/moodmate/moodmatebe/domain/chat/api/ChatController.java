@@ -7,6 +7,7 @@ import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
+import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
 import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,21 +38,21 @@ public class ChatController {
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
     private final UserService userService;
-    private final static String TOKEN_PREFIX = "Bearer ";
+    private final JwtProvider jwtProvider;
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     public void handleChatMessage(ChatMessageDto messageDto) {
         try {
-            String authorization = messageDto.getToken().substring(TOKEN_PREFIX.length());
-            if (authorization != null) {
-                Long userId = chatService.getUserId(authorization);
-                Long roomId = chatService.getRoomId(userId);
-                chatRoomService.enterChatRoom(roomId);
-                RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
-                redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
-                chatService.saveMessage(redisChatMessageDto);
-            }
+            String authorization = jwtProvider.getTokenFromAuthorizationHeader(messageDto.getToken());
+            Long userId = chatService.getUserId(authorization);
+            Long roomId = chatService.getRoomId(userId);
+
+            chatRoomService.enterChatRoom(roomId);
+            RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
+            redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
+
+            chatService.saveMessage(redisChatMessageDto);
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
