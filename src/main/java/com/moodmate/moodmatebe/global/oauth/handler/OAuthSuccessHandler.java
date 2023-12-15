@@ -1,6 +1,5 @@
 package com.moodmate.moodmatebe.global.oauth.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import com.moodmate.moodmatebe.global.jwt.AuthRole;
