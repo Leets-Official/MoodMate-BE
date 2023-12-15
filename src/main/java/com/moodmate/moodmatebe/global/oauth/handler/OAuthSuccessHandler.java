@@ -39,7 +39,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             AuthRole role = AuthRole.valueOf(authority);
 
             String accessToken = jwtProvider.generateToken(id, email, role, false);
-            String refreshToken = jwtProvider.generateToken(id, email, role, true);sHandler 주석 삭제)
+            String refreshToken = jwtProvider.generateToken(id, email, role, true);
 
             getRedirectStrategy().sendRedirect(request, response, redirectUrl + "?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
 
