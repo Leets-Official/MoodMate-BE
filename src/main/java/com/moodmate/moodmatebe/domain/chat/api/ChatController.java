@@ -5,45 +5,81 @@ import com.moodmate.moodmatebe.domain.chat.application.ChatRoomService;
 import com.moodmate.moodmatebe.domain.chat.application.ChatService;
 import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
+import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
+import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
+import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.simp.user.SimpUser;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-
+@Slf4j
 public class ChatController {
     private final ChatService chatService;
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
+    private final UserService userService;
+    private final SimpMessageSendingOperations simpMessageSendingOperations;
+    private final static String TOKEN_PREFIX = "Bearer ";
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
-    @SendTo("/sub/chat")
-    public void handleChatMessage(ChatMessageDto messageDto, @Header("Authorization") String authorizationHeader) {
-        Long userId = chatService.getUserId(authorizationHeader);
-        Long roomId = chatService.getRoomId(userId);
-        chatRoomService.enterChatRoom(roomId);
-        RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
-        redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
-        chatService.saveMessage(redisChatMessageDto);
+    public void handleChatMessage(ChatMessageDto messageDto) {
+        log.info("dto:{}",messageDto.toString());
+        try {
+            String authorization = messageDto.getToken().substring(TOKEN_PREFIX.length());
+            log.info("authorization:{}",authorization);
+            if (authorization != null) {
+                log.info("message전송!!");
+                Long userId = chatService.getUserId(authorization);
+                log.info("userId:{}",userId);
+                Long roomId = chatService.getRoomId(userId);
+                log.info("roomId:{}",roomId);
+                chatRoomService.enterChatRoom(roomId);
+                RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
+                log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getMessageId());
+                log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
+                log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
+                log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
+                //simpMessageSendingOperations.convertAndSend("/sub/chat/" +roomId,messageDto);
+                redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
+                log.info("publish");
+                chatService.saveMessage(redisChatMessageDto);
+            }
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
+            throw new InvalidTokenException();
+        }
     }
 
     @Operation(summary = "채팅내역 조회", description = "채팅내역을 조회합니다.")
@@ -53,7 +89,7 @@ public class ChatController {
             @RequestHeader("Authorization") String authorizationHeader, @RequestParam int size, @RequestParam int page) throws JsonProcessingException {
         List<MessageDto> message = chatService.getMessage(roomId, size, page);
         ChatPageableDto pageable = chatService.getPageable(roomId, size, page);
-        ChatUserDto user = chatService.getUserInfo(authorizationHeader);
+        ChatUserDto user = userService.getChatPartnerInfo(authorizationHeader);
         ChatResponseDto responseDto = new ChatResponseDto(user, pageable, message);
         return ResponseEntity.ok(responseDto);
     }
@@ -66,8 +102,8 @@ public class ChatController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PatchMapping("/chat")
-    ResponseEntity<Void> closeChatRoom(@RequestParam Long roomId) {
-        chatRoomService.exitChatRoom(roomId);
+    ResponseEntity<Void> closeChatRoom(@RequestHeader("Authorization") String authorizationHeader) {
+        chatRoomService.exitChatRoom(authorizationHeader);
         return ResponseEntity.ok().build();
     }
 }
