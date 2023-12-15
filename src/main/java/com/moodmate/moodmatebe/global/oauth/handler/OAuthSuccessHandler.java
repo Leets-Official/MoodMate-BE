@@ -28,8 +28,6 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println("CustomAuthenticationSuccessHandler - onAuthenticationSuccess method is called");
-
         try {
             OAuthDetails oAuthDetails = (OAuthDetails) authentication.getPrincipal();
             Long id = oAuthDetails.getId();
@@ -42,11 +40,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
             getRedirectStrategy().sendRedirect(request, response, redirectUrl + "?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
 
-            System.out.println("accessToken : " + accessToken);
-            System.out.println("refreshToken : " + refreshToken);
-            System.out.println("CustomAuthenticationSuccessHandler - Successfully completed the onAuthenticationSuccess method");
         } catch (Exception e) {
-            System.out.println("Exception in loadUser: " + e.getMessage());
             e.printStackTrace();
 
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
