@@ -27,6 +27,7 @@ public class MyPageService {
         Prefer prefer = preferRepository.findByUser(user).orElseThrow(() -> new PreferNotFoundException());
 
         return MyPageResponse.builder()
+                .userGender(user.getUserGender())
                 .userNickname(user.getUserNickname())
                 .year(user.getYear())
                 .userDepartment(user.getUserDepartment())
