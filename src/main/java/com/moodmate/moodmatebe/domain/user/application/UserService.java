@@ -141,7 +141,11 @@ public class UserService {
 
     public ChatUserDto getChatPartnerInfo(String authorizationHeader) {
         User otherUser = getOtherUser(authorizationHeader);
-        return new ChatUserDto(otherUser.getUserGender(), otherUser.getUserNickname());
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
+        ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
+        return new ChatUserDto(otherUser.getUserGender(), otherUser.getUserNickname(), chatRoom.getRoomActive());
     }
 
     public PartnerResponse getPartnerInfo(String authorizationHeader) {
