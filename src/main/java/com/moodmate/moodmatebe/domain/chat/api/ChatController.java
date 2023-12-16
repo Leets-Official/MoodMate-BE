@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
@@ -64,14 +65,14 @@ public class ChatController {
     ResponseEntity<ChatResponseDto> getChatMessage(
             @RequestParam Long roomId,
             @RequestHeader("Authorization") String authorizationHeader, @RequestParam int size, @RequestParam int page) throws JsonProcessingException {
-        List<MessageDto> message = chatService.getMessage(roomId, size, page);
-        ChatPageableDto pageable = chatService.getPageable(roomId, size, page);
+        Long validRoomId = chatRoomService.validateRoomIdAuthorization(roomId, authorizationHeader);
+        List<MessageDto> message = chatService.getMessage(validRoomId, size, page);
+        ChatPageableDto pageable = chatService.getPageable(validRoomId, size, page);
         ChatUserDto user = userService.getChatPartnerInfo(authorizationHeader);
         ChatResponseDto responseDto = new ChatResponseDto(user, pageable, message);
         return ResponseEntity.ok(responseDto);
     }
-
-    @Operation(summary = "채팅 종료", description = "채팅을 종료합니다.")
+    @Operation(summary = "채팅ㄱ 종료", description = "채팅을 종료합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),

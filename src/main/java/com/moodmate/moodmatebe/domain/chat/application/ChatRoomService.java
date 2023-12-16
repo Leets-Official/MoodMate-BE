@@ -2,6 +2,7 @@ package com.moodmate.moodmatebe.domain.chat.application;
 
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
+import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomUnauthorizedException;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisSubscriber;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.ConnectionException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
@@ -41,6 +42,17 @@ public class ChatRoomService {
             ChatRoom chatRoom = optionalChatRoom.get();
             chatRoom.setRoomActive(false);
             roomRepository.save(chatRoom);
+        }
+    }
+    public Long validateRoomIdAuthorization(Long roomId, String authorizationHeader){
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        Optional<ChatRoom> optionalChatRoom = roomRepository.findActiveChatRoomByUserId(userId);
+        if (optionalChatRoom.isPresent() && (optionalChatRoom.get().getRoomId().equals(roomId))) {
+            return optionalChatRoom.get().getRoomId();
+        }
+        else{
+            throw new ChatRoomUnauthorizedException();
         }
     }
 }

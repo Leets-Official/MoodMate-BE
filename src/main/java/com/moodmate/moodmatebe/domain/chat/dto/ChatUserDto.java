@@ -9,4 +9,5 @@ import lombok.Getter;
 public class ChatUserDto {
     private Gender gender;
     private String nickname;
+    private Boolean roomActive;
 }

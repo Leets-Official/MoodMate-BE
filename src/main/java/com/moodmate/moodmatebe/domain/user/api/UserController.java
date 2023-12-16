@@ -3,10 +3,7 @@ package com.moodmate.moodmatebe.domain.user.api;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
-import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
-import com.moodmate.moodmatebe.domain.user.dto.PartnerResponse;
-import com.moodmate.moodmatebe.domain.user.dto.PreferInfoRequest;
-import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
+import com.moodmate.moodmatebe.domain.user.dto.*;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -114,11 +111,10 @@ public class UserController {
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     @PostMapping("/refresh")
-    public ResponseEntity<Void> refreshAccessToken(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
-        Map<String, String> newTokens = userService.refreshAccessToken(refreshToken);
-        response.setHeader("accessToken", newTokens.get("accessToken"));
-        response.setHeader("refreshToken", newTokens.get("refreshToken"));
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Map<String, TokenResponse>> refreshAccessToken(@RequestBody Map<String, String> tokenRequest) {
+        String refreshToken = tokenRequest.get("refreshToken");
+        TokenResponse tokenResponse = userService.refreshAccessToken(refreshToken);
+        return new ResponseEntity<>(Map.of("tokenResponse", tokenResponse), HttpStatus.OK);
     }
 
     @Operation(summary = "상대무디 정보 조회", description = "현재 채팅 중인 상대방의 정보를 상세조회합니다.")

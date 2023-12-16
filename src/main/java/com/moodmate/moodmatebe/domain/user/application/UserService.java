@@ -7,10 +7,7 @@ import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
-import com.moodmate.moodmatebe.domain.user.dto.MainPageResponse;
-import com.moodmate.moodmatebe.domain.user.dto.PartnerResponse;
-import com.moodmate.moodmatebe.domain.user.dto.PreferInfoRequest;
-import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
+import com.moodmate.moodmatebe.domain.user.dto.*;
 import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
@@ -20,7 +17,6 @@ import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import com.moodmate.moodmatebe.global.jwt.AuthRole;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,7 +119,7 @@ public class UserService {
     }
 
     @Transactional
-    public Map<String, String> refreshAccessToken(String refreshToken) {
+    public TokenResponse refreshAccessToken(String refreshToken) {
         try {
             jwtProvider.validateToken(refreshToken, true);
             Claims claims = jwtProvider.parseClaims(refreshToken, true);
@@ -135,20 +131,21 @@ public class UserService {
             String newAccessToken = jwtProvider.generateToken(userId, userEmail, role, false);
             String newRefreshToken = jwtProvider.generateToken(userId, userEmail, role, true);
 
-            Map<String, String> tokens = new HashMap<>();
-            tokens.put("accessToken", newAccessToken);
-            tokens.put("refreshToken", newRefreshToken);
-
-            return tokens;
+            return new TokenResponse(newAccessToken, newRefreshToken);
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
             throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+
     public ChatUserDto getChatPartnerInfo(String authorizationHeader) {
         User otherUser = getOtherUser(authorizationHeader);
-        return new ChatUserDto(otherUser.getUserGender(), otherUser.getUserNickname());
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
+        ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
+        return new ChatUserDto(otherUser.getUserGender(), otherUser.getUserNickname(), chatRoom.getRoomActive());
     }
 
     public PartnerResponse getPartnerInfo(String authorizationHeader) {
@@ -174,21 +171,5 @@ public class UserService {
         Long otherUserId = (userId.equals(chatRoom.getUser1().getUserId())) ? chatRoom.getUser2().getUserId() : chatRoom.getUser1().getUserId();
 
         return userRepository.findById(otherUserId).orElseThrow(() -> new UserNotFoundException());
-    }
-
-
-    public String extractAccessTokenFromCookies(Cookie[] cookies) {
-        String token = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                System.out.println(cookie.getName());
-                System.out.println(cookie.getValue());
-                if (cookie.getName().equals("accessToken")) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
-        return token;
     }
 }
