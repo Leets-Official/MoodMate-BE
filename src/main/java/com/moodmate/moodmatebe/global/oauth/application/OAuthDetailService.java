@@ -1,6 +1,5 @@
 package com.moodmate.moodmatebe.global.oauth.application;
 
-import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
@@ -40,11 +39,12 @@ public class OAuthDetailService extends DefaultOAuth2UserService {
                     .userMatchActive(true)
                     .build();
 
-            System.out.println("UserId : " + createdUser.getUserId());
             System.out.println("UserEmail : " + createdUser.getUserEmail());
             System.out.println("UserIsActivate : " + createdUser.getUserMatchActive());
 
             user = userRepository.save(createdUser);
+
+            System.out.println("UserId : " + createdUser.getUserId());
         }
 
         return new OAuthDetails(user.getUserId(), user.getUserEmail(), attr.getAttributes());
