@@ -41,6 +41,14 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());
 
+        // 여기서 userId로 prefer 테이블에 해당하는 값이 있는지 체크하고 있을 경우 delete하고 새로 집어넣음
+        // 중복되는 prefer을 일시적으로 막을 수 있음
+        // 근본적 해결책은 아님
+        Optional<Prefer> prefer2 = preferRepository.findByUser(user);
+        if(prefer2.isPresent()){
+            preferRepository.deleteById(prefer2.get().getPreferId());
+        }
+
         Prefer prefer = new Prefer();
 
         prefer.setUser(user);
