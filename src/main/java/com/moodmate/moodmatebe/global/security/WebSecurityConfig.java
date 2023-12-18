@@ -52,6 +52,8 @@ public class WebSecurityConfig {
                 .requestMatchers("/mypage/**").hasAuthority(AuthRole.ROLE_USER.getRole())
                 .requestMatchers("/users/**").hasAuthority(AuthRole.ROLE_USER.getRole())
                 .requestMatchers("/chat/**").hasAuthority(AuthRole.ROLE_USER.getRole())
+                .requestMatchers("/oauth/**").permitAll()
+                .requestMatchers("/login/**").permitAll()
 
                 .anyRequest().authenticated()
                 .and()
