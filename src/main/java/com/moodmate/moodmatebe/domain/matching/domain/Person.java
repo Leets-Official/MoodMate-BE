@@ -25,6 +25,9 @@ public class Person {
     private boolean dontCareSameDepartment; // 같은 학과 선호 여부, 기본적으로 false로 초기화
 
     public Person(User user, Prefer prefer) {
+        this.user = user;
+        this.prefer = prefer;
+        this.gender = user.getUserGender();
         this.name = user.getUserNickname();
         this.mood = prefer.getPreferMood();
         this.minYear = prefer.getPreferYearMin();
