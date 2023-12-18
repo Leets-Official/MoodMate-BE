@@ -1,6 +1,7 @@
 package com.moodmate.moodmatebe.global.security;
 
 import com.moodmate.moodmatebe.global.filter.ExceptionHandleFilter;
+import com.moodmate.moodmatebe.global.jwt.AuthRole;
 import com.moodmate.moodmatebe.global.jwt.JwtFilter;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import com.moodmate.moodmatebe.global.oauth.application.OAuthDetailService;
@@ -48,7 +49,9 @@ public class WebSecurityConfig {
                 .requestMatchers(CorsUtils::isCorsRequest).permitAll()
 
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                .requestMatchers("/**").permitAll()
+                .requestMatchers("/mypage/**").hasAuthority(AuthRole.ROLE_USER.getRole())
+                .requestMatchers("/users/**").hasAuthority(AuthRole.ROLE_USER.getRole())
+                .requestMatchers("/chat/**").hasAuthority(AuthRole.ROLE_USER.getRole())
 
                 .anyRequest().authenticated()
                 .and()
