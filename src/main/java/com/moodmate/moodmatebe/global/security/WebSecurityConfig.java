@@ -49,11 +49,7 @@ public class WebSecurityConfig {
                 .requestMatchers(CorsUtils::isCorsRequest).permitAll()
 
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                .requestMatchers("/mypage/**").hasAuthority(AuthRole.ROLE_USER.getRole())
-                .requestMatchers("/users/**").hasAuthority(AuthRole.ROLE_USER.getRole())
-                .requestMatchers("/chat/**").hasAuthority(AuthRole.ROLE_USER.getRole())
-                .requestMatchers("/oauth/**").permitAll()
-                .requestMatchers("/login/**").permitAll()
+                .requestMatchers("/**").permitAll()
 
                 .anyRequest().authenticated()
                 .and()
