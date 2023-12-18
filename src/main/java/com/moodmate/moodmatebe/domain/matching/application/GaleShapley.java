@@ -81,15 +81,18 @@ public class GaleShapley {
 
     // 모든 남자가 첫 번째 선호도의 여성에게 고백하는 메서드
     private void firstPropose() {
+        System.out.println("모든 남자가 첫 번째 선호도의 여성에게 고백합니다.");
         for (Man man : men.values()) {
             Woman woman = women.get(man.getPreferences().get(0));
             woman.getProposals().add(man);
             man.getProposed().add(woman);  // 남자가 고백한 여성을 기록
+            System.out.println(man.getName() + "이(가) " + woman.getName() + "에게 고백했습니다.");
         }
     }
 
     // 각 여성이 고백한 남자 중 가장 선호하는 남자를 선택하는 메소드
     private void firstAcceptOrReject() {
+        System.out.println("각 여성이 고백한 남자 중 가장 선호하는 남자를 선택합니다.");
         for (Woman woman : women.values()) {
             if (!woman.getProposals().isEmpty()) {
                 Man chosenMan = woman.getProposals().get(0);
@@ -103,6 +106,7 @@ public class GaleShapley {
                 woman.setPartner(chosenMan.getName());
                 chosenMan.setEngaged(true);
                 engagedCount++;
+                System.out.println(woman.getName() + "이(가) " + chosenMan.getName() + "을(를) 선택했습니다.");
 
                 woman.getProposals().remove(chosenMan);
                 for (Man man : woman.getProposals()) {
