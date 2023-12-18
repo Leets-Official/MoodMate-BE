@@ -23,5 +23,5 @@ public interface PreferRepository extends JpaRepository<Prefer, Long> {
             "INNER JOIN p.user u " +
             "WHERE u.userMatchActive = true " +
             "AND u.userGender = :gender")
-    List<Prefer> findByUserMatchActiveAndGenderTrue(Gender gender);
+    List<Prefer> findByUserMatchActiveAndGenderTrue(@Param("gender") Gender gender);
 }
