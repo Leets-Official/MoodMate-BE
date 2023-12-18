@@ -52,7 +52,6 @@ public class MatchingService {
         Map<String, Man> m = convertListToMap(men);
         Map<String, Woman> w = convertListToMap(women);
 
-
         Map<String, Map<String, Man>> menGroups = groupByMood(m);
         Map<String, Map<String, Woman>> womenGroups = groupByMood(w);
 
@@ -62,9 +61,10 @@ public class MatchingService {
             Map<String, Man> menGroup = menGroups.get(mood);
             Map<String, Woman> womenGroup = womenGroups.get(mood);
 
-            if (womenGroup == null) {
-                continue; // 여자 그룹이 없으면 건너뛰기
-            }
+            System.out.println();
+            System.out.println("====================================");
+            System.out.println(mood + " 그룹 매칭을 시작합니다.");
+            System.out.println("====================================");
 
             // 각 그룹의 남자 목록 출력
             System.out.println(mood + " 그룹 남자:");
@@ -80,16 +80,13 @@ public class MatchingService {
 
             // 각 남자의 선호도 목록 생성
             for (Man man : menGroup.values()) {
-
                 List<String> mainPreferences = new ArrayList<>();
                 List<String> secondaryPreferences = new ArrayList<>();
                 List<String> finalPreferences = new ArrayList<>();
 
                 // 여자 그룹을 순회하면서 남자의 선호도를 결정
                 for (Woman woman : womenGroup.values()) {
-
                     if (!man.isDontCareSameDepartment() && man.getDepartment().equals(woman.getDepartment())) {
-
                         finalPreferences.add(woman.getName());
 
                     } else if (woman.getYear() >= man.getMinYear() && woman.getYear() <= man.getMaxYear()) {
