@@ -22,7 +22,5 @@ public class OAuthController {
     })
     @GetMapping("/callback/google")
     public void googleCallback() {
-        // Auto-generated method by Spring Security
-        // OAuth 인증 완료 후 호출되는 api
     }
 }

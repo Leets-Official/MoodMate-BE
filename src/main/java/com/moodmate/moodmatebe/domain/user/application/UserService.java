@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -92,7 +90,7 @@ public class UserService {
     }
 
     @Transactional
-    public Map<String, String> setUserInfo(String token, UserInfoRequest userInfoDto) {
+    public void setUserInfo(String token, UserInfoRequest userInfoDto) {
         try {
             if (token == null || userInfoDto == null) {
                 throw new InvalidInputValueException();
@@ -108,15 +106,6 @@ public class UserService {
             user.setYear(userInfoDto.getYear());
 
             userRepository.save(user);
-
-            String newAccessToken = jwtProvider.generateToken(userId, user.getUserEmail(), AuthRole.ROLE_USER, false);
-            String newRefreshToken = jwtProvider.generateToken(userId, user.getUserEmail(), AuthRole.ROLE_USER, true);
-
-            Map<String, String> tokens = new HashMap<>();
-            tokens.put("accessToken", newAccessToken);
-            tokens.put("refreshToken", newRefreshToken);
-
-            return tokens;
         } catch (ServiceException e) {
             throw e;
         } catch (IllegalArgumentException e) {

@@ -27,9 +27,7 @@ import java.util.Map;
 @RequestMapping("/mypage")
 public class MyPageController {
 
-    private final UserService userService;
     private final MyPageService myPageService;
-    private final JwtProvider jwtProvider;
 
     @Operation(summary = "마이 페이지 불러오기", description = "유저의 마이 페이지를 불러옵니다.")
     @ApiResponses({
