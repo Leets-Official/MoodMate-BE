@@ -9,6 +9,7 @@ import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.*;
 import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
+import com.moodmate.moodmatebe.domain.user.exception.PreferNotFoundException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
@@ -179,5 +180,22 @@ public class UserService {
         Long otherUserId = (userId.equals(chatRoom.getUser1().getUserId())) ? chatRoom.getUser2().getUserId() : chatRoom.getUser1().getUserId();
 
         return userRepository.findById(otherUserId).orElseThrow(() -> new UserNotFoundException());
+    }
+
+    @Transactional
+    public void updateUserInformation(String authorizationHeader, UpdateUserRequest updateUserRequest) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        Prefer prefer = preferRepository.findByUser(user).orElseThrow(PreferNotFoundException::new);
+
+        user.setUserKeywords(updateUserRequest.getUserKeywords());
+        prefer.setPreferYearMin(updateUserRequest.getPreferYearMin());
+        prefer.setPreferYearMax(updateUserRequest.getPreferYearMax());
+        prefer.setPreferMood(updateUserRequest.getPreferMood());
+
+        userRepository.save(user);
     }
 }
