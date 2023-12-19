@@ -1,7 +1,6 @@
 package com.moodmate.moodmatebe.global.security;
 
 import com.moodmate.moodmatebe.global.filter.ExceptionHandleFilter;
-import com.moodmate.moodmatebe.global.jwt.AuthRole;
 import com.moodmate.moodmatebe.global.jwt.JwtFilter;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import com.moodmate.moodmatebe.global.oauth.application.OAuthDetailService;
