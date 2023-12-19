@@ -98,9 +98,6 @@ public class UserController {
     })
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(@CookieValue("refreshToken") String oldToken, HttpServletResponse res) {
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setMaxAge(0);
-        res.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 
