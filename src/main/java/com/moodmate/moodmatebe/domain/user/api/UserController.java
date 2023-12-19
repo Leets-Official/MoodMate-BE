@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Tag(name = "사용자")
@@ -125,5 +126,11 @@ public class UserController {
     public ResponseEntity<PartnerResponse> getPartnerInfo(@RequestHeader("Authorization") String authorizationHeader){
         PartnerResponse partnerInfo = userService.getPartnerInfo(authorizationHeader);
         return ResponseEntity.ok(partnerInfo);
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<Map<String, Object>> updateUserInformation(@RequestHeader("Authorization") String token, @RequestBody UpdateUserRequest updateUserRequest) {
+        userService.updateUserInformation(token, updateUserRequest);
+        return new ResponseEntity<>(Map.of("updateResponse", updateUserRequest), HttpStatus.OK);
     }
 }
