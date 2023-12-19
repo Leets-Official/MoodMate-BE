@@ -38,8 +38,6 @@ public class OAuthDetailService extends DefaultOAuth2UserService {
                     .build();
 
             user = userRepository.save(createdUser);
-
-            System.out.println("UserId : " + createdUser.getUserId());
         }
 
         return new OAuthDetails(user.getUserId(), user.getUserEmail(), attr.getAttributes());
