@@ -137,9 +137,10 @@ public class GaleShapley {
     }
 
     public void printCouples() {
-        System.out.println("----------------------------------------");
-        System.out.println("--------------- 최종결과 ---------------");
-        System.out.println("----------------------------------------");
+        System.out.println();
+        System.out.println("========================================");
+        System.out.println("=============== 최종결과 ===============");
+        System.out.println("========================================");
         for (Woman w : women.values()) {
             System.out.println(w.getName() + " - " + w.getPartner());
             // 여성과 파트너의 사용자 ID가 null이 아닌지 확인
