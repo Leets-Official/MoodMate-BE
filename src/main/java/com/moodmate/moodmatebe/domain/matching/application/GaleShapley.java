@@ -3,7 +3,9 @@ package com.moodmate.moodmatebe.domain.matching.application;
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.matching.domain.Man;
+import com.moodmate.moodmatebe.domain.matching.domain.WhoMeet;
 import com.moodmate.moodmatebe.domain.matching.domain.Woman;
+import com.moodmate.moodmatebe.domain.matching.repository.WhoMeetRepository;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 
@@ -18,10 +20,13 @@ public class GaleShapley {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
 
+    private final WhoMeetRepository whoMeetRepository;
+
     // 생성자
-    public GaleShapley(Map<String, Man> m, Map<String, Woman> w, RoomRepository roomRepository, UserRepository userRepository) {
+    public GaleShapley(Map<String, Man> m, Map<String, Woman> w, RoomRepository roomRepository, UserRepository userRepository, WhoMeetRepository whoMeetRepository) {
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
+        this.whoMeetRepository = whoMeetRepository;
         N = Math.min(m.size(), w.size());
         engagedCount = 0;
         men = m;
@@ -143,12 +148,15 @@ public class GaleShapley {
         System.out.println("========================================");
         for (Woman w : women.values()) {
             System.out.println(w.getName() + " - " + w.getPartner());
+
             // 여성과 파트너의 사용자 ID가 null이 아닌지 확인
             if (w.getUserId() != null && w.getPartnerUserId() != null) {
                 Optional<User> womenUser = userRepository.findById(w.getUserId());
                 Optional<User> partnerUser = userRepository.findById(w.getPartnerUserId());
-                // 두 사용자 모두 데이터베이스에서 찾아진 경우에만 채팅룸 생성
+
+                // 두 사용자 모두 데이터베이스에서 찾아진 경우에만 처리
                 if (womenUser.isPresent() && partnerUser.isPresent()) {
+                    // 채팅룸 생성 및 저장
                     ChatRoom chatRoom = ChatRoom.builder()
                             .user1(womenUser.get())
                             .user2(partnerUser.get())
@@ -156,9 +164,16 @@ public class GaleShapley {
                             .createdAt(LocalDateTime.now())
                             .build();
                     roomRepository.save(chatRoom);
+
+                    // 만난 사람 정보 저장
+                    WhoMeet whoMeet = WhoMeet.builder()
+                            .metUser1(womenUser.get())
+                            .metUser2(partnerUser.get())
+                            .createdAt(LocalDateTime.now())
+                            .build();
+                    whoMeetRepository.save(whoMeet);
                 }
             }
         }
     }
 }
-
