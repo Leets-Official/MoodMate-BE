@@ -3,7 +3,10 @@ package com.moodmate.moodmatebe.domain.matching.application;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.matching.domain.Man;
 import com.moodmate.moodmatebe.domain.matching.domain.Person;
+import com.moodmate.moodmatebe.domain.matching.domain.WhoMeet;
+import com.moodmate.moodmatebe.domain.matching.domain.WhoMeet;
 import com.moodmate.moodmatebe.domain.matching.domain.Woman;
+import com.moodmate.moodmatebe.domain.matching.repository.WhoMeetRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
@@ -20,21 +23,26 @@ public class MatchingService {
     private final PreferRepository preferRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository; // UserRepository 추가
+    private final WhoMeetRepository whoMeetRepository;
 
     private List<Man> men = new ArrayList<>();
     private List<Woman> women = new ArrayList<>();
 
     @Autowired
-    public MatchingService(PreferRepository personRepository, RoomRepository roomRepository, UserRepository userRepository) {
+    public MatchingService(PreferRepository personRepository, RoomRepository roomRepository, UserRepository userRepository, WhoMeetRepository whoMeetRepository) {
         this.preferRepository = personRepository;
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
+        this.whoMeetRepository = whoMeetRepository;
     }
 
     public void match() {
         // 활성화된 Prefer 객체들을 가져옴
         List<Prefer> activeMatchTrue = preferRepository.findByUserMatchActiveAndGenderTrue(Gender.MALE);
         activeMatchTrue.addAll(preferRepository.findByUserMatchActiveAndGenderTrue(Gender.FEMALE));
+
+        // shuffle을 통해 무작위로 섞음
+        Collections.shuffle(activeMatchTrue);
 
         // Prefer 객체들을 Person 인스턴스로 변환하고 남성과 여성 리스트에 추가
         for (Prefer prefer : activeMatchTrue) {
@@ -57,7 +65,6 @@ public class MatchingService {
 
         // 각 그룹에 대해 Gale-Shapley 알고리즘 실행
         for (String mood : menGroups.keySet()) {
-
             Map<String, Man> menGroup = menGroups.get(mood);
             Map<String, Woman> womenGroup = womenGroups.get(mood);
 
@@ -82,25 +89,35 @@ public class MatchingService {
             for (Man man : menGroup.values()) {
                 List<String> mainPreferences = new ArrayList<>();
                 List<String> secondaryPreferences = new ArrayList<>();
-                List<String> finalPreferences = new ArrayList<>();
+                List<String> thirdPreferences = new ArrayList<>();
+                Set<String> metFemalesSet = new HashSet<>();
+
+                // 특정 남성과 매칭된 이력 조회
+                List<WhoMeet> metFemales = whoMeetRepository.findByMetUser2(man.getUser());
+                for (WhoMeet met : metFemales) {
+                    metFemalesSet.add(met.getMetUser1().getUserNickname()); // 이전에 매칭된 여성 추가
+                }
 
                 // 여자 그룹을 순회하면서 남자의 선호도를 결정
                 for (Woman woman : womenGroup.values()) {
-                    if (!man.isDontCareSameDepartment() && man.getDepartment().equals(woman.getDepartment())) {
-                        finalPreferences.add(woman.getName());
+                    String womanName = woman.getName();
+                    if (metFemalesSet.contains(womanName)) {
+                        continue; // 이전에 매칭된 여성은 제외
+                    }
 
+                    if (!man.isDontCareSameDepartment() && man.getDepartment().equals(woman.getDepartment())) {
+                        thirdPreferences.add(womanName);
                     } else if (woman.getYear() >= man.getMinYear() && woman.getYear() <= man.getMaxYear()) {
-                        // 만약 여자의 나이가 남자의 나이 선호 범위 내에 있다면 첫 번째 선호도로 추가
-                        mainPreferences.add(woman.getName());
+                        mainPreferences.add(womanName);
                     } else {
-                        // 그렇지 않으면 보조 선호도로 추가
-                        secondaryPreferences.add(woman.getName());
+                        secondaryPreferences.add(womanName);
                     }
                 }
 
                 // 보조 선호도를 전체 선호도 목록에 추가
                 mainPreferences.addAll(secondaryPreferences);
-                mainPreferences.addAll(finalPreferences);
+                mainPreferences.addAll(thirdPreferences);
+                mainPreferences.addAll(metFemalesSet);
 
                 // 남자의 preferences 속성에 최종 선호도 목록 설정
                 man.setPreferences(mainPreferences);
@@ -112,12 +129,24 @@ public class MatchingService {
             for (Woman woman : womenGroup.values()) {
                 List<String> mainPreferences = new ArrayList<>();
                 List<String> secondaryPreferences = new ArrayList<>();
-                List<String> finalPreferences = new ArrayList<>();
+                List<String> thirdPreferences = new ArrayList<>();
+                Set<String> metMalesSet = new HashSet<>();
+
+                // 특정 여성과 매칭된 이력 조회
+                List<WhoMeet> metMales = whoMeetRepository.findByMetUser1(woman.getUser());
+                for (WhoMeet met : metMales) {
+                    metMalesSet.add(met.getMetUser2().getUserNickname()); // 이전에 매칭된 남성 추가
+                }
 
                 // 남자 그룹을 순회하면서 여자의 선호도를 결정
                 for (Man man : menGroup.values()) {
+                    String manName = man.getName();
+                    if (metMalesSet.contains(manName)) {
+                        continue; // 이전에 매칭된 남성은 제외
+                    }
+
                     if (!woman.isDontCareSameDepartment() && woman.getDepartment().equals(man.getDepartment())) {
-                        finalPreferences.add(man.getName());
+                        thirdPreferences.add(man.getName());
                     }
                     else if (man.getYear() >= woman.getMinYear() && man.getYear() <= woman.getMaxYear()) {
                         // 만약 남자의 나이가 여자의 나이 선호 범위 내에 있다면 첫 번째 선호도로 추가
@@ -130,7 +159,8 @@ public class MatchingService {
 
                 // 보조 선호도를 전체 선호도 목록에 추가
                 mainPreferences.addAll(secondaryPreferences);
-                mainPreferences.addAll(finalPreferences);
+                mainPreferences.addAll(thirdPreferences);
+                mainPreferences.addAll(metMalesSet);
 
                 // 여자의 preferences 속성에 최종 선호도 목록 설정
                 woman.setPreferences(mainPreferences);
@@ -139,7 +169,7 @@ public class MatchingService {
             }
 
             // Gale-Shapley 알고리즘 실행
-            new GaleShapley(menGroup, womenGroup, roomRepository, userRepository);
+            new GaleShapley(menGroup, womenGroup, roomRepository, userRepository, whoMeetRepository);
         }
     }
 
