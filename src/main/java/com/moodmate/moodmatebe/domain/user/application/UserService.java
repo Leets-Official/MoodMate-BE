@@ -183,6 +183,7 @@ public class UserService {
         user.setUserKeywords(updateUserRequest.getUserKeywords());
         prefer.setPreferYearMin(updateUserRequest.getPreferYearMin());
         prefer.setPreferYearMax(updateUserRequest.getPreferYearMax());
+        prefer.setPreferDepartmentPossible(updateUserRequest.isPreferDepartmentPossible());
         prefer.setPreferMood(updateUserRequest.getPreferMood());
 
         userRepository.save(user);
