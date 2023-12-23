@@ -72,7 +72,7 @@ public class ChatController {
         ChatResponseDto responseDto = new ChatResponseDto(user, pageable, message);
         return ResponseEntity.ok(responseDto);
     }
-    @Operation(summary = "채팅ㄱ 종료", description = "채팅을 종료합니다.")
+    @Operation(summary = "채팅 종료", description = "채팅을 종료합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
