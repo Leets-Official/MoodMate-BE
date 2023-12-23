@@ -8,7 +8,6 @@ import com.moodmate.moodmatebe.domain.chat.redis.exception.ConnectionException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
@@ -44,14 +43,14 @@ public class ChatRoomService {
             roomRepository.save(chatRoom);
         }
     }
-    public Long validateRoomIdAuthorization(Long roomId, String authorizationHeader){
+
+    public Long validateRoomIdAuthorization(Long roomId, String authorizationHeader) {
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);
         Optional<ChatRoom> optionalChatRoom = roomRepository.findActiveChatRoomByUserId(userId);
         if (optionalChatRoom.isPresent() && (optionalChatRoom.get().getRoomId().equals(roomId))) {
             return optionalChatRoom.get().getRoomId();
-        }
-        else{
+        } else {
             throw new ChatRoomUnauthorizedException();
         }
     }

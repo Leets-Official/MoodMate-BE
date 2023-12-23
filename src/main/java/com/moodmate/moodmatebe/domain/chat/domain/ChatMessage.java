@@ -1,7 +1,6 @@
 package com.moodmate.moodmatebe.domain.chat.domain;
 
 import com.moodmate.moodmatebe.domain.user.domain.User;
-import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
