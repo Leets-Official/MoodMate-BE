@@ -9,6 +9,7 @@ import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.*;
 import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
+import com.moodmate.moodmatebe.domain.user.exception.PreferNotFoundException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
@@ -21,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -40,6 +39,14 @@ public class UserService {
         Long userId = jwtProvider.getUserIdFromToken(token);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());
+
+        // 여기서 userId로 prefer 테이블에 해당하는 값이 있는지 체크하고 있을 경우 delete하고 새로 집어넣음
+        // 중복되는 prefer을 일시적으로 막을 수 있음
+        // 근본적 해결책은 아님
+        Optional<Prefer> prefer2 = preferRepository.findByUser(user);
+        if(prefer2.isPresent()){
+            preferRepository.deleteById(prefer2.get().getPreferId());
+        }
 
         Prefer prefer = new Prefer();
 
@@ -84,7 +91,7 @@ public class UserService {
     }
 
     @Transactional
-    public Map<String, String> setUserInfo(String token, UserInfoRequest userInfoDto) {
+    public void setUserInfo(String token, UserInfoRequest userInfoDto) {
         try {
             if (token == null || userInfoDto == null) {
                 throw new InvalidInputValueException();
@@ -100,15 +107,6 @@ public class UserService {
             user.setYear(userInfoDto.getYear());
 
             userRepository.save(user);
-
-            String newAccessToken = jwtProvider.generateToken(userId, user.getUserEmail(), AuthRole.ROLE_USER, false);
-            String newRefreshToken = jwtProvider.generateToken(userId, user.getUserEmail(), AuthRole.ROLE_USER, true);
-
-            Map<String, String> tokens = new HashMap<>();
-            tokens.put("accessToken", newAccessToken);
-            tokens.put("refreshToken", newRefreshToken);
-
-            return tokens;
         } catch (ServiceException e) {
             throw e;
         } catch (IllegalArgumentException e) {
@@ -171,5 +169,22 @@ public class UserService {
         Long otherUserId = (userId.equals(chatRoom.getUser1().getUserId())) ? chatRoom.getUser2().getUserId() : chatRoom.getUser1().getUserId();
 
         return userRepository.findById(otherUserId).orElseThrow(() -> new UserNotFoundException());
+    }
+
+    @Transactional
+    public void updateUserInformation(String authorizationHeader, UpdateUserRequest updateUserRequest) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        Prefer prefer = preferRepository.findByUser(user).orElseThrow(PreferNotFoundException::new);
+
+        user.setUserKeywords(updateUserRequest.getUserKeywords());
+        prefer.setPreferYearMin(updateUserRequest.getPreferYearMin());
+        prefer.setPreferYearMax(updateUserRequest.getPreferYearMax());
+        prefer.setPreferMood(updateUserRequest.getPreferMood());
+
+        userRepository.save(user);
     }
 }
