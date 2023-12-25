@@ -12,5 +12,6 @@ public class UpdateUserRequest {
     private List<Keyword> userKeywords;
     private int preferYearMin;
     private int preferYearMax;
+    private boolean preferDepartmentPossible;
     private String preferMood;
 }
