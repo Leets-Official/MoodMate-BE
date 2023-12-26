@@ -1,6 +1,5 @@
 package com.moodmate.moodmatebe.global.config;
 
-import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisSubscriber;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.ConnectionException;
@@ -28,15 +27,17 @@ public class RedisConfig {
     private String host;
     @Value("${spring.data.redis.port}")
     private int port;
+
     @Bean
-    public RedisConnectionFactory redisConnectionFactory(){
+    public RedisConnectionFactory redisConnectionFactory() {
         try {
-            RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host,port);
+            RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
             return new LettuceConnectionFactory(redisStandaloneConfiguration);
-        }catch (RedisConnectionFailureException e){
+        } catch (RedisConnectionFailureException e) {
             throw new ConnectionException();
         }
     }
+
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
@@ -46,6 +47,7 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
     @Bean
     public RedisTemplate<String, RedisChatMessageDto> chatRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, RedisChatMessageDto> chatRedisTemplate = new RedisTemplate<>();
@@ -53,21 +55,24 @@ public class RedisConfig {
         chatRedisTemplate.setKeySerializer(new StringRedisSerializer());
         try {
             chatRedisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new SerializationException();
         }
         return chatRedisTemplate;
     }
+
     @Bean
     public ChannelTopic topic() {
         return new ChannelTopic("/chatRoom");
     }
+
     @Bean
     public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         return container;
     }
+
     @Bean
     public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "onMessage");

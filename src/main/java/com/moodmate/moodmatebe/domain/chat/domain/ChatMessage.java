@@ -1,7 +1,6 @@
 package com.moodmate.moodmatebe.domain.chat.domain;
 
 import com.moodmate.moodmatebe.domain.user.domain.User;
-import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "chat_message")
-public class ChatMessage{
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")

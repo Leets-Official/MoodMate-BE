@@ -7,6 +7,7 @@ import com.moodmate.moodmatebe.domain.chat.dto.*;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisPublisher;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
+import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import com.moodmate.moodmatebe.global.jwt.exception.ExpiredTokenException;
 import com.moodmate.moodmatebe.global.jwt.exception.InvalidTokenException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,23 +22,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.simp.user.SimpUser;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,33 +38,20 @@ public class ChatController {
     private final RedisPublisher redisPublisher;
     private final ChatRoomService chatRoomService;
     private final UserService userService;
-    private final SimpMessageSendingOperations simpMessageSendingOperations;
-    private final static String TOKEN_PREFIX = "Bearer ";
+    private final JwtProvider jwtProvider;
 
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     public void handleChatMessage(ChatMessageDto messageDto) {
-        log.info("dto:{}",messageDto.toString());
         try {
-            String authorization = messageDto.getToken().substring(TOKEN_PREFIX.length());
-            log.info("authorization:{}",authorization);
-            if (authorization != null) {
-                log.info("message전송!!");
-                Long userId = chatService.getUserId(authorization);
-                log.info("userId:{}",userId);
-                Long roomId = chatService.getRoomId(userId);
-                log.info("roomId:{}",roomId);
-                chatRoomService.enterChatRoom(roomId);
-                RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
-                log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getMessageId());
-                log.info("redisChatMessageDto-content:{}",redisChatMessageDto.getContent());
-                log.info("redisChatMessageDto-userId:{}",redisChatMessageDto.getUserId());
-                log.info("redisChatMessageDto-roomId:{}",redisChatMessageDto.getRoomId());
-                //simpMessageSendingOperations.convertAndSend("/sub/chat/" +roomId,messageDto);
-                redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
-                log.info("publish");
-                chatService.saveMessage(redisChatMessageDto);
-            }
+            String authorization = jwtProvider.getTokenFromAuthorizationHeader(messageDto.getToken());
+            Long userId = chatService.getUserId(authorization);
+            Long roomId = chatService.getRoomId(userId);
+
+            chatRoomService.enterChatRoom(roomId);
+            RedisChatMessageDto redisChatMessageDto = new RedisChatMessageDto(null, userId, roomId, messageDto.getContent(), true, LocalDateTime.now());
+            redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), redisChatMessageDto);
+            chatService.saveMessage(redisChatMessageDto);
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (SignatureException | UnsupportedJwtException | IllegalArgumentException | MalformedJwtException e) {
@@ -95,7 +71,8 @@ public class ChatController {
         ChatResponseDto responseDto = new ChatResponseDto(user, pageable, message);
         return ResponseEntity.ok(responseDto);
     }
-    @Operation(summary = "채팅ㄱ 종료", description = "채팅을 종료합니다.")
+
+    @Operation(summary = "채팅 종료", description = "채팅을 종료합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
