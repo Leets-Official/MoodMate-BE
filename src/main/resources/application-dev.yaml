@@ -1,0 +1,47 @@
+spring:
+  datasource:
+    url: ENC(URQ1YM2k6hAw0/FQZonsjaeaJ+0fCWaYpUNhQhy57julIh9+51wGvQQbhO8r0faVtFdjfJHkfQ9L10WgJTidgw7xtTdt2kWat/a5TVyO0Shq0DDzzsYNB58dBcVePGeddLoNv9cO4u0=)
+    username: ENC(lTMVOKtY/fZl+Tug5yVIjQ==)
+    password: ENC(V+/5+sksg/OG4KbxeGc84xoWdskdQPR4)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database: mysql
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  h2:
+    console:
+      enabled: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ENC(O92xh3ZjEoMaKUExPEGourf6SwvbblsAQGdAiEByO/TwAkDNWQIHWFyQGDQr2AZzxSCXXadt241C5Jep4M7dCtQJJj7njUJFJ3o0LueR+lpFg/FP1ewKdQ==)
+            client-secret: ENC(j7VmRrdm8RKZxvM3x8zhg60orNREcTRTVtw52QGWPZLi3VLKNlAlxW/0y5lY3Hay)
+            redirect-uri: ${baseUrl}/oauth/callback/google #redirect-uri 수정하기
+            scope:
+              - email
+              - profile
+jwt:
+  access_secret: ENC(JxVNEnrDkmH9HUSpiBjDD7GvObaGAWk21JXFvZPV4FgEmUQb/9LtEwkLjtTc5Q9F+WQj/gz5vGmPiP4H4BAAgw==)
+  refresh_secret: ENC(hzfWfJcKzqgetp0MJkmjjOj5t9BwEsHjTV9i/t0iili1Cihv9K4LLAPtcR3ZSF8X+Bqmw3K2yAece+I1wHfXsA==)
+
+cors:
+  origin:
+    development: ENC(BMIQf/o2B87dywylesBMMk00s365UiZicBhkCrDXrJg=)
+    production: ENC(ppojO5UkpyTsrA26/AkaJADO74y10zljtzG8kAwfkn3Q4MEFl5LShh3jsYtqdBaz)
+
+social-login:
+  redirect: ENC(W4b92hK1VGe6ronN9gmeVVoyCvRoGTWPlwVhq12WBWPi4lyg+Bxwu0oVn9KCKQZU)
