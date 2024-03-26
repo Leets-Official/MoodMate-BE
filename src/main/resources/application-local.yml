@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: ENC(/t3stO7d9IKxAiXOGQiXhBFaOIzFq1LsWv+xOC/0yv4lT00Q0MTe1qhP6ASKlbU/)
-    username: ENC(J5pFUqQCyxIVpKD9RV76+g==)
+    url: jdbc:mysql://localhost:3306/moodmate
+    username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
