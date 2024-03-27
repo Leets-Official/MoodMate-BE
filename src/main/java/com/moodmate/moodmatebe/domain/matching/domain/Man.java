@@ -10,8 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Man extends Person {
-    private boolean engaged;  // 남자의 현재 매칭 상태
-    private List<Woman> proposed; // 남자의 프로포즈한 여자 목록
+    private boolean engaged;
+    private List<Woman> proposed;
 
     public Man(User user, Prefer prefer) {
         super(user, prefer);
