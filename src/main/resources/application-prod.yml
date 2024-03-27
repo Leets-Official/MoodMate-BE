@@ -27,6 +27,7 @@ spring:
     oauth2:
       client:
         registration:
+          #TODO: 소셜로그인 변경하기
           google:
             client-id: ENC(O92xh3ZjEoMaKUExPEGourf6SwvbblsAQGdAiEByO/TwAkDNWQIHWFyQGDQr2AZzxSCXXadt241C5Jep4M7dCtQJJj7njUJFJ3o0LueR+lpFg/FP1ewKdQ==)
             client-secret: ENC(j7VmRrdm8RKZxvM3x8zhg60orNREcTRTVtw52QGWPZLi3VLKNlAlxW/0y5lY3Hay)
