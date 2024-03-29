@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 public class Woman extends Person {
     private String partner;
-    private Long partnerUserId;  // 현재 파트너
-    private List<Man> proposals; // 여자가 남자에게 받은 고백 목록
+    private Long partnerUserId;
+    private List<Man> proposals;
 
     public Woman(User user, Prefer prefer) {
         super(user, prefer);
