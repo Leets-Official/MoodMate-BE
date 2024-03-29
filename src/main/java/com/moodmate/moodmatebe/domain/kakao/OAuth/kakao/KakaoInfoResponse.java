@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.OAuth.kakao;
+package com.moodmate.moodmatebe.domain.kakao.OAuth.kakao;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.OAuth.kakao;//package semicolon.MeetOn.domain.admin.OAuth.kakao;
+package com.moodmate.moodmatebe.domain.kakao.OAuth.kakao;//package semicolon.MeetOn.domain.admin.OAuth.kakao;
 //
 //import com.fasterxml.jackson.core.JsonProcessingException;
 //import com.fasterxml.jackson.databind.JsonNode;

@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.domain;
+package com.moodmate.moodmatebe.domain.kakao.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.OAuth.kakao;
+package com.moodmate.moodmatebe.domain.kakao.OAuth.kakao;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

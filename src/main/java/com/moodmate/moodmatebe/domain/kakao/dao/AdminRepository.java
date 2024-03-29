@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.dao;
+package com.moodmate.moodmatebe.domain.kakao.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

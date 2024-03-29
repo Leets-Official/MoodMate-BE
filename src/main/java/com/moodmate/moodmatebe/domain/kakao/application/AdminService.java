@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.application;
+package com.moodmate.moodmatebe.domain.kakao.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

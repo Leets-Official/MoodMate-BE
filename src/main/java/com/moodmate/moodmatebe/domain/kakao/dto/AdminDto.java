@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.dto;
+package com.moodmate.moodmatebe.domain.kakao.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

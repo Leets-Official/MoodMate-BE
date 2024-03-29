@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.api;
+package com.moodmate.moodmatebe.domain.kakao.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

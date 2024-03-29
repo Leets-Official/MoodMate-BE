@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.admin.OAuth;
+package com.moodmate.moodmatebe.domain.kakao.OAuth;
 
 import org.springframework.stereotype.Component;
 
