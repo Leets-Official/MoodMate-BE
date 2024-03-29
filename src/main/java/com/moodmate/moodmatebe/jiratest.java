@@ -1,2 +1,4 @@
-package com.moodmate.moodmatebe;public class jiratest {
+package com.moodmate.moodmatebe;
+
+public class jiratest {
 }
