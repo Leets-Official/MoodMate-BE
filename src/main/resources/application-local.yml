@@ -50,4 +50,4 @@ social-login:
 
 logging:
   level:
-    root: info
+    root: trace
