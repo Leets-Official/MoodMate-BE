@@ -46,3 +46,7 @@ cors:
 
 social-login:
   redirect: ENC(W4b92hK1VGe6ronN9gmeVVoyCvRoGTWPlwVhq12WBWPi4lyg+Bxwu0oVn9KCKQZU)
+
+logging:
+  level:
+    root: trace
