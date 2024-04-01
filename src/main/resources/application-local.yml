@@ -1,4 +1,6 @@
 spring:
+  environment:
+    JASYPT_ENCRYPTOR_PASSWORD: ${ENCRYPTED_PASSWORD}
   datasource:
     url: jdbc:h2:~/moodmate;MODE=MySQL
     username: root
