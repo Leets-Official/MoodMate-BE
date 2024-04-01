@@ -34,7 +34,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_nickname", nullable = true)
     private String userNickname;
 
-    @Column(name = "year", nullable = true)
+    @Column(name = "user_year", nullable = true)
     private Integer year;
 
     @ElementCollection

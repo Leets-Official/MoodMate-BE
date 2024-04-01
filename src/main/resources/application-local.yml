@@ -1,20 +1,17 @@
 spring:
   datasource:
-    url: jdbc:h2:~/moodmate
+    url: jdbc:h2:~/moodmate;MODE=MySQL
     username: root
     password: 1234
     driver-class-name: org.h2.Driver
   jpa:
-    show-sql: true
     hibernate:
-      ddl-auto: update
-    database: h2
+      ddl-auto: create
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
-        show_sql: false
-        use_sql_comments: true
-        dialect: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.H2Dialect
   h2:
     console:
       enabled: true
@@ -50,4 +47,4 @@ social-login:
 
 logging:
   level:
-    root: trace
+    root: info
