@@ -1,21 +1,46 @@
+#spring:
+#  datasource:
+#    url: jdbc:h2:~/moodmate;MODE=MySQL
+#    username: root
+#    password: 1234
+#    driver-class-name: org.h2.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: create
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#    database-platform: org.hibernate.dialect.H2Dialect
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
 spring:
   datasource:
-    url: jdbc:h2:~/moodmate;MODE=MySQL
-    username: root
-    password: 1234
-    driver-class-name: org.h2.Driver
+    url: ENC(NKpZcVuFwcDYDlSTJcoYUmQ8ZycoSuSqmylNCzXChrgcQhLNojaQe/nXCYkByw8BmUcIkdvYV7QML6Hf4Fp+KD1o61RKscwyRi4V+kxhRoDNMTFE15BqA/J+Q+9iDO1JWPSOw6WU7rg=)
+    # ENC(URQ1YM2k6hAw0/FQZonsjaeaJ+0fCWaYpUNhQhy57julIh9+51wGvQQbhO8r0faVtFdjfJHkfQ9L10WgJTidgw7xtTdt2kWat/a5TVyO0Shq0DDzzsYNB58dBcVePGeddLoNv9cO4u0=)
+    username: ENC(lTMVOKtY/fZl+Tug5yVIjQ==)
+    password: ENC(V+/5+sksg/OG4KbxeGc84xoWdskdQPR4)
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    hibernate:
-      ddl-auto: create
     show-sql: true
+    hibernate:
+      ddl-auto: update
+    database: mysql
     properties:
       hibernate:
         format_sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
+        show_sql: false
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQLDialect
   h2:
     console:
-      enabled: true
-      path: /h2-console
+      enabled: false
   data:
     redis:
       host: localhost
