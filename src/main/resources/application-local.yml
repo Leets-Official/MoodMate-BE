@@ -43,7 +43,8 @@ cors:
     production: ENC(ppojO5UkpyTsrA26/AkaJADO74y10zljtzG8kAwfkn3Q4MEFl5LShh3jsYtqdBaz)
 
 social-login:
-  redirect: ENC(W4b92hK1VGe6ronN9gmeVVoyCvRoGTWPlwVhq12WBWPi4lyg+Bxwu0oVn9KCKQZU)
+  redirect: ENC(O4abML25OFKl9+bb3qHHHDX+NyWW6NqSSAeXRbmRUZCPl25FqMDaYiWebE4o5uOT)
+  # ENC(W4b92hK1VGe6ronN9gmeVVoyCvRoGTWPlwVhq12WBWPi4lyg+Bxwu0oVn9KCKQZU)
 
 logging:
   level:
