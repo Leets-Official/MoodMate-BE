@@ -15,9 +15,7 @@ import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
-import com.moodmate.moodmatebe.global.jwt.AuthRole;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,7 +102,7 @@ public class UserService {
             user.setUserKeywords(userInfoDto.getKeywords());
             user.setUserGender(Gender.valueOf(String.valueOf(userInfoDto.getGender())));
             user.setUserDepartment(userInfoDto.getDepartment());
-            user.setYear(userInfoDto.getYear());
+            user.setUserBirthYear(userInfoDto.getYear());
 
             userRepository.save(user);
         } catch (ServiceException e) {
@@ -116,26 +114,26 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public TokenResponse refreshAccessToken(String refreshToken) {
-        try {
-            jwtProvider.validateToken(refreshToken, true);
-            Claims claims = jwtProvider.parseClaims(refreshToken, true);
-
-            Long userId = Long.parseLong(claims.get("id").toString());
-            String userEmail = claims.get("email").toString();
-            AuthRole role = AuthRole.valueOf(claims.get("role").toString());
-
-            String newAccessToken = jwtProvider.generateToken(userId, userEmail, role, false);
-            String newRefreshToken = jwtProvider.generateToken(userId, userEmail, role, true);
-
-            return new TokenResponse(newAccessToken, newRefreshToken);
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @Transactional
+//    public TokenResponse refreshAccessToken(String refreshToken) {
+//        try {
+//            jwtProvider.validateToken(refreshToken, true);
+//            Claims claims = jwtProvider.parseClaims(refreshToken, true);
+//
+//            Long userId = Long.parseLong(claims.get("id").toString());
+//            String userEmail = claims.get("email").toString();
+//            Authority role = Authority.valueOf(claims.get("role").toString());
+//
+//            String newAccessToken = jwtProvider.generateToken(userId, userEmail, role, false);
+//            String newRefreshToken = jwtProvider.generateToken(userId, userEmail, role, true);
+//
+//            return new TokenResponse(newAccessToken, newRefreshToken);
+//        } catch (ServiceException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     public ChatUserDto getChatPartnerInfo(String authorizationHeader) {
         User otherUser = getOtherUser(authorizationHeader);
@@ -155,7 +153,7 @@ public class UserService {
                 otherUser.getUserKeywords(),
                 otherUser.getUserGender(),
                 otherUser.getUserDepartment(),
-                otherUser.getYear(),
+                otherUser.getUserBirthYear(),
                 preferMoodByUserId.orElse(null)
         );
     }

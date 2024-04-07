@@ -50,7 +50,6 @@ spring:
     oauth2:
       client:
         registration:
-          #TODO: 소셜로그인 변경하기
           google:
             client-id: ENC(O92xh3ZjEoMaKUExPEGourf6SwvbblsAQGdAiEByO/TwAkDNWQIHWFyQGDQr2AZzxSCXXadt241C5Jep4M7dCtQJJj7njUJFJ3o0LueR+lpFg/FP1ewKdQ==)
             client-secret: ENC(j7VmRrdm8RKZxvM3x8zhg60orNREcTRTVtw52QGWPZLi3VLKNlAlxW/0y5lY3Hay)
@@ -58,6 +57,22 @@ spring:
             scope:
               - email
               - profile
+          kakao:
+            # TODO: 테스트 후 키값 재발급 + jasypt로 암호화
+            client-id: 871a87d6b8fbd9a562311af34ea85c92
+            client-secret: 8Yiwp3YdkzM556pxtiCLsvCDmOSOtAep
+            #redirect-uri: http://localhost:3000/login/kakao
+            redirect-uri: http://localhost:8080/oauth/callback/kakao
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            client-name: Kakao
+            scope: profile_nickname, profile_image, account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
 jwt:
   access_secret: ENC(JxVNEnrDkmH9HUSpiBjDD7GvObaGAWk21JXFvZPV4FgEmUQb/9LtEwkLjtTc5Q9F+WQj/gz5vGmPiP4H4BAAgw==)
   refresh_secret: ENC(hzfWfJcKzqgetp0MJkmjjOj5t9BwEsHjTV9i/t0iili1Cihv9K4LLAPtcR3ZSF8X+Bqmw3K2yAece+I1wHfXsA==)

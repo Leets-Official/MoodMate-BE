@@ -1,6 +1,6 @@
 package com.moodmate.moodmatebe.global.oauth.domain;
 
-import com.moodmate.moodmatebe.global.jwt.AuthRole;
+import com.moodmate.moodmatebe.global.jwt.Authority;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class OAuthDetails implements UserDetails, OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(AuthRole.ROLE_USER.getRole()));
+        return Collections.singletonList(new SimpleGrantedAuthority(Authority.ROLE_USER.getRole()));
     }
 
     @Override
