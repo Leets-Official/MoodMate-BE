@@ -1,12 +1,10 @@
-package com.moodmate.moodmatebe.domain.chat.dto;
+package com.moodmate.moodmatebe.domain.chat.dto.response;
 
 import com.moodmate.moodmatebe.domain.chat.domain.Message;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 @Getter
-@AllArgsConstructor
 public class ChatPageableDto {
     private int size;
     private int page;

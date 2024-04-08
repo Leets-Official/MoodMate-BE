@@ -1,18 +1,24 @@
-package com.moodmate.moodmatebe.domain.chat.dto;
+package com.moodmate.moodmatebe.domain.chat.dto.response;
 
+import com.moodmate.moodmatebe.domain.chat.domain.Message;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
 public class MessageDto {
-    private Long messageId;
+    private String messageId;
     private String content;
     private Long userId;
     private LocalDateTime createdAt;
-    private Boolean isRead;
+    //private Boolean isRead;
+
+    public MessageDto(Message message){
+        this.messageId = message.getId();
+        this.content = message.getContent();
+        this.userId = message.getSenderId();
+        this.createdAt = message.getCreatedAt();
+    }
 }
