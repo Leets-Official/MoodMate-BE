@@ -1,6 +1,6 @@
 package com.moodmate.moodmatebe.global.config;
 
-import com.moodmate.moodmatebe.domain.chat.dto.RedisChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.dto.request.ChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.redis.RedisSubscriber;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.ConnectionException;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.SerializationException;
@@ -49,8 +49,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, RedisChatMessageDto> chatRedisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, RedisChatMessageDto> chatRedisTemplate = new RedisTemplate<>();
+    public RedisTemplate<String, ChatMessageDto> chatRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, ChatMessageDto> chatRedisTemplate = new RedisTemplate<>();
         chatRedisTemplate.setConnectionFactory(connectionFactory);
         chatRedisTemplate.setKeySerializer(new StringRedisSerializer());
         try {

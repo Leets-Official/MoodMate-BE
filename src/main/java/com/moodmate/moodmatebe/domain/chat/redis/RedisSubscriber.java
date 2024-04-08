@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatMessageDto;
+import com.moodmate.moodmatebe.domain.chat.dto.request.ChatMessageDto;
 import com.moodmate.moodmatebe.domain.chat.redis.exception.JsonParsingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.connection.Message;
