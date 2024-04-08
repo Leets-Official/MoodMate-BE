@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.chat.dto;
+package com.moodmate.moodmatebe.domain.chat.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +16,7 @@ public class ChatMessageDto {
     private Long roomId;
     private String token;
     private Long userId;
-    private LocalDateTime createdAt;
+    //private LocalDateTime createdAt;
+    //private boolean isRead;
 
 }
