@@ -44,10 +44,13 @@ public class WebSecurityConfig {
                 .and()
                 .exceptionHandling()
                 .and()
+                .headers().frameOptions().disable() // x-frame-options을 비활성화, spring security에서 clickjacking 공격을 막기위해 사용하기에, 서비스를 배포할 때 해당 줄 삭제
+                .and()
                 .authorizeHttpRequests()
                 .requestMatchers(CorsUtils::isCorsRequest).permitAll()
 
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/**").permitAll()
 
                 .anyRequest().authenticated()

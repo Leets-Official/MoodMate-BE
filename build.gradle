@@ -30,6 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -65,4 +66,5 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    systemProperty "jasypt.encryptor.password", project.getProperties().get("jasypt.encryptor.password")
 }

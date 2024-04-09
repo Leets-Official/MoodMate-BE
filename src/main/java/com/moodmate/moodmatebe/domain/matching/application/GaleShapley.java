@@ -8,21 +8,21 @@ import com.moodmate.moodmatebe.domain.matching.domain.Woman;
 import com.moodmate.moodmatebe.domain.matching.repository.WhoMeetRepository;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 public class GaleShapley {
-    private final int N; // 총 커플 수
-    private int engagedCount;  // 현재 매칭된 커플 수
-    private Map<String, Man> men;  // 모든 남자를 저장하는 맵
-    private Map<String, Woman> women;  // 모든 여자를 저장하는 맵
+    private final int N;
+    private int engagedCount;
+    private Map<String, Man> men;
+    private Map<String, Woman> women;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
-
     private final WhoMeetRepository whoMeetRepository;
 
-    // 생성자
     public GaleShapley(Map<String, Man> m, Map<String, Woman> w, RoomRepository roomRepository, UserRepository userRepository, WhoMeetRepository whoMeetRepository) {
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
@@ -37,75 +37,70 @@ public class GaleShapley {
         for (Woman woman : women.values()) {
             woman.setPreferences(new ArrayList<>(woman.getPreferences()));
         }
-        calcMatches();  // 매칭을 계산하는 메소드 호출
+        calcMatches();
     }
 
-    // 매칭을 계산하는 메소드
     private void calcMatches() {
-        System.out.println("매칭을 계산합니다.");
-        firstPropose();  // 모든 남자가 첫 번째 선호도의 여성에게 고백
-        firstAcceptOrReject();  // 각 여성이 고백한 남자 중 가장 선호하는 남자를 선택
-        while (engagedCount < N) {  // 모든 커플이 매칭될 때까지 반복
+        log.info("매칭을 계산합니다.");
+        firstPropose();
+        firstAcceptOrReject();
+        while (engagedCount < N) {
             Man free = null;
-            for (Man man : men.values()) {  // 매칭되지 않은 남자를 찾음
+            for (Man man : men.values()) {
                 if (!man.isEngaged()) {
                     free = man;
                     break;
                 }
             }
 
-            if (free != null) {  // 매칭되지 않은 남자가 있으면
-                System.out.println("남자 " + free.getName() + "이(가) 매칭을 시도합니다.");
+            if (free != null) {
+                log.debug("남자 {}이(가) 매칭을 시도합니다.", free.getName());
 
-                for (String w : free.getPreferences()) {  // 그 남자의 선호도 목록을 순회
-                    Woman woman = women.get(w);  // 선호하는 여자를 찾음
-                    if (!free.isEngaged() && !free.getProposed().contains(woman)) {  // 남자가 아직 매칭되지 않았고, 아직 고백하지 않은 여성에게만 고백
-                        System.out.println("   " + free.getName() + "이(가) " + woman.getName() + "에게 고백합니다.");
-                        free.getProposed().add(woman);  // 남자가 고백한 여성을 기록
+                for (String w : free.getPreferences()) {
+                    Woman woman = women.get(w);
+                    if (!free.isEngaged() && !free.getProposed().contains(woman)) {
+                        log.debug("{}이(가) {}에게 고백합니다.", free.getName(), woman.getName());
+                        free.getProposed().add(woman);
 
-                        if (woman.getPartner() == null) {  // 여자가 아직 매칭되지 않았으면
-                            woman.setPartnerUserId(free.getUser().getUserId()); // 여자와 남자를 매칭
+                        if (woman.getPartner() == null) {
+                            woman.setPartnerUserId(free.getUser().getUserId());
                             woman.setPartner(free.getName());
-                            free.setEngaged(true);  // 남자의 상태를 매칭됨으로 변경
-                            engagedCount++;  // 매칭된 커플 수 증가
-                            System.out.println("   " + woman.getName() + "은(는) " + free.getName() + "과(와) 매칭되었습니다.");
-
-                        } else {  // 여자가 이미 매칭되어 있으면
+                            free.setEngaged(true);
+                            engagedCount++;
+                            log.info("{}은(는) {}과(와) 매칭되었습니다.", woman.getName(), free.getName());
+                        } else {
                             Man currentPartner = men.get(woman.getPartner());
-//                            Man currentPartner = men.get(woman.getPartnerUserId());  // 현재 파트너를 찾음
-                            System.out.println("   " + woman.getName() + "은(는) 이미 " + currentPartner.getName() + "과(와) 매칭되어 있습니다.");
+                            log.debug("{}은(는) 이미 {}과(와) 매칭되어 있습니다.", woman.getName(), currentPartner.getName());
 
-                            if (morePreference(currentPartner, free, woman)) {  // 여자가 새로운 남자를 더 선호하면
-                                woman.setPartnerUserId(free.getUser().getUserId());// 여자와 새로운 남자를 매칭
-                                woman.setPartner(free.getName());  // 여자와 새로운 남자를 매칭
-                                free.setEngaged(true);  // 새로운 남자의 상태를 매칭됨으로 변경
-                                currentPartner.setEngaged(false);  // 현재 파트너의 상태를 매칭되지 않음으로 변경
-                                System.out.println("   " + woman.getName() + "은(는) " + free.getName() + "과(와) 매칭되었습니다. (이전 매칭 해제)");
+                            if (morePreference(currentPartner, free, woman)) {
+                                woman.setPartnerUserId(free.getUser().getUserId());
+                                woman.setPartner(free.getName());
+                                free.setEngaged(true);
+                                currentPartner.setEngaged(false);
+                                log.info("{}은(는) {}와(과) 이제 매칭되었습니다. 이전 파트너는 매칭 해제됩니다.(매칭해제)", woman.getName(), free.getName());
                             } else {
-                                System.out.println("   " + woman.getName() + "은(는) 여전히 " + currentPartner.getName() + "과(와) 매칭되어 있습니다. (새로운 남자 선호도 부족)");
+                                log.debug("{}은(는) 여전히 {}와(과) 매칭되어 있습니다.(새로운 남자 선호도부족)", woman.getName(), currentPartner.getName());
                             }
                         }
                     }
                 }
             }
         }
-        printCouples();  // 최종 매칭 결과 출력
+        printCouples();
     }
 
-    // 모든 남자가 첫 번째 선호도의 여성에게 고백하는 메서드
     private void firstPropose() {
-        System.out.println("모든 남자가 첫 번째 선호도의 여성에게 고백합니다.");
+        log.debug("모든 남자가 첫 번째 선호도의 여성에게 고백합니다.");
         for (Man man : men.values()) {
             Woman woman = women.get(man.getPreferences().get(0));
             woman.getProposals().add(man);
-            man.getProposed().add(woman);  // 남자가 고백한 여성을 기록
-            System.out.println(man.getName() + "이(가) " + woman.getName() + "에게 고백했습니다.");
+            man.getProposed().add(woman);
+            log.trace("{}이(가) {}에게 고백했습니다.", man.getName(), woman.getName());
         }
     }
 
-    // 각 여성이 고백한 남자 중 가장 선호하는 남자를 선택하는 메소드
     private void firstAcceptOrReject() {
-        System.out.println("각 여성이 고백한 남자 중 가장 선호하는 남자를 선택합니다.");
+        log.debug("각 여성이 고백한 남자 중 가장 선호하는 남자를 선택합니다.");
         for (Woman woman : women.values()) {
             if (!woman.getProposals().isEmpty()) {
                 Man chosenMan = woman.getProposals().get(0);
@@ -118,7 +113,7 @@ public class GaleShapley {
                 woman.setPartner(chosenMan.getName());
                 chosenMan.setEngaged(true);
                 engagedCount++;
-                System.out.println(woman.getName() + "이(가) " + chosenMan.getName() + "을(를) 선택했습니다.");
+                log.info("{}이(가) {}을(를) 선택했습니다.", woman.getName(), chosenMan.getName());
 
                 woman.getProposals().remove(chosenMan);
                 for (Man man : woman.getProposals()) {
@@ -130,33 +125,29 @@ public class GaleShapley {
         }
     }
 
-    // 여자가 새로운 남자를 더 선호하는지 확인하는 메소드
     public boolean morePreference(Man curPartner, Man newPartner, Woman w) {
-        for (String m : w.getPreferences()) {  // 여자의 선호도 목록을 순회
-            if (m.equals(newPartner.getName()))  // 새로운 남자가 먼저 나오면 true 반환
+        for (String m : w.getPreferences()) {
+            if (m.equals(newPartner.getName()))
                 return true;
-            if (m.equals(curPartner.getName()))  // 현재 파트너가 먼저 나오면 false 반환
+            if (m.equals(curPartner.getName()))
                 return false;
         }
         return false;
     }
 
     public void printCouples() {
-        System.out.println();
+        log.info("매칭 결과를 출력합니다.");
         System.out.println("========================================");
-        System.out.println("=============== 최종결과 ===============");
+        System.out.println("=============== 매칭 결과 ===============");
         System.out.println("========================================");
         for (Woman w : women.values()) {
-            System.out.println(w.getName() + " - " + w.getPartner());
+            log.info("{} - {}", w.getName(), w.getPartner());
 
-            // 여성과 파트너의 사용자 ID가 null이 아닌지 확인
             if (w.getUserId() != null && w.getPartnerUserId() != null) {
                 Optional<User> womenUser = userRepository.findById(w.getUserId());
                 Optional<User> partnerUser = userRepository.findById(w.getPartnerUserId());
 
-                // 두 사용자 모두 데이터베이스에서 찾아진 경우에만 처리
                 if (womenUser.isPresent() && partnerUser.isPresent()) {
-                    // 채팅룸 생성 및 저장
                     ChatRoom chatRoom = ChatRoom.builder()
                             .user1(womenUser.get())
                             .user2(partnerUser.get())
@@ -165,7 +156,6 @@ public class GaleShapley {
                             .build();
                     roomRepository.save(chatRoom);
 
-                    // 만난 사람 정보 저장
                     WhoMeet whoMeet = WhoMeet.builder()
                             .metUser1(womenUser.get())
                             .metUser2(partnerUser.get())
