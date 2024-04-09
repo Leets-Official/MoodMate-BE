@@ -49,6 +49,7 @@ public class UserService {
         Prefer prefer = new Prefer();
 
         prefer.setUser(user);
+        prefer.setPreferDepartmentPossible(preferInfoRequest.isPreferDepartmentPossible());
         prefer.setPreferMood(preferInfoRequest.getPreferMood());
         prefer.setPreferYearMax(preferInfoRequest.getPreferYearMax());
         prefer.setPreferYearMin(preferInfoRequest.getPreferYearMin());
@@ -102,7 +103,8 @@ public class UserService {
             user.setUserKeywords(userInfoDto.getKeywords());
             user.setUserGender(Gender.valueOf(String.valueOf(userInfoDto.getGender())));
             user.setUserDepartment(userInfoDto.getDepartment());
-            user.setUserBirthYear(userInfoDto.getYear());
+            user.setUserBirthYear(userInfoDto.getBirthYear());
+            user.setUserMatchActive(true);
 
             userRepository.save(user);
         } catch (ServiceException e) {

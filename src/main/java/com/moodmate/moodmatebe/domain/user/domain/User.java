@@ -1,5 +1,6 @@
 package com.moodmate.moodmatebe.domain.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.moodmate.moodmatebe.global.jwt.Authority;
 import com.moodmate.moodmatebe.global.oauth.OAuthInfoResponse;
 import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
@@ -39,18 +40,22 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_birth_year", nullable = true)
     private Integer userBirthYear;
 
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "user_keywords", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "user_keywords", nullable = true)
-    private List<Keyword> userKeywords;
-
     @Column(name = "user_department", nullable = true)
     private String userDepartment;
 
     @Column(name = "user_match_active")
     @ColumnDefault("true")
     private Boolean userMatchActive;
+
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_keywords", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "user_keywords", nullable = true)
+    private List<Keyword> userKeywords;
+
+    @JsonManagedReference
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Prefer prefer;
 
     @Column()
     private LocalDateTime deletedAt;
@@ -61,8 +66,8 @@ public class User extends BaseTimeEntity {
     }
 
     // 하단 컬럼 추가(jwt & Oauth2)
-    @Column(name = "user_image", nullable = true)
-    private String userImage;
+    @Column(name = "user_profile_image_url", nullable = true)
+    private String userProfileImageUrl;
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
@@ -73,7 +78,7 @@ public class User extends BaseTimeEntity {
                 .builder()
                 .userNickname(oAuthInfoResponse.getNickname())
                 .userEmail(oAuthInfoResponse.getEmail())
-                .userImage(oAuthInfoResponse.getProfileImage())
+                .userProfileImageUrl(oAuthInfoResponse.getProfileImageUrl())
                 //.userGender(oAuthInfoResponse.getGender())
                 //.userBirthYear(oAuthInfoResponse.getBirthYear())
                 .authority(Authority.ROLE_USER)

@@ -30,7 +30,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     database: mysql
     properties:
       hibernate:
@@ -53,7 +53,7 @@ spring:
           google:
             client-id: ENC(O92xh3ZjEoMaKUExPEGourf6SwvbblsAQGdAiEByO/TwAkDNWQIHWFyQGDQr2AZzxSCXXadt241C5Jep4M7dCtQJJj7njUJFJ3o0LueR+lpFg/FP1ewKdQ==)
             client-secret: ENC(j7VmRrdm8RKZxvM3x8zhg60orNREcTRTVtw52QGWPZLi3VLKNlAlxW/0y5lY3Hay)
-            redirect-uri: ${baseUrl}/oauth/callback/google #redirect-uri 수정하기
+            redirect-uri: ${baseUrl}/oauth/callback/google
             scope:
               - email
               - profile
@@ -62,7 +62,7 @@ spring:
             client-id: 871a87d6b8fbd9a562311af34ea85c92
             client-secret: 8Yiwp3YdkzM556pxtiCLsvCDmOSOtAep
             #redirect-uri: http://localhost:3000/login/kakao
-            redirect-uri: http://localhost:8080/oauth/callback/kakao
+            redirect-uri: ${baseUrl}/oauth/callback/kakao
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Kakao
@@ -84,7 +84,6 @@ cors:
 
 social-login:
   redirect: ENC(O4abML25OFKl9+bb3qHHHDX+NyWW6NqSSAeXRbmRUZCPl25FqMDaYiWebE4o5uOT)
-  # ENC(W4b92hK1VGe6ronN9gmeVVoyCvRoGTWPlwVhq12WBWPi4lyg+Bxwu0oVn9KCKQZU)
 
 logging:
   level:
