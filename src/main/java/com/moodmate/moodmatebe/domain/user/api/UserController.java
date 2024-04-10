@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Tag(name = "사용자")
@@ -100,18 +98,18 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "액세스 토큰 갱신", description = "Refresh Token을 사용하여 Access Token과 Refresh Token을 갱신합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Map.class))),
-            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-    })
-    @PostMapping("/refresh")
-    public ResponseEntity<Map<String, TokenResponse>> refreshAccessToken(@RequestBody Map<String, String> tokenRequest) {
-        String refreshToken = tokenRequest.get("refreshToken");
-        TokenResponse tokenResponse = userService.refreshAccessToken(refreshToken);
-        return new ResponseEntity<>(Map.of("tokenResponse", tokenResponse), HttpStatus.OK);
-    }
+//    @Operation(summary = "액세스 토큰 갱신", description = "Refresh Token을 사용하여 Access Token과 Refresh Token을 갱신합니다.")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Map.class))),
+//            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+//            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+//    })
+//    @PostMapping("/refresh")
+//    public ResponseEntity<Map<String, TokenResponse>> refreshAccessToken(@RequestBody Map<String, String> tokenRequest) {
+//        String refreshToken = tokenRequest.get("refreshToken");
+//        TokenResponse tokenResponse = userService.refreshAccessToken(refreshToken);
+//        return new ResponseEntity<>(Map.of("tokenResponse", tokenResponse), HttpStatus.OK);
+//    }
 
     @Operation(summary = "상대무디 정보 조회", description = "현재 채팅 중인 상대방의 정보를 상세조회합니다.")
     @ApiResponses({

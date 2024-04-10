@@ -25,7 +25,10 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,7 +47,8 @@ public class ChatController {
     @MessageMapping("/chat")
     public void handleChatMessage(ChatMessageDto messageDto) {
         try {
-            String authorization = jwtProvider.getTokenFromAuthorizationHeader(messageDto.getToken());
+            // String authorization = jwtProvider.getTokenFromAuthorizationHeader(messageDto.getToken());
+            String authorization = String.valueOf(jwtProvider.getAuthentication(messageDto.getToken()));
             Long userId = chatService.getUserId(authorization);
             Long roomId = chatService.getRoomId(userId);
 
