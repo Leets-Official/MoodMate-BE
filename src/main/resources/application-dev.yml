@@ -1,16 +1,14 @@
-# TODO 추후 kakaologin dev 검증 시 아래 yml 설정 변경할것
-
 spring:
   datasource:
-    # prod용 임시 db.
-    url: ENC(IGBIQXu1p+L0142+uplxofAcyhNyx4QBj5kJMRAByq5C/Pkr88FSy/RLM/SgafzPHUoPsuThv5CbdV9F81BylRp3CsaRs7+DKKIH3DxVldHsT7eCXyWs0suZ379EgXh7pjd34jc/VQw=)
+    # dev용 database
+    url: ENC(NKpZcVuFwcDYDlSTJcoYUmQ8ZycoSuSqmylNCzXChrgcQhLNojaQe/nXCYkByw8BmUcIkdvYV7QML6Hf4Fp+KD1o61RKscwyRi4V+kxhRoDNMTFE15BqA/J+Q+9iDO1JWPSOw6WU7rg=)
     username: ENC(lTMVOKtY/fZl+Tug5yVIjQ==)
     password: ENC(V+/5+sksg/OG4KbxeGc84xoWdskdQPR4)
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     database: mysql
     properties:
       hibernate:
@@ -25,18 +23,10 @@ spring:
     redis:
       host: localhost
       port: 6379
-
   security:
     oauth2:
       client:
         registration:
-          google:
-            client-id: ENC(O92xh3ZjEoMaKUExPEGourf6SwvbblsAQGdAiEByO/TwAkDNWQIHWFyQGDQr2AZzxSCXXadt241C5Jep4M7dCtQJJj7njUJFJ3o0LueR+lpFg/FP1ewKdQ==)
-            client-secret: ENC(j7VmRrdm8RKZxvM3x8zhg60orNREcTRTVtw52QGWPZLi3VLKNlAlxW/0y5lY3Hay)
-            redirect-uri: ${baseUrl}/oauth/callback/google
-            scope:
-              - email
-              - profile
           kakao:
             client-id: ENC(jtFSE8X3pgeKaeyOGatxdqrvK1t4FmdbpZaHiPf6E2RoEiEEYdOQcvD3Ko34rAH9)
             client-secret: ENC(DuxDV+plHXpQS6l4tBhROg7UthSrsjKKlKgFlQijPxeSof6VLLaZBrcK7zdTydS4)
@@ -51,6 +41,7 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+
 jwt:
   access_secret: ENC(JxVNEnrDkmH9HUSpiBjDD7GvObaGAWk21JXFvZPV4FgEmUQb/9LtEwkLjtTc5Q9F+WQj/gz5vGmPiP4H4BAAgw==)
   refresh_secret: ENC(hzfWfJcKzqgetp0MJkmjjOj5t9BwEsHjTV9i/t0iili1Cihv9K4LLAPtcR3ZSF8X+Bqmw3K2yAece+I1wHfXsA==)
