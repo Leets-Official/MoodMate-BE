@@ -39,12 +39,19 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*")); // 실제 환경에서는 명확한 URL 지정
+        configuration.setAllowedOriginPatterns(Arrays.asList("https://*.moodmate.site", "https://develop.d1vm6ddjncz2cx.amplifyapp.com", "http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Content-Type",
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Headers",
+                "Authorization",
+                "X-Requested-With",
+                "requestId",
+                "Correlation-Id"
+        ));
+        configuration.setAllowCredentials(true); // 인증 정보 포함 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // cors 추후
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
