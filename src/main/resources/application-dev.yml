@@ -1,6 +1,10 @@
 server:
   port: 8088
 
+app:
+  baseUrl: ${baseUrl}
+
+
 spring:
   datasource:
     # dev용 database
