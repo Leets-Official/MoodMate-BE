@@ -1,5 +1,6 @@
 package com.moodmate.moodmatebe.global.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -15,11 +16,13 @@ public class ClientConfig {
         return new RestTemplate();
     }
 
+    @Value("${app.baseUrl}")
+    private String baseUrl;
     @Bean
     public WebClient webClient() {
         return WebClient
                 .builder()
-                .baseUrl("http://localhost:8080")
+                .baseUrl(baseUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
