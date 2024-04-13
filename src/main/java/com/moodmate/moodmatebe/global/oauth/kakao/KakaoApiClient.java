@@ -24,8 +24,10 @@ public class KakaoApiClient implements OAuthApiClient {
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String KAKAO_CLIENT_ID;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String REDIRECT_URI;
+//    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+//    private String REDIRECT_URI;
+
+    private String REDIRECT_URI = "https://develop.d1vm6ddjncz2cx.amplifyapp.com/oauth/callback/kakao";
 
     @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
     private String TOKEN_URI;

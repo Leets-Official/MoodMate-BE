@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @Slf4j
-//@CrossOrigin(value = "http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping
