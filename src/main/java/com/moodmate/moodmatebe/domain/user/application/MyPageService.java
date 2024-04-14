@@ -29,7 +29,7 @@ public class MyPageService {
         return MyPageResponse.builder()
                 .userGender(user.getUserGender())
                 .userNickname(user.getUserNickname())
-                .year(user.getYear())
+                .year(user.getUserBirthYear())
                 .userDepartment(user.getUserDepartment())
                 .userKeywords(user.getUserKeywords())
                 .preferYearMin(prefer.getPreferYearMin())

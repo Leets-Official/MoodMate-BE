@@ -3,11 +3,11 @@ package com.moodmate.moodmatebe.domain.matching.domain;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -32,7 +32,7 @@ public class Person {
         this.mood = prefer.getPreferMood();
         this.minYear = prefer.getPreferYearMin();
         this.maxYear = prefer.getPreferYearMax();
-        this.year = user.getYear();
+        this.year = user.getUserBirthYear();
         this.department = user.getUserDepartment();
         this.dontCareSameDepartment = prefer.isPreferDepartmentPossible();
         this.preferences = new ArrayList<>();

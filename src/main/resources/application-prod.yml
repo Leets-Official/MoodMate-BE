@@ -1,6 +1,9 @@
+# TODO 추후 kakaologin dev 검증 시 아래 yml 설정 변경할것
+
 spring:
   datasource:
-    url: ENC(URQ1YM2k6hAw0/FQZonsjaeaJ+0fCWaYpUNhQhy57julIh9+51wGvQQbhO8r0faVtFdjfJHkfQ9L10WgJTidgw7xtTdt2kWat/a5TVyO0Shq0DDzzsYNB58dBcVePGeddLoNv9cO4u0=)
+    # prod용 임시 db.
+    url: ENC(IGBIQXu1p+L0142+uplxofAcyhNyx4QBj5kJMRAByq5C/Pkr88FSy/RLM/SgafzPHUoPsuThv5CbdV9F81BylRp3CsaRs7+DKKIH3DxVldHsT7eCXyWs0suZ379EgXh7pjd34jc/VQw=)
     username: ENC(lTMVOKtY/fZl+Tug5yVIjQ==)
     password: ENC(V+/5+sksg/OG4KbxeGc84xoWdskdQPR4)
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -29,22 +32,31 @@ spring:
     oauth2:
       client:
         registration:
-          #TODO: 소셜로그인 변경하기
           google:
             client-id: ENC(O92xh3ZjEoMaKUExPEGourf6SwvbblsAQGdAiEByO/TwAkDNWQIHWFyQGDQr2AZzxSCXXadt241C5Jep4M7dCtQJJj7njUJFJ3o0LueR+lpFg/FP1ewKdQ==)
             client-secret: ENC(j7VmRrdm8RKZxvM3x8zhg60orNREcTRTVtw52QGWPZLi3VLKNlAlxW/0y5lY3Hay)
-            redirect-uri: ${baseUrl}/oauth/callback/google #redirect-uri 수정하기
+            redirect-uri: ${baseUrl}/oauth/callback/google
             scope:
               - email
               - profile
+          kakao:
+            client-id: ENC(jtFSE8X3pgeKaeyOGatxdqrvK1t4FmdbpZaHiPf6E2RoEiEEYdOQcvD3Ko34rAH9)
+            client-secret: ENC(DuxDV+plHXpQS6l4tBhROg7UthSrsjKKlKgFlQijPxeSof6VLLaZBrcK7zdTydS4)
+            redirect-uri: ${baseUrl}/oauth/callback/kakao
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            client-name: Kakao
+            scope: profile_nickname, profile_image, account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
 jwt:
   access_secret: ENC(JxVNEnrDkmH9HUSpiBjDD7GvObaGAWk21JXFvZPV4FgEmUQb/9LtEwkLjtTc5Q9F+WQj/gz5vGmPiP4H4BAAgw==)
   refresh_secret: ENC(hzfWfJcKzqgetp0MJkmjjOj5t9BwEsHjTV9i/t0iili1Cihv9K4LLAPtcR3ZSF8X+Bqmw3K2yAece+I1wHfXsA==)
 
-cors:
-  origin:
-    development: ENC(BMIQf/o2B87dywylesBMMk00s365UiZicBhkCrDXrJg=)
-    production: ENC(ppojO5UkpyTsrA26/AkaJADO74y10zljtzG8kAwfkn3Q4MEFl5LShh3jsYtqdBaz)
-
-social-login:
-  redirect: ENC(W4b92hK1VGe6ronN9gmeVVoyCvRoGTWPlwVhq12WBWPi4lyg+Bxwu0oVn9KCKQZU)
+logging:
+  level:
+    root: info

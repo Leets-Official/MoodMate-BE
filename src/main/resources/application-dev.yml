@@ -1,9 +1,14 @@
-# TODO 추후 kakaologin dev 검증 시 아래 yml 설정 변경할것
+server:
+  port: 8088
+
+app:
+  baseUrl: ${baseUrl}
+
 
 spring:
   datasource:
-    # local용 임시 db.
-    url: ENC(Ri4KrNG1MNcUb7b+erH4l/838FO6+gx6jkDR9MfiI49DUFxU+kVV+mVac60I7nEXU2ssfNZj00TlI0jHFROhIrPB4JiLVAFJW5hBrU3PLh2datvtes0t99rRh+nMqjwkbG5SqMmNa94=)
+    # dev용 database
+    url: ENC(NKpZcVuFwcDYDlSTJcoYUmQ8ZycoSuSqmylNCzXChrgcQhLNojaQe/nXCYkByw8BmUcIkdvYV7QML6Hf4Fp+KD1o61RKscwyRi4V+kxhRoDNMTFE15BqA/J+Q+9iDO1JWPSOw6WU7rg=)
     username: ENC(lTMVOKtY/fZl+Tug5yVIjQ==)
     password: ENC(V+/5+sksg/OG4KbxeGc84xoWdskdQPR4)
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -25,9 +30,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-    mongodb:
-      uri: mongodb://localhost:27017/chatdb
-
   security:
     oauth2:
       client:
@@ -51,7 +53,6 @@ jwt:
   access_secret: ENC(JxVNEnrDkmH9HUSpiBjDD7GvObaGAWk21JXFvZPV4FgEmUQb/9LtEwkLjtTc5Q9F+WQj/gz5vGmPiP4H4BAAgw==)
   refresh_secret: ENC(hzfWfJcKzqgetp0MJkmjjOj5t9BwEsHjTV9i/t0iili1Cihv9K4LLAPtcR3ZSF8X+Bqmw3K2yAece+I1wHfXsA==)
 
-# 적절하게 개발 시 DEBUG, TRACE 등으로 변경하여 사용
 logging:
   level:
     root: info
