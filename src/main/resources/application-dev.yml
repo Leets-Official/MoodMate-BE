@@ -32,7 +32,7 @@ spring:
       port: 6379
     mongodb:
       uri: ENC(VuMfFurVm4glsVWYNWnSSDgS5B5Ng5GHT5aq3xTTsA1s5LgZc8IF8m4IbRzTAvUXAK1f0IdBvyLWP3Gd7awDnw==)
-      authentication-database: ENC(bYuKsZ73bSPgVpH9PvK69Q==)
+      authentication-database: ENC(Ofv5QuCO25DqzZK6JuvwiWyST8tdN9V/)
 
   security:
     oauth2:
