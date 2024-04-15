@@ -1,7 +1,7 @@
 package com.moodmate.moodmatebe.domain.user.application;
 
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatUserDto;
+import com.moodmate.moodmatebe.domain.chat.dto.response.ChatUserDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
@@ -143,7 +143,7 @@ public class UserService {
         Long userId = jwtProvider.getUserIdFromToken(token);
         Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
         ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
-        return new ChatUserDto(otherUser.getUserGender(), otherUser.getUserNickname(), chatRoom.getRoomActive());
+        return new ChatUserDto(otherUser, chatRoom);
     }
 
     public PartnerResponse getPartnerInfo(String authorizationHeader) {
