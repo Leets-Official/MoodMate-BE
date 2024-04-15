@@ -31,6 +31,10 @@ public class ChatController {
     @Operation(summary = "실시간 채팅", description = "실시간으로 채팅 메시지를 보냅니다.")
     @MessageMapping("/chat")
     public void handleChatMessage(ChatMessageDto messageDto) {
+        log.info("chatStart");
+        log.info("content:{}",messageDto.getContent());
+        log.info("token:{}",messageDto.getToken());
+        log.info("roomId:{}",messageDto.getRoomId());
         chatService.onMessage(messageDto);
     }
 

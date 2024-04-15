@@ -42,7 +42,8 @@ public class ChatService {
         chatRoomService.enterChatRoom(roomId);
 
         redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), chatMessageDto);
-
+        log.info("userId:{}",userId);
+        log.info("roomId:{}",roomId);
         Message message = Message.of(chatMessageDto);
         messageRepository.save(message);
     }
