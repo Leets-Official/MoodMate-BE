@@ -30,6 +30,9 @@ spring:
     redis:
       host: localhost
       port: 6379
+    mongodb:
+      uri: ENC(GmWmyq6zCTH+Jv8fZHBTUC85M6eaT2H7fJJ0wjxpcTw4pVP8mNUh5BLB2PTEGPsQK4MuFJ0DXSP6xf2EN/sytA==)
+
   security:
     oauth2:
       client:
