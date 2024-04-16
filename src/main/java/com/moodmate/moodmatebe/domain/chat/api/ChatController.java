@@ -35,7 +35,7 @@ public class ChatController {
         log.info("content:{}",messageDto.getContent());
         log.info("token:{}",messageDto.getToken());
         log.info("roomId:{}",messageDto.getRoomId());
-        chatService.onMessage(messageDto);
+        chatService.handleMessage(messageDto);
     }
 
     @Operation(summary = "채팅내역 조회", description = "채팅내역을 조회합니다.")

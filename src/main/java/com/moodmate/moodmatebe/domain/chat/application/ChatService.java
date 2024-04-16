@@ -34,7 +34,7 @@ public class ChatService {
     private final RedisPublisher redisPublisher;
     private final UserService userService;
 
-    public void onMessage(ChatMessageDto chatMessageDto) {
+    public void handleMessage(ChatMessageDto chatMessageDto) {
         String authorization = jwtProvider.getTokenFromAuthorizationHeader(chatMessageDto.getToken());
         Long userId = getUserId(authorization);
         Long roomId = getRoomId(userId);
