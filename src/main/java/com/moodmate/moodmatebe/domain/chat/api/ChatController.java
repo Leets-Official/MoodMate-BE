@@ -44,6 +44,7 @@ public class ChatController {
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam Long roomId,
             @RequestParam int size, @RequestParam int page){
+        log.info("authrizationHeader:{}", authorizationHeader);
 
         return ResponseEntity.ok(chatService.getMessage(authorizationHeader, size, page, roomId));
     }
