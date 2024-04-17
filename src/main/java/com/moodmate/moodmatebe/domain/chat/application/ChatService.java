@@ -37,10 +37,12 @@ public class ChatService {
     private final UserService userService;
 
     public void handleMessage(ChatMessageDto chatMessageDto) {
+        log.info("service");
         String authorization = jwtProvider.getTokenFromAuthorizationHeader(chatMessageDto.getToken());
+        log.info("authorization:{}",authorization);
         Long userId = jwtTokenGenerator.extractUserId(authorization);
-        Long roomId = getRoomId(userId);
         log.info("userId:{}",userId);
+        Long roomId = getRoomId(userId);
         log.info("roomId:{}",roomId);
 
         chatRoomService.enterChatRoom(roomId);
@@ -49,7 +51,6 @@ public class ChatService {
 
         Message message = Message.of(chatMessageDto);
         messageRepository.save(message);
-        System.out.println("!");
     }
 
     public ChatResponseDto getMessage(String authorizationHeader, int size, int page, Long roomId) {
