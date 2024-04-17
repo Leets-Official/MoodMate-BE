@@ -16,6 +16,7 @@ import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
+import com.moodmate.moodmatebe.global.jwt.JwtTokenGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final PreferRepository preferRepository;
+    private final JwtTokenGenerator jwtTokenGenerator;
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
 
@@ -140,7 +142,9 @@ public class UserService {
     public ChatUserDto getChatPartnerInfo(String authorizationHeader) {
         User otherUser = getOtherUser(authorizationHeader);
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
-        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        Long userId = jwtTokenGenerator.extractUserId(token);
+        //Long userId = jwtProvider.getUserIdFromToken(token);
         Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
         ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
         return new ChatUserDto(otherUser, chatRoom);

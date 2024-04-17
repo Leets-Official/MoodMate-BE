@@ -13,6 +13,7 @@ import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
+import com.moodmate.moodmatebe.global.jwt.JwtTokenGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,22 +31,25 @@ public class ChatService {
     private final RoomRepository roomRepository;
     private final MessageRepository messageRepository;
     private final JwtProvider jwtProvider;
+    private final JwtTokenGenerator jwtTokenGenerator;
     private final ChatRoomService chatRoomService;
     private final RedisPublisher redisPublisher;
     private final UserService userService;
 
     public void handleMessage(ChatMessageDto chatMessageDto) {
         String authorization = jwtProvider.getTokenFromAuthorizationHeader(chatMessageDto.getToken());
-        Long userId = getUserId(authorization);
+        Long userId = jwtTokenGenerator.extractUserId(authorization);
         Long roomId = getRoomId(userId);
+        log.info("userId:{}",userId);
+        log.info("roomId:{}",roomId);
 
         chatRoomService.enterChatRoom(roomId);
 
         redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), chatMessageDto);
-        log.info("userId:{}",userId);
-        log.info("roomId:{}",roomId);
+
         Message message = Message.of(chatMessageDto);
         messageRepository.save(message);
+        System.out.println("!");
     }
 
     public ChatResponseDto getMessage(String authorizationHeader, int size, int page, Long roomId) {
