@@ -69,7 +69,7 @@ public class ChatService {
 
         Pageable pageable = PageRequest.of(page - 1, size);
         ChatRoom chatRoom = getChatRoom(roomId);
-        return  messageRepository.findByRoomIdOrderByCreatedAtDesc(chatRoom.getRoomId(), pageable);
+        return  messageRepository.findByRoomIdOrderByCreatedAtAsc(chatRoom.getRoomId(), pageable);
     }
 
 
