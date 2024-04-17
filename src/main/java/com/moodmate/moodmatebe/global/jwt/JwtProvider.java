@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -32,7 +33,10 @@ public class JwtProvider {
     //     * @param secretKey
     public JwtProvider(@Value("${jwt.access_secret}") String secretKey) {
         //byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        //this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+
     }
 
     //토큰 생성
