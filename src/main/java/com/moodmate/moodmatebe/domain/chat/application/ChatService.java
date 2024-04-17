@@ -31,7 +31,6 @@ public class ChatService {
     private final RoomRepository roomRepository;
     private final MessageRepository messageRepository;
     private final JwtProvider jwtProvider;
-    private final JwtTokenGenerator jwtTokenGenerator;
     private final ChatRoomService chatRoomService;
     private final RedisPublisher redisPublisher;
     private final UserService userService;
@@ -40,7 +39,7 @@ public class ChatService {
         log.info("service");
         String authorization = jwtProvider.getTokenFromAuthorizationHeader(chatMessageDto.getToken());
         log.info("authorization:{}",authorization);
-        Long userId = jwtTokenGenerator.extractUserId(authorization);
+        Long userId = getUserId(authorization);
         log.info("userId:{}",userId);
         Long roomId = getRoomId(userId);
         log.info("roomId:{}",roomId);
