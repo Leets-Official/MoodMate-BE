@@ -36,13 +36,9 @@ public class ChatService {
     private final UserService userService;
 
     public void handleMessage(ChatMessageDto chatMessageDto) {
-        log.info("service");
         String authorization = jwtProvider.getTokenFromAuthorizationHeader(chatMessageDto.getToken());
-        log.info("authorization:{}",authorization);
         Long userId = getUserId(authorization);
-        log.info("userId:{}",userId);
         Long roomId = getRoomId(userId);
-        log.info("roomId:{}",roomId);
 
         chatRoomService.enterChatRoom(roomId);
 
@@ -53,8 +49,6 @@ public class ChatService {
     }
 
     public ChatResponseDto getMessage(String authorizationHeader, int size, int page, Long roomId) {
-
-
         Long validRoomId = chatRoomService.validateRoomIdAuthorization(roomId, authorizationHeader);
         ChatUserDto user = userService.getChatPartnerInfo(authorizationHeader);
 
