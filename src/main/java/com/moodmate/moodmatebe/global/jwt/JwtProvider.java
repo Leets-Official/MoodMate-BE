@@ -2,7 +2,6 @@ package com.moodmate.moodmatebe.global.jwt;
 
 import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +31,8 @@ public class JwtProvider {
     // 주의점: 여기서 @Value는 `springframework.beans.factory.annotation.Value`소속이다! lombok의 @Value와 착각하지 말것!
     //     * @param secretKey
     public JwtProvider(@Value("${jwt.access_secret}") String secretKey) {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        //byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 
     //토큰 생성
