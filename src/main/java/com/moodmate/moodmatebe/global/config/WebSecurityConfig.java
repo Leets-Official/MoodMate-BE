@@ -67,6 +67,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/oauth/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/healthcheck").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
+                                .requestMatchers("**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling((exceptionConfig) -> exceptionConfig.authenticationEntryPoint(jwtAuthenticationEntryPoint)
