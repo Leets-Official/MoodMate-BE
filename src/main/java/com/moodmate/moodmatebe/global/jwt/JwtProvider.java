@@ -104,7 +104,10 @@ public class JwtProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return Long.parseLong(claims.getSubject());
+        log.info("토큰유효");
+        Long userId = Long.parseLong(claims.getSubject());
+        log.info("userId:{}", userId);
+        return userId;
     }
 
 
