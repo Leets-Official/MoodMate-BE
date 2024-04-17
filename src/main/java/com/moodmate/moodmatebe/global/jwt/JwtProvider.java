@@ -23,21 +23,21 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtProvider {
-    private final SecretKey key;
+    //private final SecretKey key;
     private static final String AUTHORITIES_KEY = "auth";
 
-   // @Value("${jwt.access_secret}")
-   // private String accessSecret;
+    @Value("${jwt.access_secret}")
+    private String accessSecret;
 
     // 주의점: 여기서 @Value는 `springframework.beans.factory.annotation.Value`소속이다! lombok의 @Value와 착각하지 말것!
     //     * @param secretKey
-    public JwtProvider(@Value("${jwt.access_secret}") String secretKey) {
-        //byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
-        //this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
-
-    }
+//    public JwtProvider(@Value("${jwt.access_secret}") String secretKey) {
+//        //byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+//        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+//        //this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+//        this.key = Keys.hmacShaKeyFor(keyBytes);
+//
+//    }
 
     //토큰 생성
     public String generate(String subject, Date expiredAt) {
@@ -45,7 +45,7 @@ public class JwtProvider {
                 .setSubject(subject)
                 .claim(AUTHORITIES_KEY, Authority.ROLE_USER)
                 .setExpiration(expiredAt)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(SignatureAlgorithm.HS256,accessSecret)
                 .compact();
     }
 
@@ -57,7 +57,7 @@ public class JwtProvider {
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(accessSecret)
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody();
@@ -68,7 +68,7 @@ public class JwtProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(accessSecret).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
@@ -104,7 +104,8 @@ public class JwtProvider {
 
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key) // 수정된 부분: accessSecret 대신 key 사용
+                .setSigningKey(accessSecret)
+                //.setSigningKey(key) // 수정된 부분: accessSecret 대신 key 사용
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
