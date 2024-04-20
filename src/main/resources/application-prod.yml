@@ -60,3 +60,5 @@ jwt:
 logging:
   level:
     root: info
+websocket:
+  allowedOrigins: ENC(+L0+mDIuEa3k7xJLH//Yqjsk3lfgZMRg4qZQZID/6LVE8YMSC9GFVg==)
