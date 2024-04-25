@@ -26,7 +26,7 @@ spring:
       host: localhost
       port: 6379
     mongodb:
-      uri: mongodb://localhost:27017/chatdb
+      uri: ENC(COzOv0EX5mcy3UTlm/uNN2vDGuMy+PaUZmbX0Wjrd7cYhwhhSU91GLcf14yqORVj4natNiiisNPCiVKghhHxRWA7as4X+0PppmJipi2WrIQy7EW9Xr+yHqrvaP6C0jTEpMfNN3XYr1rl1dBBSvezaQ==)
 
   security:
     oauth2:
