@@ -26,7 +26,7 @@ spring:
       host: localhost
       port: 6379
     mongodb:
-      uri: ENC(oDUEe1/6m848hraLOjvPvEm8+uvxV0Q2XEQfOJ5CeGoNPoR4iDNSbc8YCsG2jGchqcQiv9sDd95jsbMTdVaW/USSyk5XiUVFHSaZBIsSGL07INmcMorRNp8HBZoLpsKGsNJAmAKp/QiUtLWFU0gcKpPjs5b3KLXeZge7sG3VAjU=)
+      uri: ENC(COzOv0EX5mcy3UTlm/uNN2vDGuMy+PaUZmbX0Wjrd7cYhwhhSU91GLcf14yqORVj4natNiiisNPCiVKghhHxRWA7as4X+0PppmJipi2WrIQy7EW9Xr+yHqrvaP6C0jTEpMfNN3XYr1rl1dBBSvezaQ==)
 
   security:
     oauth2:
@@ -60,3 +60,5 @@ jwt:
 logging:
   level:
     root: info
+websocket:
+  allowedOrigins: ENC(+L0+mDIuEa3k7xJLH//Yqjsk3lfgZMRg4qZQZID/6LVE8YMSC9GFVg==)
