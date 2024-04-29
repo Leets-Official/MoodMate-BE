@@ -1,4 +1,4 @@
-package org.example.weneedbe.notification.service;
+package com.moodmate.moodmatebe.domain.notification.service;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
