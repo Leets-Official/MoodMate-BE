@@ -1,4 +1,4 @@
-package org.example.weneedbe.notification.repository;
+package com.moodmate.moodmatebe.domain.notification.repository;
 
 import com.moodmate.moodmatebe.domain.notification.domain.Notification;
 import com.moodmate.moodmatebe.domain.user.domain.User;
