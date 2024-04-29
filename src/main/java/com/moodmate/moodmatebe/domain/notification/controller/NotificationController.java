@@ -1,6 +1,5 @@
-package org.example.weneedbe.notification.controller;
+package com.moodmate.moodmatebe.domain.notification.controller;
 
-import com.moodmate.moodmatebe.domain.chat.dto.response.ChatResponseDto;
 import com.moodmate.moodmatebe.domain.notification.dto.request.NotificationDto;
 import com.moodmate.moodmatebe.domain.notification.dto.request.TokenDto;
 import com.moodmate.moodmatebe.domain.notification.service.NotificationService;
