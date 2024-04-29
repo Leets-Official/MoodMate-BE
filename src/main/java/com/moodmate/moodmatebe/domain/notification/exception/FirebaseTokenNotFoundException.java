@@ -1,4 +1,4 @@
-package org.example.weneedbe.notification.exception;
+package com.moodmate.moodmatebe.domain.notification.exception;
 
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
