@@ -38,3 +38,6 @@ out/
 .vscode/
 
 .DS_Store
+
+### firebase ###
+/src/main/resources/mm-firebase-key.json
