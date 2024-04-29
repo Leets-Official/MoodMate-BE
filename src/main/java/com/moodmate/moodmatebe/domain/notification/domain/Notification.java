@@ -1,4 +1,4 @@
-package org.example.weneedbe.notification.domain;
+package com.moodmate.moodmatebe.domain.notification.domain;
 
 import com.moodmate.moodmatebe.domain.notification.dto.request.TokenDto;
 import com.moodmate.moodmatebe.domain.user.domain.User;
