@@ -1,4 +1,4 @@
-package org.example.weneedbe.notification.dto.request;
+package com.moodmate.moodmatebe.domain.notification.dto.request;
 
 import lombok.Getter;
 
