@@ -10,6 +10,7 @@ import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class MatchingService {
         this.whoMeetRepository = whoMeetRepository;
     }
 
+    @Transactional
     public void match() {
         List<Prefer> activeMatchTrue = preferRepository.findByUserMatchActiveAndGenderTrue(Gender.MALE);
         activeMatchTrue.addAll(preferRepository.findByUserMatchActiveAndGenderTrue(Gender.FEMALE));
@@ -52,6 +54,7 @@ public class MatchingService {
         }
     }
 
+    @Transactional
     public void grouping() {
         Map<String, Man> m = convertListToMap(men);
         Map<String, Woman> w = convertListToMap(women);
