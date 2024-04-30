@@ -57,3 +57,5 @@ logging:
     root: info
 websocket:
   allowedOrigins: "localhost:3000"
+firebase:
+  path: ENC(M47HHStR+hGcCyYNQ6hnGJ9IMadcBEmoLtXG+sYnGxs=)
