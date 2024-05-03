@@ -27,7 +27,10 @@ public class KakaoApiClient implements OAuthApiClient {
 //    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
 //    private String REDIRECT_URI;
 
-    private String REDIRECT_URI = "https://develop.d1vm6ddjncz2cx.amplifyapp.com/login/kakao";
+    // private String REDIRECT_URI = "https://develop.d1vm6ddjncz2cx.amplifyapp.com/login/kakao";
+
+    // 프론트에서 로컬 작업을 원할 경우
+    private String REDIRECT_URI = "http://localhost:3000/login/kakao";
 
     @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
     private String TOKEN_URI;
