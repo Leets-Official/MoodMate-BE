@@ -4,7 +4,6 @@ server:
 app:
   baseUrl: ${baseUrl}
 
-
 spring:
   datasource:
     # dev용 database
@@ -40,7 +39,7 @@ spring:
           kakao:
             client-id: ENC(jtFSE8X3pgeKaeyOGatxdqrvK1t4FmdbpZaHiPf6E2RoEiEEYdOQcvD3Ko34rAH9)
             client-secret: ENC(DuxDV+plHXpQS6l4tBhROg7UthSrsjKKlKgFlQijPxeSof6VLLaZBrcK7zdTydS4)
-            redirect-uri: ${baseUrl}/oauth/callback/kakao
+            redirect-uri: ${redirectURL}
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Kakao
