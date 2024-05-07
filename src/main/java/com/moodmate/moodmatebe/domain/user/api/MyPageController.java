@@ -1,10 +1,8 @@
 package com.moodmate.moodmatebe.domain.user.api;
 
 import com.moodmate.moodmatebe.domain.user.application.MyPageService;
-import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.dto.MyPageResponse;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
-import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -39,8 +35,21 @@ public class MyPageController {
     @GetMapping()
     public ResponseEntity<Map<String, MyPageResponse>> getMyPage(@RequestHeader("Authorization") String authorizationHeader) {
         MyPageResponse myPageResponse = myPageService.getMyPage(authorizationHeader);
-
         return new ResponseEntity<>(Map.of("myPageResponse", myPageResponse), HttpStatus.OK);
     }
 
+    @Operation(summary = "마이 페이지 수정하기", description = "유저의 정보를 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PutMapping()
+    public ResponseEntity<Map<String, MyPageResponse>> modifyMyPage(@RequestHeader("Authorization") String authorizationHeader, @RequestBody MyPageResponse myPageResponse) {
+        MyPageResponse response = myPageService.modifyMyPage(authorizationHeader, myPageResponse);
+
+
+        return new ResponseEntity<>(Map.of("myPageResponse", response), HttpStatus.OK);
+    }
 }
