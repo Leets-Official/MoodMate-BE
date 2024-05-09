@@ -158,7 +158,7 @@ public class MatchingService {
     private <T extends Person> Map<String, T> convertListToMap(List<T> list) {
         Map<String, T> map = new LinkedHashMap<>();
         for (T person : list) {
-            map.put(String.valueOf(person.getName()), person);
+            map.put(String.valueOf(person.getUser().getUserId()), person);  // user_id를 키로 사용
         }
         return map;
     }
