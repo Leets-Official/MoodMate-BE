@@ -37,8 +37,10 @@ public class NotificationService {
         Optional<Notification> existingNotification = notificationRepository.findByUser(user);
         if (existingNotification.isPresent()) {
             Notification notification = existingNotification.get();
-            notification.setFcmToken(tokenDto.getFcmToken());
-            notificationRepository.save(notification);
+            if (!notification.getFcmToken().equals(tokenDto.getFcmToken())) {
+                notification.setFcmToken(tokenDto.getFcmToken());
+                notificationRepository.save(notification);
+            }
         } else {
             Notification notification = Notification.of(user, tokenDto);
             notificationRepository.save(notification);
