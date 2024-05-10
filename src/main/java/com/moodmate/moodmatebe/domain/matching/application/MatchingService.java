@@ -164,10 +164,10 @@ public class MatchingService {
     }
 
     private static <T extends Person> Map<String, Map<String, T>> groupByMood(Map<String, T> persons) {
-        Map<String, Map<String, T>> groups = new HashMap<>();
+        Map<String, Map<String, T>> groups = new LinkedHashMap<>();
         for (T person : persons.values()) {
             if (!groups.containsKey(person.getMood())) {
-                groups.put(person.getMood(), new HashMap<>());
+                groups.put(person.getMood(), new LinkedHashMap<>());
             }
             groups.get(person.getMood()).put(person.getName(), person);
         }
