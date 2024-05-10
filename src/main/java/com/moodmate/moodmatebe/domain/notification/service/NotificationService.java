@@ -34,7 +34,7 @@ public class NotificationService {
         Long userId = jwtProvider.getUserIdFromToken(authorization);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Optional<Notification> existingNotification = notificationRepository.findByUser_UserId(user.getUserId());
+        Optional<Notification> existingNotification = notificationRepository.findByUser(user);
         if (existingNotification.isPresent()) {
             Notification notification = existingNotification.get();
             if (!notification.getFcmToken().equals(tokenDto.getFcmToken())) {
@@ -52,7 +52,7 @@ public class NotificationService {
         String authorization = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(authorization);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Notification notification = notificationRepository.findByUser_UserId(user.getUserId()).orElseThrow(FirebaseTokenNotFoundException::new);
+        Notification notification = notificationRepository.findByUser(user).orElseThrow(FirebaseTokenNotFoundException::new);
 
         Message message = Message.builder()
                 .setToken(notification.getFcmToken())
