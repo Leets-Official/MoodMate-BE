@@ -50,7 +50,6 @@ public class WebSecurityConfig {
                 "requestId",
                 "Correlation-Id"
         ));
-        configuration.addAllowedHeader("*"); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 인증 정보 포함 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
