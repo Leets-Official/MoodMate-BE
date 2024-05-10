@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -33,8 +34,15 @@ public class NotificationService {
         Long userId = jwtProvider.getUserIdFromToken(authorization);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Notification notification = Notification.of(user, tokenDto);
-        notificationRepository.save(notification);
+        Optional<Notification> existingNotification = notificationRepository.findByUser(user);
+        if (existingNotification.isPresent()) {
+            Notification notification = existingNotification.get();
+            notification.setFcmToken(tokenDto.getFcmToken());
+            notificationRepository.save(notification);
+        } else {
+            Notification notification = Notification.of(user, tokenDto);
+            notificationRepository.save(notification);
+        }
     }
 
     public Map<String, Object> pushNotification(String authorizationHeader, NotificationDto notificationDto) throws ExecutionException, InterruptedException {
