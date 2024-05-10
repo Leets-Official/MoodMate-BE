@@ -34,7 +34,7 @@ public class NotificationService {
         Long userId = jwtProvider.getUserIdFromToken(authorization);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Optional<Notification> existingNotification = notificationRepository.findByUser(user);
+        Optional<Notification> existingNotification = notificationRepository.findByUser_UserId(user.getUserId());
         if (existingNotification.isPresent()) {
             Notification notification = existingNotification.get();
             if (!notification.getFcmToken().equals(tokenDto.getFcmToken())) {

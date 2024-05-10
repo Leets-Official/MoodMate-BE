@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification,Long> {
-    Optional<Notification> findByUser(User user);
+    Optional<Notification> findByUser_UserId(Long user_userId);
 }
