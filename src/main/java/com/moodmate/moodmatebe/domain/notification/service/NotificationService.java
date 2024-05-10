@@ -14,6 +14,7 @@ import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
@@ -34,12 +36,18 @@ public class NotificationService {
         Long userId = jwtProvider.getUserIdFromToken(authorization);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
+        log.info("user:{}", user.getUserId());
         Optional<Notification> existingNotification = notificationRepository.findByUser(user);
+
         if (existingNotification.isPresent()) {
+            log.info("nofiticationId:{}",existingNotification.get().getNotificationId());
             Notification notification = existingNotification.get();
             if (!notification.getFcmToken().equals(tokenDto.getFcmToken())) {
+                log.info("equals:{}",notification.getFcmToken().equals(tokenDto.getFcmToken()));
                 notification.setFcmToken(tokenDto.getFcmToken());
                 notificationRepository.save(notification);
+            }else{
+                return;
             }
         } else {
             Notification notification = Notification.of(user, tokenDto);
