@@ -9,6 +9,7 @@ import com.moodmate.moodmatebe.domain.notification.dto.request.NotificationDto;
 import com.moodmate.moodmatebe.domain.notification.dto.request.TokenDto;
 import com.moodmate.moodmatebe.domain.notification.exception.FirebaseTokenNotFoundException;
 import com.moodmate.moodmatebe.domain.notification.repository.NotificationRepository;
+import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
@@ -29,6 +30,7 @@ public class NotificationService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+    private final UserService userService;
 
     public void register(String authorizationHeader, TokenDto tokenDto) {
         String authorization = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
@@ -51,10 +53,9 @@ public class NotificationService {
 
     public Map<String, Object> pushNotification(String authorizationHeader, NotificationDto notificationDto) throws ExecutionException, InterruptedException {
         Map<String, Object> result = new HashMap<>();
-        String authorization = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
-        Long userId = jwtProvider.getUserIdFromToken(authorization);
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Notification notification = notificationRepository.findByUser(user).orElseThrow(FirebaseTokenNotFoundException::new);
+
+        User otherUser = userService.getOtherUser(authorizationHeader);
+        Notification notification = notificationRepository.findByUser(otherUser).orElseThrow(FirebaseTokenNotFoundException::new);
 
         Message message = Message.builder()
                 .setToken(notification.getFcmToken())
