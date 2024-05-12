@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Builder
 @Getter
@@ -31,7 +32,7 @@ public class Message {
                 .senderId(request.getUserId())
                 .content(request.getContent())
                 //.isRead(request.isRead())
-                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
                 .build();
     }
 }
