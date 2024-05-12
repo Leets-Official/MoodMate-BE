@@ -163,7 +163,7 @@ public class UserService {
         );
     }
 
-    private User getOtherUser(String authorizationHeader) {
+    public User getOtherUser(String authorizationHeader) {
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);
 
