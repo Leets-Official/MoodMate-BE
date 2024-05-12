@@ -1,7 +1,7 @@
 package com.moodmate.moodmatebe.domain.user.application;
 
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
-import com.moodmate.moodmatebe.domain.chat.dto.ChatUserDto;
+import com.moodmate.moodmatebe.domain.chat.dto.response.ChatUserDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
@@ -15,9 +15,8 @@ import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.error.ErrorCode;
 import com.moodmate.moodmatebe.global.error.exception.ServiceException;
-import com.moodmate.moodmatebe.global.jwt.AuthRole;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
-import io.jsonwebtoken.Claims;
+import com.moodmate.moodmatebe.global.jwt.JwtTokenGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final PreferRepository preferRepository;
+    private final JwtTokenGenerator jwtTokenGenerator;
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
 
@@ -51,6 +51,7 @@ public class UserService {
         Prefer prefer = new Prefer();
 
         prefer.setUser(user);
+        prefer.setPreferDepartmentPossible(preferInfoRequest.isPreferDepartmentPossible());
         prefer.setPreferMood(preferInfoRequest.getPreferMood());
         prefer.setPreferYearMax(preferInfoRequest.getPreferYearMax());
         prefer.setPreferYearMin(preferInfoRequest.getPreferYearMin());
@@ -104,7 +105,8 @@ public class UserService {
             user.setUserKeywords(userInfoDto.getKeywords());
             user.setUserGender(Gender.valueOf(String.valueOf(userInfoDto.getGender())));
             user.setUserDepartment(userInfoDto.getDepartment());
-            user.setYear(userInfoDto.getYear());
+            user.setUserBirthYear(userInfoDto.getBirthYear());
+            user.setUserMatchActive(true);
 
             userRepository.save(user);
         } catch (ServiceException e) {
@@ -116,34 +118,35 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public TokenResponse refreshAccessToken(String refreshToken) {
-        try {
-            jwtProvider.validateToken(refreshToken, true);
-            Claims claims = jwtProvider.parseClaims(refreshToken, true);
-
-            Long userId = Long.parseLong(claims.get("id").toString());
-            String userEmail = claims.get("email").toString();
-            AuthRole role = AuthRole.valueOf(claims.get("role").toString());
-
-            String newAccessToken = jwtProvider.generateToken(userId, userEmail, role, false);
-            String newRefreshToken = jwtProvider.generateToken(userId, userEmail, role, true);
-
-            return new TokenResponse(newAccessToken, newRefreshToken);
-        } catch (ServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @Transactional
+//    public TokenResponse refreshAccessToken(String refreshToken) {
+//        try {
+//            jwtProvider.validateToken(refreshToken, true);
+//            Claims claims = jwtProvider.parseClaims(refreshToken, true);
+//
+//            Long userId = Long.parseLong(claims.get("id").toString());
+//            String userEmail = claims.get("email").toString();
+//            Authority role = Authority.valueOf(claims.get("role").toString());
+//
+//            String newAccessToken = jwtProvider.generateToken(userId, userEmail, role, false);
+//            String newRefreshToken = jwtProvider.generateToken(userId, userEmail, role, true);
+//
+//            return new TokenResponse(newAccessToken, newRefreshToken);
+//        } catch (ServiceException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     public ChatUserDto getChatPartnerInfo(String authorizationHeader) {
         User otherUser = getOtherUser(authorizationHeader);
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+
         Long userId = jwtProvider.getUserIdFromToken(token);
         Optional<ChatRoom> activeChatRoomByUserId = roomRepository.findActiveChatRoomByUserId(userId);
         ChatRoom chatRoom = activeChatRoomByUserId.orElseThrow(() -> new ChatRoomNotFoundException());
-        return new ChatUserDto(otherUser.getUserGender(), otherUser.getUserNickname(), chatRoom.getRoomActive());
+        return new ChatUserDto(otherUser, chatRoom);
     }
 
     public PartnerResponse getPartnerInfo(String authorizationHeader) {
@@ -155,12 +158,12 @@ public class UserService {
                 otherUser.getUserKeywords(),
                 otherUser.getUserGender(),
                 otherUser.getUserDepartment(),
-                otherUser.getYear(),
+                otherUser.getUserBirthYear(),
                 preferMoodByUserId.orElse(null)
         );
     }
 
-    private User getOtherUser(String authorizationHeader) {
+    public User getOtherUser(String authorizationHeader) {
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);
 

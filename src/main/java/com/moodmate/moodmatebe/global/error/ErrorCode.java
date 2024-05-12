@@ -17,7 +17,8 @@ public enum ErrorCode {
     JSON_MAPPING_ERROR(400, "JSON_MAPPING_ERROR", "제이슨 맵핑에 실패했습니다."),
     INVALID_INPUT_VALUE(400, "INVALID_INPUT_VALUE", "유효하지 않은 입력값입니다."),
     PREFER_NOT_FOUND(404, "PREFER_NOT_FOUND", "선호 조건이 설정되지 않았습니다."),
-    CHAT_ROOM_UNAUTHORIZED(401, "CHAT_ROOM_UNAUTHORIZED","권한이 없는 채팅방입니다.");
+    CHAT_ROOM_UNAUTHORIZED(401, "CHAT_ROOM_UNAUTHORIZED","권한이 없는 채팅방입니다."),
+    FIREBASE_TOKEN_NOT_FOUND(404, "FIREBASE_TOKEN_NOT_FOUND","파이어베이스토큰이 존재하지않습니다.");
 
     private final int httpStatus;
     private final String code;

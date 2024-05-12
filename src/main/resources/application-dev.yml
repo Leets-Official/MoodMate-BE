@@ -1,0 +1,64 @@
+server:
+  port: 8088
+
+app:
+  baseUrl: ${baseUrl}
+
+spring:
+  datasource:
+    # dev용 database
+    url: ENC(NKpZcVuFwcDYDlSTJcoYUmQ8ZycoSuSqmylNCzXChrgcQhLNojaQe/nXCYkByw8BmUcIkdvYV7QML6Hf4Fp+KD1o61RKscwyRi4V+kxhRoDNMTFE15BqA/J+Q+9iDO1JWPSOw6WU7rg=)
+    username: ENC(lTMVOKtY/fZl+Tug5yVIjQ==)
+    password: ENC(V+/5+sksg/OG4KbxeGc84xoWdskdQPR4)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database: mysql
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  h2:
+    console:
+      enabled: false
+  data:
+    redis:
+      host: moodmate-redis
+      port: 6379
+    mongodb:
+      uri: ENC(4AbP9ywRUmywg1cUVnXMryfihuYd+AJuLA8SAMXU+Biirkcaiu9OJUW3GZVv+MKqkR/tzUWuapDUNfJSvHH6nRf3LE8mtj6PMJdJiGcjSfvFtrdo5xjS+a4xwmfvPgO0I+WNXXWyBe1EuuQLbGqK2IgZFPsMqzs8)
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ENC(jtFSE8X3pgeKaeyOGatxdqrvK1t4FmdbpZaHiPf6E2RoEiEEYdOQcvD3Ko34rAH9)
+            client-secret: ENC(DuxDV+plHXpQS6l4tBhROg7UthSrsjKKlKgFlQijPxeSof6VLLaZBrcK7zdTydS4)
+            redirect-uri: ${redirectURL}
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            client-name: Kakao
+            scope: profile_nickname, profile_image, account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+jwt:
+  access_secret: ENC(JxVNEnrDkmH9HUSpiBjDD7GvObaGAWk21JXFvZPV4FgEmUQb/9LtEwkLjtTc5Q9F+WQj/gz5vGmPiP4H4BAAgw==)
+  refresh_secret: ENC(hzfWfJcKzqgetp0MJkmjjOj5t9BwEsHjTV9i/t0iili1Cihv9K4LLAPtcR3ZSF8X+Bqmw3K2yAece+I1wHfXsA==)
+
+logging:
+  level:
+    root: info
+websocket:
+  allowedOrigins: ENC(cB9K8YohXGxRjt7p0NJ2aHMrTurW030SHd1C6MTaVglu6gKrjEWLhz6AIrEpClL0hXVeLrXjLmc=)
+firebase:
+  path: ENC(M47HHStR+hGcCyYNQ6hnGJ9IMadcBEmoLtXG+sYnGxs=)

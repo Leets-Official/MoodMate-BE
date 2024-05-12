@@ -29,7 +29,7 @@ public class MyPageService {
         return MyPageResponse.builder()
                 .userGender(user.getUserGender())
                 .userNickname(user.getUserNickname())
-                .year(user.getYear())
+                .year(user.getUserBirthYear())
                 .userDepartment(user.getUserDepartment())
                 .userKeywords(user.getUserKeywords())
                 .preferYearMin(prefer.getPreferYearMin())
@@ -38,4 +38,46 @@ public class MyPageService {
                 .preferMood(prefer.getPreferMood())
                 .build();
     }
+
+    public MyPageResponse modifyMyPage(String authorizationHeader, MyPageResponse myPageResponse) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        Prefer prefer = preferRepository.findByUser(user).orElseThrow(() -> new PreferNotFoundException());
+
+        // Update User details
+        user.setUserGender(myPageResponse.getUserGender());
+        user.setUserNickname(myPageResponse.getUserNickname());
+        user.setUserBirthYear(myPageResponse.getYear());
+        user.setUserDepartment(myPageResponse.getUserDepartment());
+        user.setUserKeywords(myPageResponse.getUserKeywords());
+
+        userRepository.save(user);
+
+        // Update Prefer details
+        prefer.setPreferYearMin(myPageResponse.getPreferYearMin());
+        prefer.setPreferYearMax(myPageResponse.getPreferYearMax());
+        prefer.setPreferDepartmentPossible(myPageResponse.isPreferDepartmentPossible());
+        prefer.setPreferMood(myPageResponse.getPreferMood());
+
+        preferRepository.save(prefer);
+
+        // After updating, retrieve updated values to confirm changes and return
+        User updatedUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        Prefer updatedPrefer = preferRepository.findByUser(updatedUser).orElseThrow(() -> new PreferNotFoundException());
+
+        return MyPageResponse.builder()
+                .userGender(updatedUser.getUserGender())
+                .userNickname(updatedUser.getUserNickname())
+                .year(updatedUser.getUserBirthYear())
+                .userDepartment(updatedUser.getUserDepartment())
+                .userKeywords(updatedUser.getUserKeywords())
+                .preferYearMin(updatedPrefer.getPreferYearMin())
+                .preferYearMax(updatedPrefer.getPreferYearMax())
+                .preferDepartmentPossible(updatedPrefer.isPreferDepartmentPossible())
+                .preferMood(updatedPrefer.getPreferMood())
+                .build();
+    }
+
 }

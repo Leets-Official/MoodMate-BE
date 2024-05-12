@@ -16,6 +16,7 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+src/main/resources/application.yml
 
 ### IntelliJ IDEA ###
 .idea
@@ -37,3 +38,6 @@ out/
 .vscode/
 
 .DS_Store
+
+### firebase ###
+/src/main/resources/mm-firebase-key.json

@@ -1,5 +1,6 @@
 package com.moodmate.moodmatebe.domain.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.moodmate.moodmatebe.global.shared.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,8 +17,9 @@ public class Prefer extends BaseTimeEntity {
     @Column(name = "prefer_id")
     private Long preferId;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JsonBackReference
+    @OneToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
     @Column(name = "prefer_department_possible", nullable = false)

@@ -10,6 +10,7 @@ import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class MatchingService {
         this.whoMeetRepository = whoMeetRepository;
     }
 
+    @Transactional
     public void match() {
         List<Prefer> activeMatchTrue = preferRepository.findByUserMatchActiveAndGenderTrue(Gender.MALE);
         activeMatchTrue.addAll(preferRepository.findByUserMatchActiveAndGenderTrue(Gender.FEMALE));
@@ -52,6 +54,7 @@ public class MatchingService {
         }
     }
 
+    @Transactional
     public void grouping() {
         Map<String, Man> m = convertListToMap(men);
         Map<String, Woman> w = convertListToMap(women);
@@ -155,16 +158,16 @@ public class MatchingService {
     private <T extends Person> Map<String, T> convertListToMap(List<T> list) {
         Map<String, T> map = new LinkedHashMap<>();
         for (T person : list) {
-            map.put(String.valueOf(person.getName()), person);
+            map.put(String.valueOf(person.getUser().getUserId()), person);  // user_id를 키로 사용
         }
         return map;
     }
 
     private static <T extends Person> Map<String, Map<String, T>> groupByMood(Map<String, T> persons) {
-        Map<String, Map<String, T>> groups = new HashMap<>();
+        Map<String, Map<String, T>> groups = new LinkedHashMap<>();
         for (T person : persons.values()) {
             if (!groups.containsKey(person.getMood())) {
-                groups.put(person.getMood(), new HashMap<>());
+                groups.put(person.getMood(), new LinkedHashMap<>());
             }
             groups.get(person.getMood()).put(person.getName(), person);
         }
