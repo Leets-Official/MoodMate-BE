@@ -6,7 +6,6 @@ app:
 
 spring:
   datasource:
-    # dev용 database
     url: ENC(IGBIQXu1p+L0142+uplxofAcyhNyx4QBj5kJMRAByq5C/Pkr88FSy/RLM/SgafzPHUoPsuThv5CbdV9F81BylRp3CsaRs7+DKKIH3DxVldHsT7eCXyWs0suZ379EgXh7pjd34jc/VQw=)
     username: ENC(lTMVOKtY/fZl+Tug5yVIjQ==)
     password: ENC(V+/5+sksg/OG4KbxeGc84xoWdskdQPR4)
