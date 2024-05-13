@@ -6,6 +6,8 @@ import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.*;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
+import com.moodmate.moodmatebe.global.jwt.dto.JwtToken;
+import com.moodmate.moodmatebe.global.oauth.CookieUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -95,21 +97,22 @@ public class UserController {
     })
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(@CookieValue("refreshToken") String oldToken, HttpServletResponse res) {
+        CookieUtil.deleteCookie("refreshToken", res);
         return ResponseEntity.ok().build();
     }
 
-//    @Operation(summary = "액세스 토큰 갱신", description = "Refresh Token을 사용하여 Access Token과 Refresh Token을 갱신합니다.")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Map.class))),
-//            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-//            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-//    })
-//    @PostMapping("/refresh")
-//    public ResponseEntity<Map<String, TokenResponse>> refreshAccessToken(@RequestBody Map<String, String> tokenRequest) {
-//        String refreshToken = tokenRequest.get("refreshToken");
-//        TokenResponse tokenResponse = userService.refreshAccessToken(refreshToken);
-//        return new ResponseEntity<>(Map.of("tokenResponse", tokenResponse), HttpStatus.OK);
-//    }
+    @Operation(summary = "액세스 토큰 갱신", description = "Refresh Token을 사용하여 Access Token을 갱신합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, JwtToken>> refreshAccessToken(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        JwtToken jwtToken = userService.refreshAccessToken(refreshToken);
+        CookieUtil.createCookie("accessToken", jwtToken.getAccessToken(), response, 24 * 60 * 60);
+        return new ResponseEntity<>(Map.of("jwtToken", jwtToken), HttpStatus.OK);
+    }
 
     @Operation(summary = "상대무디 정보 조회", description = "현재 채팅 중인 상대방의 정보를 상세조회합니다.")
     @ApiResponses({
@@ -122,11 +125,5 @@ public class UserController {
     public ResponseEntity<PartnerResponse> getPartnerInfo(@RequestHeader("Authorization") String authorizationHeader) {
         PartnerResponse partnerInfo = userService.getPartnerInfo(authorizationHeader);
         return ResponseEntity.ok(partnerInfo);
-    }
-
-    @PatchMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateUserInformation(@RequestHeader("Authorization") String token, @RequestBody UpdateUserRequest updateUserRequest) {
-        userService.updateUserInformation(token, updateUserRequest);
-        return new ResponseEntity<>(Map.of("updateResponse", updateUserRequest), HttpStatus.OK);
     }
 }

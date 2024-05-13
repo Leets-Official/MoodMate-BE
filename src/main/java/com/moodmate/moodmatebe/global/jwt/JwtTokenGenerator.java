@@ -21,7 +21,15 @@ public class JwtTokenGenerator {
         Date accessTokenExpiredAt = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String subject = userId.toString();
         String accessToken = jwtProvider.generate(subject, accessTokenExpiredAt);
-        return JwtToken.of(accessToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME / 1000L);
+
+        String refreshToken = generateRefreshToken(userId);
+
+        return JwtToken.builder()
+                .grantType(BEARER_TYPE)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenExpireIn(REFRESH_TOKEN_EXPIRE_TIME / 1000L)
+                .build();
     }
 
     public String generateRefreshToken(Long userId) {
@@ -33,5 +41,14 @@ public class JwtTokenGenerator {
 
     public Long extractUserId(String accessToken) {
         return Long.valueOf(jwtProvider.extractSubject(accessToken));
+    }
+
+    public JwtToken generateAccessToken(Long userId) {
+        long now = (new Date()).getTime();
+        Date accessTokenExpiredAt = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+        String subject = userId.toString();
+        String accessToken = jwtProvider.generate(subject, accessTokenExpiredAt);
+
+        return JwtToken.builder().grantType(BEARER_TYPE).accessToken(accessToken).tokenExpireIn(ACCESS_TOKEN_EXPIRE_TIME / 1000L).build();
     }
 }

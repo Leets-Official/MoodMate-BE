@@ -2,6 +2,7 @@ package com.moodmate.moodmatebe.domain.user.api;
 
 import com.moodmate.moodmatebe.domain.user.application.AuthService;
 import com.moodmate.moodmatebe.global.jwt.dto.JwtToken;
+import com.moodmate.moodmatebe.global.oauth.CookieUtil;
 import com.moodmate.moodmatebe.global.oauth.kakao.KakaoLoginParams;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping
 public class AuthController {
-
     private final AuthService authService;
 
     @PostMapping("/oauth/callback/kakao")
@@ -25,6 +25,13 @@ public class AuthController {
         return authService.login(authorizationCode, response)
                 .map(token -> {
                     log.info("accessToken={}", token.getAccessToken());
+
+                    // accessToken 쿠키 설정 (24시간)
+                    CookieUtil.createCookie("accessToken", token.getAccessToken(), response, 24 * 60 * 60);
+
+                    // refreshToken 쿠키 설정 (7일)
+                    CookieUtil.createCookie("refreshToken", token.getRefreshToken(), response, 7 * 24 * 60 * 60);
+
                     return ResponseEntity.ok(token);
                 });
     }

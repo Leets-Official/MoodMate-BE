@@ -25,17 +25,10 @@ public class JwtProvider {
     private final SecretKey key;
     private static final String AUTHORITIES_KEY = "auth";
 
-   // @Value("${jwt.access_secret}")
-   // private String accessSecret;
-
-    // 주의점: 여기서 @Value는 `springframework.beans.factory.annotation.Value`소속이다! lombok의 @Value와 착각하지 말것!
-    //     * @param secretKey
     public JwtProvider(@Value("${jwt.access_secret}") String secretKey) {
-        //byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 
-    //토큰 생성
     public String generate(String subject, Date expiredAt) {
         return Jwts.builder()
                 .setSubject(subject)
@@ -79,20 +72,17 @@ public class JwtProvider {
     }
 
     public Authentication getAuthentication(String accessToken) {
-        // 토큰 복호화
         Claims claims = parseClaims(accessToken);
 
         if (claims.get(AUTHORITIES_KEY) == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
 
-        // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        // UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
@@ -100,7 +90,7 @@ public class JwtProvider {
 
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key) // 수정된 부분: accessSecret 대신 key 사용
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
