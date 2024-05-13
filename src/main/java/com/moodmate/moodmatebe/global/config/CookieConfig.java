@@ -6,7 +6,6 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 
 @Configuration
 public class CookieConfig {
-
     @Bean
     public DefaultCookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
