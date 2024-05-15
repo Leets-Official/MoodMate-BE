@@ -110,7 +110,8 @@ public class UserController {
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, JwtToken>> refreshAccessToken(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
         JwtToken jwtToken = userService.refreshAccessToken(refreshToken);
-        CookieUtil.createCookie("accessToken", jwtToken.getAccessToken(), response, 24 * 60 * 60);
+        //CookieUtil.createCookie("accessToken", jwtToken.getAccessToken(), response, 24 * 60 * 60);
+        CookieUtil.createCookie("accessToken", jwtToken.getAccessToken(), response, 24);
         return new ResponseEntity<>(Map.of("jwtToken", jwtToken), HttpStatus.OK);
     }
 
