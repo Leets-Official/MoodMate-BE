@@ -5,6 +5,8 @@ import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.domain.matching.domain.Man;
 import com.moodmate.moodmatebe.domain.matching.domain.WhoMeet;
 import com.moodmate.moodmatebe.domain.matching.domain.Woman;
+import com.moodmate.moodmatebe.domain.matching.exception.ChatRoomSaveException;
+import com.moodmate.moodmatebe.domain.matching.exception.MeetingRecordSaveException;
 import com.moodmate.moodmatebe.domain.matching.repository.WhoMeetRepository;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
@@ -174,10 +176,20 @@ public class GaleShapley {
 
         if (womanUser.isPresent() && partnerUser.isPresent()) {
             ChatRoom chatRoom = createChatRoom(womanUser.get(), partnerUser.get());
-            roomRepository.save(chatRoom);
+            try {
+                roomRepository.save(chatRoom);
+            } catch (Exception e) {
+                log.error("채팅방에 저장하는 동안 오류가 발생했습니다: ", e);
+                throw new ChatRoomSaveException();
+            }
 
             WhoMeet whoMeet = createWhoMeetRecord(womanUser.get(), partnerUser.get());
-            whoMeetRepository.save(whoMeet);
+            try {
+                whoMeetRepository.save(whoMeet);
+            } catch (Exception e) {
+                log.error("만남 기록을 저장하는 동안 오류가 발생했습니다: ", e);
+                throw new MeetingRecordSaveException();
+            }
         }
     }
 
