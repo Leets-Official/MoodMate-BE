@@ -65,22 +65,18 @@ public class User extends BaseTimeEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
-    // 하단 컬럼 추가(jwt & Oauth2)
     @Column(name = "user_profile_image_url", nullable = true)
     private String userProfileImageUrl;
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    // TODO: kakao 심사 완료 시 하단 메소드 내부 주석 제거(성별+생년 받기)
     public static User toUser(OAuthInfoResponse oAuthInfoResponse) {
         return User
                 .builder()
                 .userNickname(oAuthInfoResponse.getNickname())
                 .userEmail(oAuthInfoResponse.getEmail())
                 .userProfileImageUrl(oAuthInfoResponse.getProfileImageUrl())
-                //.userGender(oAuthInfoResponse.getGender())
-                //.userBirthYear(oAuthInfoResponse.getBirthYear())
                 .authority(Authority.ROLE_USER)
                 .build();
     }
