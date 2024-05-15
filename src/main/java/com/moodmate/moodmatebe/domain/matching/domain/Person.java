@@ -2,6 +2,7 @@ package com.moodmate.moodmatebe.domain.matching.domain;
 
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,16 +12,11 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class Person {
     private final UserProfile userProfile;
     private final UserPreferences userPreferences;
     private List<String> preferences;
-
-    protected Person(UserProfile userProfile, UserPreferences userPreferences, List<String> preferences) {
-        this.userProfile = userProfile;
-        this.userPreferences = userPreferences;
-        this.preferences = preferences;
-    }
 
     public static Person createPerson(User user, Prefer prefer) {
         UserProfile userProfile = UserProfile.from(user);
