@@ -8,16 +8,18 @@ import com.moodmate.moodmatebe.domain.matching.domain.Woman;
 import com.moodmate.moodmatebe.domain.matching.repository.WhoMeetRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
+import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MatchingService {
 
     private final PreferRepository preferRepository;
@@ -28,14 +30,6 @@ public class MatchingService {
     private List<Man> men = new ArrayList<>();
     private List<Woman> women = new ArrayList<>();
 
-    @Autowired
-    public MatchingService(PreferRepository personRepository, RoomRepository roomRepository, UserRepository userRepository, WhoMeetRepository whoMeetRepository) {
-        this.preferRepository = personRepository;
-        this.roomRepository = roomRepository;
-        this.userRepository = userRepository;
-        this.whoMeetRepository = whoMeetRepository;
-    }
-
     @Transactional
     public void match() {
         List<Prefer> activeMatchTrue = preferRepository.findByUserMatchActiveAndGenderTrue(Gender.MALE);
@@ -44,12 +38,12 @@ public class MatchingService {
         Collections.shuffle(activeMatchTrue);
 
         for (Prefer prefer : activeMatchTrue) {
-            Person person = new Person(prefer.getUser(), prefer);
+            Person person = Person.createPerson(prefer.getUser(), prefer);
 
-            if (person.getGender() == Gender.MALE) {
-                men.add(new Man(person.getUser(), person.getPrefer()));
-            } else if (person.getGender() == Gender.FEMALE) {
-                women.add(new Woman(person.getUser(), person.getPrefer()));
+            if (person.getUserProfile().gender() == Gender.MALE) {
+                men.add(Man.createMan(prefer.getUser(), prefer));
+            } else if (person.getUserProfile().gender() == Gender.FEMALE) {
+                women.add(Woman.createWoman(prefer.getUser(), prefer));
             }
         }
     }
@@ -86,7 +80,9 @@ public class MatchingService {
                 List<String> thirdPreferences = new ArrayList<>();
                 Set<String> metFemalesSet = new HashSet<>();
 
-                List<WhoMeet> metFemales = whoMeetRepository.findByMetUser2(man.getUser());
+                User manUser = userRepository.findById(man.getUserProfile().userId()).orElseThrow(
+                        () -> new IllegalArgumentException("ID에 해당하는 유저가 없음"));
+                List<WhoMeet> metFemales = whoMeetRepository.findByMetUser2(manUser);
                 for (WhoMeet met : metFemales) {
                     metFemalesSet.add(met.getMetUser1().getUserNickname());
                 }
@@ -97,9 +93,9 @@ public class MatchingService {
                         continue;
                     }
 
-                    if (!man.isDontCareSameDepartment() && man.getDepartment().equals(woman.getDepartment())) {
+                    if (!man.getUserPreferences().departmentPossible() && man.getUserProfile().department().equals(woman.getUserProfile().department())) {
                         thirdPreferences.add(womanName);
-                    } else if (woman.getYear() >= man.getMinYear() && woman.getYear() <= man.getMaxYear()) {
+                    } else if (woman.getUserProfile().birthYear() >= man.getUserPreferences().yearMin() && woman.getUserProfile().birthYear() <= man.getUserPreferences().yearMax() ) {
                         mainPreferences.add(womanName);
                     } else {
                         secondaryPreferences.add(womanName);
@@ -121,7 +117,9 @@ public class MatchingService {
                 List<String> thirdPreferences = new ArrayList<>();
                 Set<String> metMalesSet = new HashSet<>();
 
-                List<WhoMeet> metMales = whoMeetRepository.findByMetUser1(woman.getUser());
+                User womanUser = userRepository.findById(woman.getUserProfile().userId()).orElseThrow(
+                        () -> new IllegalArgumentException("ID에 해당하는 유저가 없음"));
+                List<WhoMeet> metMales = whoMeetRepository.findByMetUser1(womanUser);
                 for (WhoMeet met : metMales) {
                     metMalesSet.add(met.getMetUser2().getUserNickname());
                 }
@@ -132,10 +130,9 @@ public class MatchingService {
                         continue;
                     }
 
-                    if (!woman.isDontCareSameDepartment() && woman.getDepartment().equals(man.getDepartment())) {
+                    if (!woman.getUserPreferences().departmentPossible() && woman.getUserProfile().department().equals(man.getUserProfile().department())) {
                         thirdPreferences.add(man.getName());
-                    }
-                    else if (man.getYear() >= woman.getMinYear() && man.getYear() <= woman.getMaxYear()) {
+                    } else if (man.getUserProfile().birthYear() >= woman.getUserPreferences().yearMin() && man.getUserProfile().birthYear() <= woman.getUserPreferences().yearMax()) {
                         mainPreferences.add(man.getName());
                     } else {
                         secondaryPreferences.add(man.getName());
@@ -158,19 +155,29 @@ public class MatchingService {
     private <T extends Person> Map<String, T> convertListToMap(List<T> list) {
         Map<String, T> map = new LinkedHashMap<>();
         for (T person : list) {
-            map.put(String.valueOf(person.getUser().getUserId()), person);  // user_id를 키로 사용
+            map.put(String.valueOf(person.getUserProfile().userId()), person);  // user_id를 키로 사용
         }
         return map;
     }
 
     private static <T extends Person> Map<String, Map<String, T>> groupByMood(Map<String, T> persons) {
-        Map<String, Map<String, T>> groups = new HashMap<>();
+        Map<String, Map<String, T>> groups = new LinkedHashMap<>();
         for (T person : persons.values()) {
             if (!groups.containsKey(person.getMood())) {
-                groups.put(person.getMood(), new HashMap<>());
+                groups.put(person.getMood(), new LinkedHashMap<>());
             }
             groups.get(person.getMood()).put(person.getName(), person);
         }
         return groups;
+    }
+
+    private static <T extends Person> void printGroupedPersons(Map<String, Map<String, T>> groupedPersons) {
+        for (String mood : groupedPersons.keySet()) {
+            log.info("Mood: {}", mood);
+            Map<String, T> group = groupedPersons.get(mood);
+            for (T person : group.values()) {
+                log.info("Name: {}", person.getName());
+            }
+        }
     }
 }

@@ -63,7 +63,7 @@ public class GaleShapley {
                         free.getProposed().add(woman);
 
                         if (woman.getPartner() == null) {
-                            woman.setPartnerUserId(free.getUser().getUserId());
+                            woman.setPartnerUserId(free.getUserProfile().userId());
                             woman.setPartner(free.getName());
                             free.setEngaged(true);
                             engagedCount++;
@@ -73,7 +73,7 @@ public class GaleShapley {
                             log.debug("{}은(는) 이미 {}과(와) 매칭되어 있습니다.", woman.getName(), currentPartner.getName());
 
                             if (morePreference(currentPartner, free, woman)) {
-                                woman.setPartnerUserId(free.getUser().getUserId());
+                                woman.setPartnerUserId(free.getUserProfile().userId());
                                 woman.setPartner(free.getName());
                                 free.setEngaged(true);
                                 currentPartner.setEngaged(false);
@@ -109,7 +109,7 @@ public class GaleShapley {
                         chosenMan = man;
                     }
                 }
-                woman.setPartnerUserId(chosenMan.getUser().getUserId());
+                woman.setPartnerUserId(chosenMan.getUserProfile().userId());
                 woman.setPartner(chosenMan.getName());
                 chosenMan.setEngaged(true);
                 engagedCount++;
@@ -137,9 +137,9 @@ public class GaleShapley {
 
     public void printCouples() {
         log.info("매칭 결과를 출력합니다.");
-        System.out.println("========================================");
-        System.out.println("=============== 매칭 결과 ===============");
-        System.out.println("========================================");
+        log.info("========================================");
+        log.info("=============== 매칭 결과 ===============");
+        log.info("========================================");
         for (Woman w : women.values()) {
             log.info("{} - {}", w.getName(), w.getPartner());
 
@@ -165,5 +165,7 @@ public class GaleShapley {
                 }
             }
         }
+        // 매칭이 완료된 후의 총 매칭 수 출력
+        log.info("총 매칭 수: {}", engagedCount);
     }
 }
