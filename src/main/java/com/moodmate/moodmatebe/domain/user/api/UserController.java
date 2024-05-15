@@ -96,7 +96,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/logout")
-    public ResponseEntity<Void> logout(@CookieValue("refreshToken") String oldToken, HttpServletResponse res) {
+    public ResponseEntity<Void> logout(@RequestBody String oldToken, HttpServletResponse res) {
         CookieUtil.deleteCookie("refreshToken", res);
         return ResponseEntity.ok().build();
     }
@@ -108,9 +108,10 @@ public class UserController {
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     @PostMapping("/refresh")
-    public ResponseEntity<Map<String, JwtToken>> refreshAccessToken(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<Map<String, JwtToken>> refreshAccessToken(@RequestBody String refreshToken, HttpServletResponse response) {
         JwtToken jwtToken = userService.refreshAccessToken(refreshToken);
-        CookieUtil.createCookie("accessToken", jwtToken.getAccessToken(), response, 24 * 60 * 60);
+        //CookieUtil.createCookie("accessToken", jwtToken.getAccessToken(), response, 24 * 60 * 60);
+        CookieUtil.createCookie("accessToken", jwtToken.getAccessToken(), response, 24);
         return new ResponseEntity<>(Map.of("jwtToken", jwtToken), HttpStatus.OK);
     }
 

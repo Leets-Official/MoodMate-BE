@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +23,7 @@ public class ChatRoomService {
     private final RedisSubscriber redisSubscriber;
     private final RoomRepository roomRepository;
     private final JwtProvider jwtProvider;
+    private final RoomRepository chatRoomRepository;
 
     public void enterChatRoom(Long roomId) throws ChatRoomNotFoundException, ConnectionException {
         ChannelTopic topic = new ChannelTopic("/sub/chat/" + roomId);
@@ -53,5 +56,12 @@ public class ChatRoomService {
         } else {
             throw new ChatRoomUnauthorizedException();
         }
+    }
+
+    @Transactional
+    public void deactivateAllActiveRooms() {
+        List<ChatRoom> activeRooms = chatRoomRepository.findAllByRoomActiveIsTrue();
+        activeRooms.forEach(room -> room.setRoomActive(false));
+        chatRoomRepository.saveAll(activeRooms);
     }
 }

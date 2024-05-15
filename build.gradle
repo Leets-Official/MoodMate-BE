@@ -73,7 +73,11 @@ dependencies {
     //Spring webClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+    // firebase
     implementation 'com.google.firebase:firebase-admin:7.1.1'
+
+    // Netty MacOS
+    runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.108.Final:osx-aarch_64'
 
 }
 
