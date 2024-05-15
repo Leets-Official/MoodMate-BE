@@ -18,8 +18,8 @@ import java.util.*;
 public class GaleShapley {
     private final int totalMatches;
     private int engagedCount;
-    private Map<String, Man> men;
-    private Map<String, Woman> women;
+    private final Map<String, Man> men;
+    private final Map<String, Woman> women;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final WhoMeetRepository whoMeetRepository;
