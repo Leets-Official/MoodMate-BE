@@ -2,9 +2,4 @@ spring:
   config:
     activate:
       on-profile: ${SPRING_PROFILES_ACTIVE}
----
-spring:
-  profiles: dev
----
-spring:
-  profiles: prod
+
