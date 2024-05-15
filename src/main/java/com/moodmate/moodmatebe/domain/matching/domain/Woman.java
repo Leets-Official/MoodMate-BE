@@ -22,10 +22,10 @@ public class Woman extends Person {
         return Woman.builder()
                 .userProfile(userProfile)
                 .userPreferences(userPreferences)
-                .preferences(new ArrayList<>()) // Initialize preferences with an empty list
-                .partner(null) // Initialize partner with null
-                .partnerUserId(null) // Initialize partnerUserId with null
-                .proposals(new ArrayList<>()) // Initialize proposals with an empty list
+                .preferences(new ArrayList<>())
+                .partner(null)
+                .partnerUserId(null)
+                .proposals(new ArrayList<>())
                 .build();
     }
 

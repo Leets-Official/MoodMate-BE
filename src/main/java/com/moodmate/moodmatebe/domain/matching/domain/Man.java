@@ -33,9 +33,4 @@ public class Man extends Person {
         this.engaged = engaged;
         this.proposed = proposed;
     }
-//    public Man(User user, Prefer prefer) {
-//        super(user, prefer);
-//        this.engaged = false;
-//        this.proposed = new ArrayList<>();
-//    }
 }

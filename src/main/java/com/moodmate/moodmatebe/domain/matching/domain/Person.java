@@ -12,36 +12,9 @@ import java.util.List;
 @Getter
 @Setter
 public class Person {
-//    private Gender gender;
-//    private User user;
-//    private Prefer prefer;
-//    private String name;
-//    private String mood;
-//    private int minYear;
-//    private int maxYear;
-//    private int year;
-//    private String department;
-//    private boolean dontCareSameDepartment;
     private final UserProfile userProfile;
     private final UserPreferences userPreferences;
     private List<String> preferences;
-
-//    public Person(User user, Prefer prefer) {
-//        this.userProfile = UserProfile.from(user);
-//        this.userPreferences = UserPreferences.from(prefer);
-//
-////        this.user = user;
-////        this.prefer = prefer;
-////        this.gender = user.getUserGender();
-////        this.name = user.getUserNickname();
-////        this.mood = prefer.getPreferMood();
-////        this.minYear = prefer.getPreferYearMin();
-////        this.maxYear = prefer.getPreferYearMax();
-////        this.year = user.getUserBirthYear();
-////        this.department = user.getUserDepartment();
-////        this.dontCareSameDepartment = prefer.isPreferDepartmentPossible();
-//        this.preferences = new ArrayList<>();
-//    }
 
     protected Person(UserProfile userProfile, UserPreferences userPreferences, List<String> preferences) {
         this.userProfile = userProfile;
