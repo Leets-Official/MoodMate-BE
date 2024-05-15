@@ -1,6 +1,7 @@
 package com.moodmate.moodmatebe.domain.matching.application;
 
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
+import com.moodmate.moodmatebe.domain.matching.algorithm.GaleShapley;
 import com.moodmate.moodmatebe.domain.matching.domain.Man;
 import com.moodmate.moodmatebe.domain.matching.domain.Person;
 import com.moodmate.moodmatebe.domain.matching.domain.WhoMeet;

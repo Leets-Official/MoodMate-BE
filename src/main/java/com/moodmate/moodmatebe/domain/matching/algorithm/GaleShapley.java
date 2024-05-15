@@ -1,4 +1,4 @@
-package com.moodmate.moodmatebe.domain.matching.application;
+package com.moodmate.moodmatebe.domain.matching.algorithm;
 
 import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.*;
 
+
 @Slf4j
 public class GaleShapley {
     private final int N;
@@ -23,24 +24,31 @@ public class GaleShapley {
     private final UserRepository userRepository;
     private final WhoMeetRepository whoMeetRepository;
 
-    public GaleShapley(Map<String, Man> m, Map<String, Woman> w, RoomRepository roomRepository, UserRepository userRepository, WhoMeetRepository whoMeetRepository) {
+    public GaleShapley(Map<String, Man> men, Map<String, Woman> women,
+                       RoomRepository roomRepository, UserRepository userRepository,
+                       WhoMeetRepository whoMeetRepository) {
+        this.N = Math.min(men.size(), women.size());
+        this.men = new LinkedHashMap<>(men);
+        this.women = new LinkedHashMap<>(women);
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
         this.whoMeetRepository = whoMeetRepository;
-        N = Math.min(m.size(), w.size());
-        engagedCount = 0;
-        men = m;
-        women = w;
-        for (Man man : men.values()) {
-            man.setPreferences(new ArrayList<>(man.getPreferences()));
-        }
-        for (Woman woman : women.values()) {
-            woman.setPreferences(new ArrayList<>(woman.getPreferences()));
-        }
-        calcMatches();
+        this.engagedCount = 0;
+
+        initializePreferences();
+        calculateMatches();
     }
 
-    private void calcMatches() {
+    private void initializePreferences() {
+        men.values().forEach(
+                man -> man.setPreferences(new ArrayList<>(man.getPreferences()))
+        );
+        women.values().forEach(
+                woman -> woman.setPreferences(new ArrayList<>(woman.getPreferences()))
+        );
+    }
+
+        private void calculateMatches() {
         log.info("매칭을 계산합니다.");
         firstPropose();
         firstAcceptOrReject();
