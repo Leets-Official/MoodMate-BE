@@ -4,6 +4,8 @@ import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,13 +16,28 @@ public class Woman extends Person {
     private Long partnerUserId;
     private List<Man> proposals;
 
-    public Woman(User user, Prefer prefer) {
-        super(user, prefer);
-        this.partner = null;
-        this.partnerUserId = null;
-        this.proposals = new ArrayList<>();
+    public static Woman createWoman(User user, Prefer prefer) {
+        UserProfile userProfile = UserProfile.from(user);
+        UserPreferences userPreferences = UserPreferences.from(prefer);
+        return Woman.builder()
+                .userProfile(userProfile)
+                .userPreferences(userPreferences)
+                .preferences(new ArrayList<>())
+                .partner(null)
+                .partnerUserId(null)
+                .proposals(new ArrayList<>())
+                .build();
     }
+
+    @Builder
+    private Woman(UserProfile userProfile, UserPreferences userPreferences, List<String> preferences, String partner, Long partnerUserId, List<Man> proposals) {
+        super(userProfile, userPreferences, preferences);
+        this.partner = partner;
+        this.partnerUserId = partnerUserId;
+        this.proposals = proposals;
+    }
+
     public Long getUserId() {
-        return this.getUser().getUserId();
+        return this.getUserProfile().userId();
     }
 }
