@@ -26,12 +26,11 @@ public class AuthController {
                 .map(token -> {
                     log.info("accessToken={}", token.getAccessToken());
 
-                    // accessToken 쿠키 설정 (24시간)
-                    //CookieUtil.createCookie("accessToken", token.getAccessToken(), response, 24 * 60 * 60);
-                    CookieUtil.createCookie("accessToken", token.getAccessToken(), response, 24);
+                    // accessToken 쿠키 설정 (3일)
+                    CookieUtil.createCookie("accessToken", token.getAccessToken(), response, 3 * 24 * 60 * 60);
 
-                    // refreshToken 쿠키 설정 (7일)
-                    CookieUtil.createCookie("refreshToken", token.getRefreshToken(), response, 7 * 24 * 60 * 60);
+                    // refreshToken 쿠키 설정 (14일)
+                    CookieUtil.createCookie("refreshToken", token.getRefreshToken(), response, 14 * 24 * 60 * 60);
 
                     return ResponseEntity.ok(token);
                 });
