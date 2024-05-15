@@ -26,10 +26,10 @@ spring:
       enabled: false
   data:
     redis:
-      host: moodmate-redis
-      port: 6379
+      host: mm-main-redis
+      port: 6380
     mongodb:
-      uri: ENC(4AbP9ywRUmywg1cUVnXMryfihuYd+AJuLA8SAMXU+Biirkcaiu9OJUW3GZVv+MKqkR/tzUWuapDUNfJSvHH6nRf3LE8mtj6PMJdJiGcjSfvFtrdo5xjS+a4xwmfvPgO0I+WNXXWyBe1EuuQLbGqK2IgZFPsMqzs8)
+      uri: ENC(9wISJRBsEAC2hQCpj8Z6+eE4m0WcaztbNejxIiP7c8jC4knrrMrG/Z883jXgyV/G25HCXbeXM/2ttcZsCVBfbS9Gb5qRkyzdlnSK2hz5hhhXMvAKx2z6N2a4Ki3ZAQRXvaB5tyHdfWwao9F2PbLYpsV+sNDvWzNK)
 
   security:
     oauth2:
@@ -58,6 +58,6 @@ logging:
   level:
     root: info
 websocket:
-  allowedOrigins: ENC(cB9K8YohXGxRjt7p0NJ2aHMrTurW030SHd1C6MTaVglu6gKrjEWLhz6AIrEpClL0hXVeLrXjLmc=)
+  allowedOrigins: "https://www.moodmate.site"
 firebase:
   path: ENC(M47HHStR+hGcCyYNQ6hnGJ9IMadcBEmoLtXG+sYnGxs=)

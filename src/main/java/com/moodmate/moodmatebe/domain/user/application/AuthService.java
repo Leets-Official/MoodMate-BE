@@ -26,12 +26,6 @@ public class AuthService {
     private final JwtTokenGenerator jwtTokenGenerator;
     private final UserRepository userRepository;
 
-    /**
-     * 로그인
-     *
-     * @param params
-     * @return
-     */
     @Transactional
     public Mono<JwtToken> login(OAuthLoginParams params, HttpServletResponse response) {
         return requestOAuthInfoService.request(params)
@@ -39,8 +33,8 @@ public class AuthService {
                     Long userId = findOrCreateUser(oAuthInfoResponse);
                     JwtToken token = jwtTokenGenerator.generate(userId);
                     String refreshToken = jwtTokenGenerator.generateRefreshToken(userId);
-                    CookieUtil.createCookie("refreshToken", refreshToken, response);
-                    CookieUtil.createCookie("userId", String.valueOf(userId), response);
+                    CookieUtil.createCookie("refreshToken", refreshToken, response, 24 * 60 * 60 * 7);
+                    CookieUtil.createCookie("userId", String.valueOf(userId), response, 24 * 60 * 60 * 7);
                     return Mono.just(token);
                 });
     }

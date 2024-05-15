@@ -1,4 +1,5 @@
 spring:
-  profiles:
-    active: prod
+  config:
+    activate:
+      on-profile: ${SPRING_PROFILES_ACTIVE}
 

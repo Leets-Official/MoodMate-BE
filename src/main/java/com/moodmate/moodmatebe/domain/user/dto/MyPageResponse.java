@@ -17,7 +17,6 @@ public class MyPageResponse {
     private Integer year;
     private String userDepartment;
     private List<Keyword> userKeywords;
-
     private int preferYearMin;
     private int preferYearMax;
     private boolean preferDepartmentPossible;
