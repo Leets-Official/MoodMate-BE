@@ -1,4 +1,10 @@
 spring:
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE}
 
+---
+spring:
+  profiles: dev
+---
+spring:
+  profiles: prod
