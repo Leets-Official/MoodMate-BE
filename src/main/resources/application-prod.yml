@@ -27,9 +27,9 @@ spring:
   data:
     redis:
       host: mm-main-redis
-      port: 6379
+      port: 6380
     mongodb:
-      uri: ENC(qci6OvpFNGie7QpbGC1SxtMVq10ZRheT4Ty+rGUuwc9cIqEiJ5nnqDN53v57OdGhIokyIkeWQcQqtfz+tS4VgrA2bbqIP0wzOTcjYxpUA0Zm0x4Dpek5dS8s+6Yfeja11F8p0OdulSPVUN26Dr33VbJmqVgianSb)
+      uri: ENC(9wISJRBsEAC2hQCpj8Z6+eE4m0WcaztbNejxIiP7c8jC4knrrMrG/Z883jXgyV/G25HCXbeXM/2ttcZsCVBfbS9Gb5qRkyzdlnSK2hz5hhhXMvAKx2z6N2a4Ki3ZAQRXvaB5tyHdfWwao9F2PbLYpsV+sNDvWzNK)
 
   security:
     oauth2:
