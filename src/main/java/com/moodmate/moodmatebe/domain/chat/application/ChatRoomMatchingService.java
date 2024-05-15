@@ -29,34 +29,55 @@ public class ChatRoomMatchingService {
 
     @Transactional
     public void deactivateInactiveUsers() {
-        // 1. 어제 오후 8시 이후 생성된 채팅방 ID 목록 가져오기
-        LocalDateTime yesterday8pm = LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusDays(1).withHour(20).withMinute(0).withSecond(0);
-        List<ChatRoom> rooms = roomRepository.findAllByCreatedAtAfter(yesterday8pm);
+        LocalDateTime yesterday8pm = calculateYesterday8pm();
+        List<Long> roomIds = getRoomIdsCreatedAfter(yesterday8pm);
+        List<Long> userMatched = getUserMatched(roomIds);
+        List<Long> userChatted = getUserChatted(roomIds);
+        Set<Long> userBlacklist = getInactiveUsers(userMatched, userChatted);
+        deactivateUsers(userBlacklist);
+    }
+
+    private LocalDateTime calculateYesterday8pm() {
+        return LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusDays(1)
+                .withHour(20).withMinute(0).withSecond(0);
+    }
+
+    private List<Long> getRoomIdsCreatedAfter(LocalDateTime timestamp) {
+        List<ChatRoom> rooms = roomRepository.findAllByCreatedAtAfter(timestamp);
         List<Long> roomIds = new ArrayList<>();
         rooms.forEach(room -> roomIds.add(room.getRoomId()));
+        return roomIds;
+    }
 
-        // 2. 채팅방에 참여한 모든 유저 ID 목록 가져오기
+    private List<Long> getUserMatched(List<Long> roomIds) {
         List<Long> userMatched = new ArrayList<>();
-        rooms.forEach(room -> {
+        roomIds.forEach(roomId -> {
+            ChatRoom room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("ChatRoom not found with ID: " + roomId));
             userMatched.add(room.getUser1().getUserId());
             userMatched.add(room.getUser2().getUserId());
         });
+        return userMatched;
+    }
 
-        // 3. 채팅방 ID에 해당하는 모든 메시지의 유저 ID 목록 가져오기
+    private List<Long> getUserChatted(List<Long> roomIds) {
         List<Long> userChatted = new ArrayList<>();
         for (Long roomId : roomIds) {
             Query query = new Query().addCriteria(Criteria.where("roomId").is(roomId));
             List<Message> messages = mongoTemplate.find(query, Message.class);
             messages.forEach(message -> userChatted.add(message.getSenderId()));
         }
+        return userChatted;
+    }
 
-        // 4. 채팅을 치지 않은 유저 ID 목록 (user_matched - user_chatted)
+    private Set<Long> getInactiveUsers(List<Long> userMatched, List<Long> userChatted) {
         Set<Long> userBlacklist = new HashSet<>(userMatched);
         userBlacklist.removeAll(userChatted);
+        return userBlacklist;
+    }
 
-        // 5. user_blacklist 에 있는 유저의 user_match_active 를 0으로 변경
+    private void deactivateUsers(Set<Long> userBlacklist) {
         for (Long userId : userBlacklist) {
-            User user = userRepository.findById(userId).orElseThrow();
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
             user.setUserMatchActive(false);
             userRepository.save(user);
         }
