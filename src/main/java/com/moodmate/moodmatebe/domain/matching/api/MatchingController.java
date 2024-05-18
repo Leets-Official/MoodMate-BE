@@ -1,6 +1,6 @@
 package com.moodmate.moodmatebe.domain.matching.api;
 
-import com.moodmate.moodmatebe.domain.matching.application.MatchingServic
+import com.moodmate.moodmatebe.domain.matching.application.MatchingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
