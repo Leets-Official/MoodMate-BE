@@ -77,6 +77,7 @@ public class UserService {
         String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
         Long userId = jwtProvider.getUserIdFromToken(token);
 
+        // 에러 발생할 수 있는 여지가 있음
         Optional<User> user = userRepository.findById(userId);
         Optional<ChatRoom> chatRoom = roomRepository.findActiveChatRoomByUserId(userId);
 
