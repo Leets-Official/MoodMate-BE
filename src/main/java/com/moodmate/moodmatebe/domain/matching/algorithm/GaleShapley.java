@@ -171,26 +171,39 @@ public class GaleShapley {
 
     // 채팅방과 만남 기록 생성
     private void createChatRoomAndMeetingRecord(Woman woman) {
+        log.info("createChatRoomAndMeetingRecord 시작");
+
         Optional<User> womanUser = userRepository.findById(woman.getUserId());
         Optional<User> partnerUser = userRepository.findById(woman.getPartnerUserId());
 
         if (womanUser.isPresent() && partnerUser.isPresent()) {
-            ChatRoom chatRoom = createChatRoom(womanUser.get(), partnerUser.get());
+            User womanUserObj = womanUser.get();
+            User partnerUserObj = partnerUser.get();
+
+            ChatRoom chatRoom = createChatRoom(womanUserObj, partnerUserObj);
             try {
+                log.info("채팅방 저장 시도: {} <-> {}", womanUserObj.getUserId(), partnerUserObj.getUserId());
                 roomRepository.save(chatRoom);
+                log.info("채팅방 저장 성공: {} <-> {}", womanUserObj.getUserId(), partnerUserObj.getUserId());
             } catch (Exception e) {
-                log.error("채팅방에 저장하는 동안 오류가 발생했습니다: ", e);
+                log.error("채팅방 저장 중 오류 발생: ", e);
                 throw new ChatRoomSaveException();
             }
 
-            WhoMeet whoMeet = createWhoMeetRecord(womanUser.get(), partnerUser.get());
+            WhoMeet whoMeet = createWhoMeetRecord(womanUserObj, partnerUserObj);
             try {
+                log.info("만남 기록 저장 시도: {} <-> {}", womanUserObj.getUserId(), partnerUserObj.getUserId());
                 whoMeetRepository.save(whoMeet);
+                log.info("만남 기록 저장 성공: {} <-> {}", womanUserObj.getUserId(), partnerUserObj.getUserId());
             } catch (Exception e) {
-                log.error("만남 기록을 저장하는 동안 오류가 발생했습니다: ", e);
+                log.error("만남 기록 저장 중 오류 발생: ", e);
                 throw new MeetingRecordSaveException();
             }
+        } else {
+            log.warn("유효한 사용자 정보가 없습니다. womanUser: {}, partnerUser: {}", womanUser, partnerUser);
         }
+
+        log.info("createChatRoomAndMeetingRecord 종료");
     }
 
     // 매칭 결과 출력
