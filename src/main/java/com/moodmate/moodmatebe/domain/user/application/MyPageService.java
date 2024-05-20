@@ -56,6 +56,7 @@ public class MyPageService {
         userRepository.save(user);
 
         // Update Prefer details
+        prefer.setUser(user);
         prefer.setPreferYearMin(myPageResponse.getPreferYearMin());
         prefer.setPreferYearMax(myPageResponse.getPreferYearMax());
         prefer.setPreferDepartmentPossible(myPageResponse.isPreferDepartmentPossible());
