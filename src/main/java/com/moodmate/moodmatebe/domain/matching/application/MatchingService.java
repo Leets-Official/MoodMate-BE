@@ -62,7 +62,16 @@ public class MatchingService {
         Map<String, Map<String, Woman>> womenGroups = groupByMood(convertListToMap(women));
 
         for (String mood : menGroups.keySet()) {
-            matchGroupsByMood(mood, menGroups.get(mood), womenGroups.get(mood));
+            Map<String, Man> menGroup = menGroups.get(mood);
+            Map<String, Woman> womenGroup = womenGroups.get(mood);
+
+            // null일 시, 다음 그룹으로 넘어가도록 함
+            if (menGroup == null || womenGroup == null || menGroup.isEmpty() || womenGroup.isEmpty()) {
+                log.info("{} 그룹에 유효한 매칭 대상이 없습니다.", mood);
+                continue;
+            }
+
+            matchGroupsByMood(mood, menGroup, womenGroup);
         }
     }
 
