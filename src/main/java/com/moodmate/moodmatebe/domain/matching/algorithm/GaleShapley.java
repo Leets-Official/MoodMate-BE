@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.*;
 
-
 @Slf4j
 public class GaleShapley {
     private final int totalMatches;
@@ -190,7 +189,7 @@ public class GaleShapley {
                 throw new ChatRoomSaveException();
             }
 
-            WhoMeet whoMeet = createWhoMeetRecord(womanUserObj, partnerUserObj);
+            WhoMeet whoMeet = WhoMeet.createWhoMeet(womanUserObj, partnerUserObj);
             try {
                 log.info("만남 기록 저장 시도: {} <-> {}", womanUserObj.getUserId(), partnerUserObj.getUserId());
                 whoMeetRepository.save(whoMeet);
@@ -219,15 +218,6 @@ public class GaleShapley {
                 .user1(user1)
                 .user2(user2)
                 .roomActive(true)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
-    // 만남 기록 생성
-    private WhoMeet createWhoMeetRecord(User user1, User user2) {
-        return WhoMeet.builder()
-                .metUser1(user1)
-                .metUser2(user2)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
