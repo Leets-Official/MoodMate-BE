@@ -2,6 +2,10 @@ package com.moodmate.moodmatebe.domain.user.api;
 
 import com.moodmate.moodmatebe.domain.user.application.MyPageService;
 import com.moodmate.moodmatebe.domain.user.dto.MyPageResponse;
+import com.moodmate.moodmatebe.domain.user.dto.NicknameCheckRequest;
+import com.moodmate.moodmatebe.domain.user.dto.NicknameCheckResponse;
+import com.moodmate.moodmatebe.domain.user.dto.NicknameModifyRequest;
+import com.moodmate.moodmatebe.domain.user.dto.NicknameModifyResponse;
 import com.moodmate.moodmatebe.global.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -51,5 +55,33 @@ public class MyPageController {
 
 
         return new ResponseEntity<>(Map.of("myPageResponse", response), HttpStatus.OK);
+    }
+
+    @Operation(summary = "닉네임 중복 검사", description = "같은 무드와 같은 성별에서 닉네임 중복 여부를 검사합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("/nickname/check")
+    public ResponseEntity<NicknameCheckResponse> checkDuplicateNickname(@RequestBody NicknameCheckRequest nicknameCheckRequest) {
+        NicknameCheckResponse response = myPageService.checkDuplicateNickname(nicknameCheckRequest);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Operation(summary = "닉네임 변경", description = "닉네임을 변경합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PutMapping("/nickname/change")
+    public ResponseEntity<NicknameModifyResponse> changeNickname(@RequestBody NicknameModifyRequest nicknameModifyRequest) {
+        NicknameModifyResponse response = myPageService.changeNickname(nicknameModifyRequest);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
