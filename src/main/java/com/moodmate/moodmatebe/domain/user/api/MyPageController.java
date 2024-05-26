@@ -79,7 +79,7 @@ public class MyPageController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @PostMapping("/nickname/change")
+    @PutMapping("/nickname/change")
     public ResponseEntity<NicknameModifyResponse> changeNickname(@RequestBody NicknameModifyRequest nicknameModifyRequest) {
         NicknameModifyResponse response = myPageService.changeNickname(nicknameModifyRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
