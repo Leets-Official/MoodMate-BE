@@ -4,6 +4,8 @@ import com.moodmate.moodmatebe.domain.chat.domain.ChatRoom;
 import com.moodmate.moodmatebe.domain.chat.dto.response.ChatUserDto;
 import com.moodmate.moodmatebe.domain.chat.exception.ChatRoomNotFoundException;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
+import com.moodmate.moodmatebe.domain.matching.repository.WhoMeetRepository;
+import com.moodmate.moodmatebe.domain.notification.repository.NotificationRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
@@ -32,6 +34,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final PreferRepository preferRepository;
+    private final NotificationRepository notificationRepository;
+    private final WhoMeetRepository whoMeetRepository;
     private final JwtTokenGenerator jwtTokenGenerator;
     private final Long ROOM_NOT_EXIST = -1L;
     private final JwtProvider jwtProvider;
@@ -165,5 +169,22 @@ public class UserService {
         Long otherUserId = (userId.equals(chatRoom.getUser1().getUserId())) ? chatRoom.getUser2().getUserId() : chatRoom.getUser1().getUserId();
 
         return userRepository.findById(otherUserId).orElseThrow(() -> new UserNotFoundException());
+    }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException());
+
+        notificationRepository.deleteByUser(user);
+        roomRepository.deleteByUser1OrUser2(user, user);
+        whoMeetRepository.deleteByMetUser1OrMetUser2(user, user);
+
+        // 관련된 키워드 항목을 삭제
+        if (user.getUserKeywords() != null) {
+            user.getUserKeywords().clear();
+        }
+
+        userRepository.delete(user);
     }
 }

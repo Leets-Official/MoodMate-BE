@@ -14,4 +14,6 @@ public interface WhoMeetRepository extends JpaRepository<WhoMeet, Long> {
 
     // 특정 남성 사용자와 매칭된 여성 목록 조회
     List<WhoMeet> findByMetUser2(User user);
+
+    void deleteByMetUser1OrMetUser2(User user1, User user2);
 }

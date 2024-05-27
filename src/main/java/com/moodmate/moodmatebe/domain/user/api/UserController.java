@@ -126,4 +126,17 @@ public class UserController {
         PartnerResponse partnerInfo = userService.getPartnerInfo(authorizationHeader);
         return ResponseEntity.ok(partnerInfo);
     }
+
+    @Operation(summary = "회원 탈퇴", description = "현재 사용자의 정보를 모든 테이블에서 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUser(@RequestBody DeleteUserRequest deleteUserRequest) {
+        userService.deleteUser(deleteUserRequest.userId());
+        return ResponseEntity.noContent().build();
+    }
 }
