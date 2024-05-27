@@ -10,6 +10,7 @@ import com.moodmate.moodmatebe.domain.matching.repository.WhoMeetRepository;
 import com.moodmate.moodmatebe.domain.user.domain.Gender;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
+import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -116,24 +117,28 @@ public class MatchingService {
         List<String> mainPreferences = new ArrayList<>();
         List<String> secondaryPreferences = new ArrayList<>();
         List<String> thirdPreferences = new ArrayList<>();
-        Set<String> metPeopleSet = getMetPeopleSet(person);
+        Set<Long> metPeopleSet = getMetPeopleSet(person);
+        List<String> metPeopleList = new ArrayList<>();
 
         for (U otherPerson : otherGroup.values()) {
-            String otherPersonName = otherPerson.getName();
-            if (metPeopleSet.contains(otherPersonName)) continue;
+            Long otherPersonId = otherPerson.getUserProfile().userId();
+            if (metPeopleSet.contains(otherPersonId)) {
+                metPeopleList.add(otherPerson.getName());
+                continue;
+            }
 
             if (isSameDepartment(person, otherPerson)) {
-                thirdPreferences.add(otherPersonName);
+                thirdPreferences.add(otherPerson.getName());
             } else if (isWithinPreferredAgeRange(person, otherPerson)) {
-                mainPreferences.add(otherPersonName);
+                mainPreferences.add(otherPerson.getName());
             } else {
-                secondaryPreferences.add(otherPersonName);
+                secondaryPreferences.add(otherPerson.getName());
             }
         }
 
         mainPreferences.addAll(secondaryPreferences);
         mainPreferences.addAll(thirdPreferences);
-        mainPreferences.addAll(metPeopleSet);
+        mainPreferences.addAll(metPeopleList);
 
         return mainPreferences;
     }
@@ -148,21 +153,21 @@ public class MatchingService {
                 otherPerson.getUserProfile().birthYear() <= person.getUserPreferences().yearMax();
     }
 
-    private <T extends Person> Set<String> getMetPeopleSet(T person) {
-        Set<String> metPeopleSet = new HashSet<>();
+    private <T extends Person> Set<Long> getMetPeopleSet(T person) {
+        Set<Long> metPeopleSet = new HashSet<>();
         User user = userRepository.findById(person.getUserProfile().userId())
-                .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 유저가 없음"));
+                .orElseThrow(UserNotFoundException::new);
 
         List<WhoMeet> metPeople;
         if (person instanceof Man) {
             metPeople = whoMeetRepository.findByMetUser2(user);
             for (WhoMeet met : metPeople) {
-                metPeopleSet.add(met.getMetUser1().getUserNickname());
+                metPeopleSet.add(met.getMetUser1().getUserId());
             }
         } else {
             metPeople = whoMeetRepository.findByMetUser1(user);
             for (WhoMeet met : metPeople) {
-                metPeopleSet.add(met.getMetUser2().getUserNickname());
+                metPeopleSet.add(met.getMetUser2().getUserId());
             }
         }
 

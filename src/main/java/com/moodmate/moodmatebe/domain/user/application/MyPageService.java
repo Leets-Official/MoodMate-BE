@@ -3,6 +3,10 @@ package com.moodmate.moodmatebe.domain.user.application;
 import com.moodmate.moodmatebe.domain.user.domain.Prefer;
 import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.dto.MyPageResponse;
+import com.moodmate.moodmatebe.domain.user.dto.NicknameCheckRequest;
+import com.moodmate.moodmatebe.domain.user.dto.NicknameCheckResponse;
+import com.moodmate.moodmatebe.domain.user.dto.NicknameModifyRequest;
+import com.moodmate.moodmatebe.domain.user.dto.NicknameModifyResponse;
 import com.moodmate.moodmatebe.domain.user.exception.PreferNotFoundException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
@@ -10,6 +14,9 @@ import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -81,4 +88,27 @@ public class MyPageService {
                 .build();
     }
 
+    @Transactional
+    public NicknameCheckResponse checkDuplicateNickname(NicknameCheckRequest nicknameCheckRequest) {
+        List<User> usersWithSameNickname = userRepository.findByUserNicknameAndUserGenderAndUserPreferMood(
+                nicknameCheckRequest.userNickname(), nicknameCheckRequest.userGender(), nicknameCheckRequest.preferMood());
+        if (!usersWithSameNickname.isEmpty()) {
+            return new NicknameCheckResponse(true, "닉네임이 중복되었습니다.");
+        }
+        return new NicknameCheckResponse(false, "닉네임이 중복되지 않았습니다.");
+    }
+
+    @Transactional
+    public NicknameModifyResponse changeNickname(String authorizationHeader, NicknameModifyRequest nicknameModifyRequest) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        user.setUserNickname(nicknameModifyRequest.newNickname());
+        userRepository.save(user);
+
+        return new NicknameModifyResponse(false, "닉네임이 성공적으로 변경되었습니다.");
+    }
 }
