@@ -172,6 +172,13 @@ public class UserService {
     }
 
     @Transactional
+    public void deleteUserByToken(String authorizationHeader) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        deleteUser(userId);
+    }
+
+    @Transactional
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException());
