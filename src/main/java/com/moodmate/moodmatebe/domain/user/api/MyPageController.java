@@ -80,8 +80,8 @@ public class MyPageController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PutMapping("/nickname/change")
-    public ResponseEntity<NicknameModifyResponse> changeNickname(@RequestBody NicknameModifyRequest nicknameModifyRequest) {
-        NicknameModifyResponse response = myPageService.changeNickname(nicknameModifyRequest);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<Map<String, NicknameModifyResponse>> changeNickname(@RequestHeader("Authorization") String authorizationHeader, @RequestBody NicknameModifyRequest nicknameModifyRequest) {
+        NicknameModifyResponse response = myPageService.changeNickname(authorizationHeader, nicknameModifyRequest);
+        return new ResponseEntity<>(Map.of("nicknameModifyResponse", response), HttpStatus.OK);
     }
 }
