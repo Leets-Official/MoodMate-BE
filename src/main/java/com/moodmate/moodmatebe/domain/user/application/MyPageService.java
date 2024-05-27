@@ -99,9 +99,13 @@ public class MyPageService {
     }
 
     @Transactional
-    public NicknameModifyResponse changeNickname(NicknameModifyRequest nicknameModifyRequest) {
-        User user = userRepository.findById(nicknameModifyRequest.userId())
+    public NicknameModifyResponse changeNickname(String authorizationHeader, NicknameModifyRequest nicknameModifyRequest) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
+
         user.setUserNickname(nicknameModifyRequest.newNickname());
         userRepository.save(user);
 
