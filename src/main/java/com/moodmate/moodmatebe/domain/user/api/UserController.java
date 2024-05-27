@@ -135,8 +135,8 @@ public class UserController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping
-    public ResponseEntity<Void> deleteUser(@RequestBody DeleteUserRequest deleteUserRequest) {
-        userService.deleteUser(deleteUserRequest.userId());
+    public ResponseEntity<Void> deleteUser(@RequestHeader("Authorization") String authorizationHeader) {
+        userService.deleteUserByToken(authorizationHeader);
         return ResponseEntity.noContent().build();
     }
 }
