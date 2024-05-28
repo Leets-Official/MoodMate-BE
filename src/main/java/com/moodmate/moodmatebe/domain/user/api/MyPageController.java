@@ -66,8 +66,8 @@ public class MyPageController {
             @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/nickname/check")
-    public ResponseEntity<NicknameCheckResponse> checkDuplicateNickname(@RequestBody NicknameCheckRequest nicknameCheckRequest) {
-        NicknameCheckResponse response = myPageService.checkDuplicateNickname(nicknameCheckRequest);
+    public ResponseEntity<NicknameCheckResponse> checkDuplicateNickname(@RequestHeader("Authorization") String authorizationHeader, @RequestBody NicknameCheckRequest nicknameCheckRequest) {
+        NicknameCheckResponse response = myPageService.checkDuplicateNickname(authorizationHeader, nicknameCheckRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

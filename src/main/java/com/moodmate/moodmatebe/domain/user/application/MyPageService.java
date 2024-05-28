@@ -89,10 +89,13 @@ public class MyPageService {
     }
 
     @Transactional
-    public NicknameCheckResponse checkDuplicateNickname(NicknameCheckRequest nicknameCheckRequest) {
-        List<User> usersWithSameNickname = userRepository.findByUserNicknameAndUserGenderAndUserPreferMood(
-                nicknameCheckRequest.userNickname(), nicknameCheckRequest.userGender(), nicknameCheckRequest.preferMood());
-        if (!usersWithSameNickname.isEmpty()) {
+    public NicknameCheckResponse checkDuplicateNickname(String authorizationHeader, NicknameCheckRequest nicknameCheckRequest) {
+        String token = jwtProvider.getTokenFromAuthorizationHeader(authorizationHeader);
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        boolean isNicknameDuplicate  = userRepository.existsByUserNicknameExceptUserId(
+                nicknameCheckRequest.userNickname(), userId);
+        if (isNicknameDuplicate) {
             return new NicknameCheckResponse(true, "닉네임이 중복되었습니다.");
         }
         return new NicknameCheckResponse(false, "닉네임이 중복되지 않았습니다.");
