@@ -71,6 +71,14 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    @Column(name = "match_in_progress")
+    @ColumnDefault("false")
+    private Boolean matchInProgress;
+
+    public boolean isMatchInProgress() {
+        return Boolean.TRUE.equals(matchInProgress);
+    }
+
     public static User toUser(OAuthInfoResponse oAuthInfoResponse) {
         return User
                 .builder()
@@ -78,6 +86,7 @@ public class User extends BaseTimeEntity {
                 .userEmail(oAuthInfoResponse.getEmail())
                 .userProfileImageUrl(oAuthInfoResponse.getProfileImageUrl())
                 .authority(Authority.ROLE_USER)
+                .matchInProgress(false)
                 .build();
     }
 }
