@@ -20,7 +20,8 @@ public enum ErrorCode {
     CHAT_ROOM_UNAUTHORIZED(401, "CHAT_ROOM_UNAUTHORIZED","권한이 없는 채팅방입니다."),
     FIREBASE_TOKEN_NOT_FOUND(404, "FIREBASE_TOKEN_NOT_FOUND","파이어베이스토큰이 존재하지않습니다."),
     SAVE_CHAT_ROOM_ERROR(500, "SAVE_CHAT_ROOM_ERROR", "채팅방을 저장하는 동안 오류가 발생했습니다."),
-    SAVE_MEETING_RECORD_ERROR(500, "SAVE_MEETING_RECORD_ERROR", "만남 기록을 저장하는 동안 오류가 발생했습니다.");
+    SAVE_MEETING_RECORD_ERROR(500, "SAVE_MEETING_RECORD_ERROR", "만남 기록을 저장하는 동안 오류가 발생했습니다."),
+    USER_MATCH_IN_PROGRESS(400, "USER_MATCH_IN_PROGRESS", "사용자가 현재 매칭 과정에 있어 삭제할 수 없습니다.");
 
     private final int httpStatus;
     private final String code;
