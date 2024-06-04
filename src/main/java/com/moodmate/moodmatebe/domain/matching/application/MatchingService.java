@@ -13,6 +13,7 @@ import com.moodmate.moodmatebe.domain.user.domain.User;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class MatchingService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final WhoMeetRepository whoMeetRepository;
+    private final EntityManager entityManager;
 
     private List<Man> men = new ArrayList<>();
     private List<Woman> women = new ArrayList<>();
@@ -37,11 +39,31 @@ public class MatchingService {
         List<Prefer> activeMatchTrue = getActiveMatchPreferences();
         Collections.shuffle(activeMatchTrue);
 
-        for (Prefer prefer : activeMatchTrue) {
-            addPersonToGroup(prefer);
+        // 매칭 작업 시작: 사용자 상태 업데이트
+        activeMatchTrue.forEach(prefer -> {
+            User user = prefer.getUser();
+            user.setMatchInProgress(true);
+            userRepository.save(user);
+        });
+        entityManager.flush();
+        entityManager.clear();
+
+        try {
+            for (Prefer prefer : activeMatchTrue) {
+                addPersonToGroup(prefer);
+            }
+            grouping();
+        } finally {
+            // 매칭 작업 완료: 사용자 상태 원래대로 되돌림
+            activeMatchTrue.forEach(prefer -> {
+                User user = prefer.getUser();
+                user.setMatchInProgress(false);
+                userRepository.save(user);
+            });
+            entityManager.flush();
+            entityManager.clear();
         }
     }
-
     private List<Prefer> getActiveMatchPreferences() {
         List<Prefer> activeMatchTrue = preferRepository.findByUserMatchActiveAndGenderTrue(Gender.MALE);
         activeMatchTrue.addAll(preferRepository.findByUserMatchActiveAndGenderTrue(Gender.FEMALE));

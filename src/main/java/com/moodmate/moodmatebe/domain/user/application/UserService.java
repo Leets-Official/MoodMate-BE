@@ -14,6 +14,7 @@ import com.moodmate.moodmatebe.domain.user.dto.PartnerResponse;
 import com.moodmate.moodmatebe.domain.user.dto.PreferInfoRequest;
 import com.moodmate.moodmatebe.domain.user.dto.UserInfoRequest;
 import com.moodmate.moodmatebe.domain.user.exception.InvalidInputValueException;
+import com.moodmate.moodmatebe.domain.user.exception.UserMatchingInProgressException;
 import com.moodmate.moodmatebe.domain.user.exception.UserNotFoundException;
 import com.moodmate.moodmatebe.domain.user.repository.PreferRepository;
 import com.moodmate.moodmatebe.domain.user.repository.UserRepository;
@@ -182,6 +183,10 @@ public class UserService {
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException());
+
+        if (user.isMatchInProgress()) {
+            throw new UserMatchingInProgressException();
+        }
 
         notificationRepository.deleteByUser(user);
         roomRepository.deleteByUser1OrUser2(user, user);
