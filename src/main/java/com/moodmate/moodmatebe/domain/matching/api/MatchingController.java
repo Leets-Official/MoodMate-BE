@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class MatchingController {
+  
     private final MatchingService matchingService;
-
+  
     @Scheduled(cron = "00 50 21 * * *", zone = "Asia/Seoul")
     public void runMatchingAlgorithm() {
         log.info("Matching start");
