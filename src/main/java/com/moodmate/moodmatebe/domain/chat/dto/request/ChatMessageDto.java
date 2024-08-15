@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class ChatMessageDto {
     private String content;
     private Long roomId;
-    private String token;
+   // private String token;
     private Long userId;
     //private LocalDateTime createdAt;
     //private boolean isRead;

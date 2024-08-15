@@ -13,7 +13,6 @@ import com.moodmate.moodmatebe.domain.chat.repository.MessageRepository;
 import com.moodmate.moodmatebe.domain.user.application.UserService;
 import com.moodmate.moodmatebe.domain.chat.repository.RoomRepository;
 import com.moodmate.moodmatebe.global.jwt.JwtProvider;
-import com.moodmate.moodmatebe.global.jwt.JwtTokenGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,12 +35,8 @@ public class ChatService {
     private final UserService userService;
 
     public void handleMessage(ChatMessageDto chatMessageDto) {
-        String authorization = jwtProvider.getTokenFromAuthorizationHeader(chatMessageDto.getToken());
-        Long userId = getUserId(authorization);
-        Long roomId = getRoomId(userId);
-
+        Long roomId = getRoomId(chatMessageDto.getUserId());
         chatRoomService.enterChatRoom(roomId);
-
         redisPublisher.publish(new ChannelTopic("/sub/chat/" + roomId), chatMessageDto);
 
         Message message = Message.of(chatMessageDto);
@@ -66,7 +61,6 @@ public class ChatService {
     }
 
     private Page<Message> getDbMessages(Long roomId, int size, int page) {
-
         Pageable pageable = PageRequest.of(page - 1, size);
         ChatRoom chatRoom = getChatRoom(roomId);
         return  messageRepository.findByRoomIdOrderByCreatedAtDesc(chatRoom.getRoomId(), pageable);
@@ -80,10 +74,6 @@ public class ChatService {
         } else {
             throw new ChatRoomNotFoundException();
         }
-    }
-
-    public Long getUserId(String authorizationHeader) {
-        return jwtProvider.getUserIdFromToken(authorizationHeader);
     }
 
     public Long getRoomId(Long userId) {
