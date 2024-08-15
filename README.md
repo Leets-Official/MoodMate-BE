@@ -218,7 +218,10 @@ MoodMate(무드메이트)는 **'가천대학교 대학생'** 을 대상으로 �
 - 이를 해결하기 위해 **스프링 스케줄러(cron)를 활용**하여, 매칭 시점부터 다음 날 채팅방 비활성화 시간까지 채팅을 입력하지 않는 **유령 회원을 자동으로 매칭에서 제외**하도록 했습니다. 
 
 > 무드 초점 전환(데이트 무드 -> 연애 무드)
-<p align="center"><img src="https://github.com/user-attachments/assets/cba96dcd-3e6b-4430-bbcb-e2969c3b5739" align="center" width="29%">  <img src="https://github.com/user-attachments/assets/984946e5-0af7-4911-8db2-0c1ec699adb2" align="center" width="32%"></p><figcaption align="center">데이트 무드(시즌1) | 연애 무드(시즌2)</figcaption>
+<p align="center"><img src="https://github.com/user-attachments/assets/cba96dcd-3e6b-4430-bbcb-e2969c3b5739" align="center" width="29%">  <img src="https://github.com/user-attachments/assets/984946e5-0af7-4911-8db2-0c1ec699adb2" align="center" width="32%"></p>
+
+<p align="center">데이트 무드(시즌1) | 연애 무드(시즌2)</p>
+
 <p align="center"> <img src="https://github.com/user-attachments/assets/f27cac4a-72d7-4525-ab1b-829a7b6884b0" align="center" width="32%"> </p> 
 
 <p align="center">무드 변경 공지</p>
