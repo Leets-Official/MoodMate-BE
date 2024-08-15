@@ -93,7 +93,9 @@ MoodMate(무드메이트)는 **'가천대학교 대학생'** 을 대상으로 �
 <br /><br/>
 
 > 메인페이지
-<p align="center">  <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/메인1.png" align="center" width="32%"> <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/메인2.png"align="center" width="32%">  <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/비활메인.png"align="center" width="32%"><figcaption align="center">매칭대기중 | 매칭 후 채팅중 | 비활성화중 메인</figcaption>
+<p align="center">  <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/메인1.png" align="center" width="32%"> <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/메인2.png"align="center" width="32%">  <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/비활메인.png"align="center" width="32%"><figcaption align="center">
+  
+<p align="center">매칭대기중 | 매칭 후 채팅중 | 비활성화중 메인</p>
 
 - 회원 정보 입력과, 상대 무디 조건 설정이 완료되면 **메인페이지로 이동**합니다.
 - 메인 페이지에서는 **매일 밤 10시에 시작되는 매칭 이벤트를 강조하는 카운트다운 타이머가 표시**됩니다. **카운트다운이 종료되면 자동으로 매칭 프로세스가 시작되며, 매칭된 사용자는 분홍색 배경의 페이지로 전환**되어 채팅방으로 들어가면 매칭된 사람과 대화를 할 수 있습니다.
@@ -106,7 +108,9 @@ MoodMate(무드메이트)는 **'가천대학교 대학생'** 을 대상으로 �
 
 > 채팅
 
-<p align="center">  <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/채팅1.png" align="center" width="32%"> <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/채팅2.png"align="center" width="32%">  <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/상대방채팅.png"align="center" width="32%"><figcaption align="center">채팅 미리보기 | 채팅중 | 상대 무디 정보 조회</figcaption>
+<p align="center">  <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/채팅1.png" align="center" width="32%"> <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/채팅2.png"align="center" width="32%">  <img src="https://github.com/Leets-Official/MoodMate-FE/raw/main/public/readme/상대방채팅.png"align="center" width="32%">
+
+<p align="center">채팅 미리보기 | 채팅중 | 상대 무디 정보 조회</p>
 
 - 매칭이 되게 되어 채팅 페이지에 입장하게 되면, **상대로 부터 온 메시지를 미리보기로 확인할 수 있습니다.**
 - **미리보기 바를 누르면 채팅방에 입장할 수 있으며**, **매칭된 상대와 1:1로 대화**를 나눌 수 있습니다.
@@ -171,14 +175,18 @@ MoodMate(무드메이트)는 **'가천대학교 대학생'** 을 대상으로 �
 
 ### 🌊 주요 변경 사항
 > PWA 도입
-<p align="center">  <img src="https://github.com/user-attachments/assets/d492e8dd-09fe-4ac1-85a5-5abb0cece2b7" align="center" width="32%">  <img src="https://github.com/user-attachments/assets/dc89ba1a-910a-4ec1-b87f-765bafe6774f" align="center" width="32%"></p><figcaption align="center">온보딩 페이지</figcaption>
+<p align="center">  <img src="https://github.com/user-attachments/assets/d492e8dd-09fe-4ac1-85a5-5abb0cece2b7" align="center" width="32%">  <img src="https://github.com/user-attachments/assets/dc89ba1a-910a-4ec1-b87f-765bafe6774f" align="center" width="32%"></p>
+
+<p align="center">온보딩 페이지</p>
 
 - 앱 알림 서비스와 UX, 채팅 기능을 개선하기 위해 **프로그레시브 웹 어플리케이션(PWA)을 도입**하였습니다.
 - 유저 서비스 만족도 조사 결과, **채팅 알림 기능에 대한 유저의 요구가 확인**되었고, 이를 **Firebase의 FCM을 활용한 웹 푸쉬 기능을 적용**하여 사용자 경험을 개선하였습니다.
 - Android, iOS, Desktop 앱으로 다운로드할 수 있습니다.
 
 > 구글 로그인 → 카카오 로그인
-<p align="center">  <img src="https://github.com/user-attachments/assets/95d60c12-0ba6-4c04-88a3-af1af17a7352" align="center" width="32%">  <img src="https://github.com/user-attachments/assets/1d4371b2-cf45-46a5-a951-4ac84596a5ac" align="center" width="32%"></p><figcaption align="center">구글 로그인(시즌1) | 카카오 로그인(시즌2)</figcaption>
+<p align="center">  <img src="https://github.com/user-attachments/assets/95d60c12-0ba6-4c04-88a3-af1af17a7352" align="center" width="32%">  <img src="https://github.com/user-attachments/assets/1d4371b2-cf45-46a5-a951-4ac84596a5ac" align="center" width="32%"></p>
+
+<p align="center">구글 로그인(시즌1) | 카카오 로그인(시즌2)</p>
 
 - **시즌 1에서는 구글 로그인 기능을 도입하여 서비스를 운영**하였습니다.
 - 그러나, **일부 유저가 여러 개의 구글 계정을 보유한 경우, 하나의 유저가 여러 계정으로 가입하는 문제**를 완전히 방지할 수 없다는 한계가 있었습니다.
@@ -187,7 +195,9 @@ MoodMate(무드메이트)는 **'가천대학교 대학생'** 을 대상으로 �
 > 회원 탈퇴 및 닉네임 수정 API 도입
 <p align="center">  <img src="https://github.com/user-attachments/assets/5d224e71-d00f-46d8-ab7b-022f5e710164" align="center" width="32%">  <img src="https://github.com/user-attachments/assets/7904b217-8985-46a8-b452-e7be82e22652" align="center" width="32%"></p>
 <p align="center">  <img src="https://github.com/user-attachments/assets/24c52d31-054f-419e-9f62-27e958c6b00b" align="center" width="32%">  <img src="https://github.com/user-attachments/assets/da0542ac-c2af-48ff-832c-e107880db1eb" align="center" width="32%"></p>
-<p align="center">  <img src="https://github.com/user-attachments/assets/96d9865c-373d-45dc-9420-ff2f7d440e02" align="center" width="32%">  </p><figcaption align="center">회원 탈퇴 및 닉네임 수정 기능 공지</figcaption>
+<p align="center">  <img src="https://github.com/user-attachments/assets/96d9865c-373d-45dc-9420-ff2f7d440e02" align="center" width="32%">  </p>
+
+<p align="center">회원 탈퇴 및 닉네임 수정 기능 공지</p>
 
 **회원 탈퇴**
 - 시즌 1에서는 회원 탈퇴 기능 없이 배포했으며, 관련 피드백이 없었기 때문에 시즌 2에서도 회원 탈퇴 기능을 포함하지 않고 배포했습니다. 
@@ -209,7 +219,9 @@ MoodMate(무드메이트)는 **'가천대학교 대학생'** 을 대상으로 �
 
 > 무드 초점 전환(데이트 무드 -> 연애 무드)
 <p align="center"><img src="https://github.com/user-attachments/assets/cba96dcd-3e6b-4430-bbcb-e2969c3b5739" align="center" width="29%">  <img src="https://github.com/user-attachments/assets/984946e5-0af7-4911-8db2-0c1ec699adb2" align="center" width="32%"></p><figcaption align="center">데이트 무드(시즌1) | 연애 무드(시즌2)</figcaption>
-<p align="center"> <img src="https://github.com/user-attachments/assets/f27cac4a-72d7-4525-ab1b-829a7b6884b0" align="center" width="32%"> </p> <figcaption align="center">무드 변경 공지</figcaption>
+<p align="center"> <img src="https://github.com/user-attachments/assets/f27cac4a-72d7-4525-ab1b-829a7b6884b0" align="center" width="32%"> </p> 
+
+<p align="center">무드 변경 공지</p>
 
 **무드 초점 전환**
 - 시즌 1에서는 “**어떤 무드의 데이트를 하고 싶은지**”에 초점을 맞춰 4개의 데이트 무드로 카테고리를 나누어 진행했습니다.
@@ -223,8 +235,13 @@ MoodMate(무드메이트)는 **'가천대학교 대학생'** 을 대상으로 �
 - 그 결과, 잔잔한 무드를 선택하는 사용자가 점차 늘어나면서 사용자들이 고르게 분산되었고, 서비스 효율성이 향상되었습니다.
 
 > 키워드 개수 확대 및 취미 관련 카테고리로 변경
-<p align="center">  <img src="https://github.com/user-attachments/assets/5c5c02a1-f811-43e6-ba4c-c8dfe978c1e0" align="center" width="32%">  <img src="https://github.com/user-attachments/assets/0f65afc1-c57e-4d6f-b9e8-2ce1a2489525" align="center" width="31.17%"></p><figcaption align="center">키워드(시즌1) | 키워드(시즌2)</figcaption>
-<p align="center">  <img src="https://github.com/user-attachments/assets/f27cac4a-72d7-4525-ab1b-829a7b6884b0" align="center" width="32%"> </p> <figcaption align="center">키워드 추가 공지</figcaption>
+<p align="center">  <img src="https://github.com/user-attachments/assets/5c5c02a1-f811-43e6-ba4c-c8dfe978c1e0" align="center" width="32%">  <img src="https://github.com/user-attachments/assets/0f65afc1-c57e-4d6f-b9e8-2ce1a2489525" align="center" width="31.17%"></p>
+
+<p align="center">키워드(시즌1) | 키워드(시즌2)</p>
+
+<p align="center">  <img src="https://github.com/user-attachments/assets/f27cac4a-72d7-4525-ab1b-829a7b6884b0" align="center" width="32%"> </p> 
+
+<p align="center">키워드 추가 공지</p>
 
 - 유저 서비스 만족도 조사 결과, 상대방 조건 추가(키, 관심사, 취미 등)에 대한 유저의 요구가 확인되었으며, 이를 반영하여 **기존 카테고리를 취미 관련 키워드로 전환하고, 키워드 개수를 확대**하여 사용자 경험을 개선하였습니다
 - **취미 카테고리로 변경**함으로써 **상대방의 취미를 이전보다 더 자세히 알 수 있었다**는 긍정적인 피드백을 받았습니다.
